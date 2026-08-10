@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>App 開發 SOP 導覽</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SOP導覽">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f1420">
+<style>
+  :root{
+    --bg: #0f1420;
+    --bg-panel: #161d2e;
+    --bg-panel-2: #1c2438;
+    --grid-line: rgba(94,184,255,0.06);
+    --border: #2a3552;
+    --border-soft: #232c46;
+    --text: #e7ecf5;
+    --text-dim: #8d97b3;
+    --text-faint: #5c6584;
+    --accent: #5eb8ff;
+    --accent-dim: #2f5f8a;
+    --accent-soft: rgba(94,184,255,0.12);
+    --amber: #e8a33d;
+    --amber-soft: rgba(232,163,61,0.12);
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, "Segoe UI", "PingFang TC", "Noto Sans TC", system-ui, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0/40px 40px,
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0/40px 40px,
+      var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    min-height:100vh;
+    padding:32px 24px 80px;
+  }
+  .wrap{max-width:1180px;margin:0 auto;}
+
+  header{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:24px;
+    border-bottom:1px solid var(--border);
+    padding-bottom:20px;
+    margin-bottom:28px;
+    flex-wrap:wrap;
+  }
+  .title-block .eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.18em;
+    color:var(--accent);
+    text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  .title-block h1{
+    font-size:26px;
+    margin:0;
+    font-weight:650;
+    letter-spacing:-0.01em;
+  }
+  .title-block p{
+    margin:6px 0 0;
+    color:var(--text-dim);
+    font-size:13.5px;
+  }
+  .status-chip{
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:var(--text-faint);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:6px 10px;
+    white-space:nowrap;
+  }
+  .status-chip b{color:var(--amber);font-weight:600;}
+
+  .layout{
+    display:block;
+  }
+
+  nav.stepnav{
+    display:flex;
+    flex-direction:row;
+    flex-wrap:wrap;
+    gap:6px;
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:8px;
+    margin-bottom:20px;
+  }
+  nav.stepnav button{
+    all:unset;
+    cursor:pointer;
+    display:flex;
+    align-items:baseline;
+    gap:7px;
+    padding:8px 12px;
+    border-radius:7px;
+    font-size:12.5px;
+    color:var(--text-dim);
+    background:var(--bg-panel);
+    border:1px solid transparent;
+    white-space:nowrap;
+  }
+  nav.stepnav button .n{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--text-faint);
+  }
+  nav.stepnav button.active{
+    background:var(--accent-soft);
+    color:var(--text);
+    border:1px solid var(--accent-dim);
+  }
+  nav.stepnav button.active .n{color:var(--accent);}
+  nav.stepnav button:hover:not(.active){color:var(--text);}
+
+  section.panel{
+    background:var(--bg-panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:24px 26px;
+    margin-bottom:18px;
+  }
+  section.panel h2{
+    font-size:15px;
+    margin:0 0 4px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:650;
+  }
+  section.panel h2 .idx{
+    font-family:var(--mono);
+    color:var(--accent);
+    font-size:12px;
+  }
+  section.panel .hint{
+    color:var(--text-dim);
+    font-size:12.5px;
+    margin:0 0 18px;
+    line-height:1.6;
+  }
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:600px){.grid2{grid-template-columns:1fr;}}
+
+  label{
+    display:block;
+    font-size:12px;
+    color:var(--text-dim);
+    margin-bottom:6px;
+    font-family:var(--mono);
+  }
+  input[type=text], select, textarea{
+    width:100%;
+    background:var(--bg-panel-2);
+    border:1px solid var(--border-soft);
+    color:var(--text);
+    border-radius:7px;
+    padding:9px 11px;
+    font-size:13.5px;
+    font-family:var(--sans);
+    margin-bottom:14px;
+    resize:vertical;
+  }
+  input[type=text]:focus, select:focus, textarea:focus{
+    outline:none;
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  textarea{font-family:var(--mono);font-size:12.5px;line-height:1.6;min-height:110px;}
+  .computed{
+    font-family:var(--mono);
+    font-size:12.5px;
+    background:var(--bg-panel-2);
+    border:1px dashed var(--border-soft);
+    border-radius:7px;
+    padding:9px 11px;
+    color:var(--accent);
+    margin-bottom:14px;
+    word-break:break-all;
+  }
+  .computed .lbl{color:var(--text-faint);font-family:var(--sans);display:block;font-size:11px;margin-bottom:2px;}
+  .checks{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+  .checks label{
+    display:flex;align-items:center;gap:6px;
+    font-family:var(--sans);color:var(--text);font-size:13px;
+    background:var(--bg-panel-2);border:1px solid var(--border-soft);
+    padding:7px 12px;border-radius:20px;cursor:pointer;
+  }
+  .checks input{margin:0;}
+
+  table.ref{width:100%;border-collapse:collapse;font-size:12.5px;font-family:var(--mono);}
+  table.ref th, table.ref td{
+    text-align:left;padding:7px 10px;border-bottom:1px solid var(--border-soft);color:var(--text-dim);
+  }
+  table.ref th{color:var(--text-faint);font-weight:500;}
+
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;}
+  button.action{
+    all:unset;cursor:pointer;
+    font-family:var(--sans);font-size:13px;font-weight:600;
+    padding:9px 16px;border-radius:7px;
+    background:var(--accent);color:#0b1220;
+  }
+  button.action.ghost{
+    background:transparent;color:var(--text-dim);border:1px solid var(--border);
+  }
+  button.action:hover{filter:brightness(1.08);}
+  button.action.ghost:hover{color:var(--text);border-color:var(--accent-dim);}
+
+  .output-box{
+    white-space:pre-wrap;
+    font-family:var(--mono);
+    font-size:12.5px;
+    line-height:1.7;
+    background:var(--bg-panel-2);
+    border:1px solid var(--border-soft);
+    border-radius:9px;
+    padding:18px;
+    max-height:460px;
+    overflow:auto;
+    color:var(--text);
+  }
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+    background:var(--bg-panel-2);border:1px solid var(--accent);color:var(--accent);
+    font-family:var(--mono);font-size:12.5px;padding:9px 16px;border-radius:8px;
+    opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,-6px);}
+
+  .savebar{
+    font-family:var(--mono);font-size:11px;color:var(--text-faint);
+    margin-top:6px;
+  }
+
+  .modal-backdrop{
+    position:fixed;inset:0;background:rgba(6,9,16,0.72);
+    display:none;align-items:center;justify-content:center;z-index:50;padding:20px;
+  }
+  .modal-backdrop.show{display:flex;}
+  .modal{
+    background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;
+    padding:22px 22px 18px;max-width:360px;width:100%;
+  }
+  .modal h3{margin:0 0 12px;font-size:15px;}
+  .modal ol{margin:0 0 16px;padding-left:20px;color:var(--text-dim);font-size:13px;line-height:1.9;}
+  .modal ol b{color:var(--text);}
+  .modal .closeModal{
+    all:unset;cursor:pointer;color:var(--accent);font-family:var(--mono);font-size:12.5px;
+  }
+  .modal .modal-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:4px;}
+  .modal .modal-btns button.danger{
+    all:unset;cursor:pointer;color:#ff6b6b;font-family:var(--mono);font-size:12.5px;padding:6px 10px;
+  }
+
+  .project-card{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:8px;
+    padding:11px 14px;margin-bottom:8px;flex-wrap:wrap;
+  }
+  .project-card .pinfo{min-width:0;}
+  .project-card .pname{font-size:13.5px;color:var(--text);font-weight:600;}
+  .project-card .pmeta{font-family:var(--mono);font-size:11px;color:var(--text-faint);margin-top:2px;}
+  .project-card .pactions{display:flex;gap:8px;flex-shrink:0;}
+  .project-card .pactions button{
+    all:unset;cursor:pointer;font-family:var(--mono);font-size:11.5px;
+    padding:6px 11px;border-radius:6px;border:1px solid var(--border);color:var(--text-dim);
+  }
+  .project-card .pactions button.load{color:var(--accent);border-color:var(--accent-dim);}
+  .project-card .pactions button.del{color:#ff6b6b;border-color:rgba(255,107,107,0.3);}
+  .empty-note{color:var(--text-faint);font-size:12.5px;font-family:var(--mono);padding:10px 0;}
+
+  .cloud-status{
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:12px;color:var(--text-dim);
+    background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:8px;
+    padding:10px 13px;margin-bottom:16px;
+  }
+  .cloud-status .dot{width:8px;height:8px;border-radius:50%;background:var(--text-faint);flex-shrink:0;}
+  .cloud-status.connected .dot{background:#4ade80;}
+  .cloud-status.connected{color:var(--text);}
+  .warn-box{
+    background:var(--amber-soft);border:1px solid rgba(232,163,61,0.35);border-radius:8px;
+    padding:11px 14px;font-size:12px;color:var(--text-dim);line-height:1.7;margin-bottom:16px;
+  }
+  .warn-box b{color:var(--amber);}
+
+  #cloudPanelBody{
+    max-height:3000px;
+    overflow:hidden;
+    transition:max-height .3s ease, opacity .25s ease;
+    opacity:1;
+  }
+  #cloudPanelBody.collapsed{
+    max-height:0;
+    opacity:0;
+  }
+  section.panel h2#cloudPanelToggle{
+    display:flex;
+    align-items:center;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="title-block">
+      <div class="eyebrow">NOMAX STUDIO — INTERNAL TOOL</div>
+      <h1>App 開發 SOP 導覽</h1>
+      <p>每次啟動新專案的固定流程 — 填寫、確認、輸出，貼給 AI 開始協作</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <button class="action ghost" id="installBtn" style="padding:8px 14px;">📲 加到主畫面</button>
+      <div class="status-chip" id="saveStatus">環境設定尚未載入</div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="stepnav" id="stepnav"></nav>
+
+    <div id="panels">
+
+      <section class="panel" data-step="0">
+        <h2><span class="idx">01</span> 專案基本資訊</h2>
+        <p class="hint">每個新專案填寫一次。資料夾名稱與套件名稱會依命名規範自動組合。</p>
+        <div class="grid2">
+          <div>
+            <label>APP 名稱</label>
+            <input type="text" id="appName" placeholder="例：NXmusic">
+          </div>
+          <div>
+            <label>版本起始號</label>
+            <input type="text" id="verStart" value="1.0.0">
+          </div>
+          <div>
+            <label>系列代號</label>
+            <select id="series">
+              <option value="sport">sport（運動）</option>
+              <option value="work">work（生產力）</option>
+              <option value="life" selected>life（生活/娛樂）</option>
+              <option value="fin">fin（金融）</option>
+              <option value="game">game（遊戲）</option>
+              <option value="__custom">自訂...</option>
+            </select>
+            <input type="text" id="seriesCustom" placeholder="輸入自訂系列代號" style="display:none;">
+          </div>
+          <div>
+            <label>功能代號</label>
+            <input type="text" id="funcCode" placeholder="例：music">
+          </div>
+        </div>
+        <div class="checks" id="platformChecks">
+          <label><input type="checkbox" value="Android" checked> Android</label>
+          <label><input type="checkbox" value="iOS"> iOS</label>
+          <label><input type="checkbox" value="Web"> Web（iOS上架前替代方案）</label>
+        </div>
+
+        <div class="computed">
+          <span class="lbl">資料夾名稱</span><span id="outFolder">nx_</span>
+        </div>
+        <div class="computed">
+          <span class="lbl">套件名稱</span><span id="outPkg">com.nomaxstudio.nx_</span>
+        </div>
+      </section>
+
+      <section class="panel" data-step="1">
+        <h2><span class="idx">02</span> 專案目標與需求簡述</h2>
+        <p class="hint">讓 AI 理解「這個 app 要解決什麼、為誰做」。也可以填是否沿用既有專案的架構（避免重工）。</p>
+        <label>目標與需求簡述</label>
+        <textarea id="goalDesc" placeholder="這個app要解決什麼問題？主要功能是什麼？目標使用者是誰？&#10;（可貼上你原本的功能規格筆記，不必整理成正式格式）" style="min-height:140px;"></textarea>
+        <label>相關既有專案 / 可沿用架構（若無可留空）</label>
+        <textarea id="reuseNote" placeholder="例：與 NXBeats 同屬音樂播放器性質，建議沿用其 sqflite 播放清單管理架構、Neumorphism UI 基礎，避免重工。"></textarea>
+      </section>
+
+      <section class="panel" data-step="2">
+        <h2><span class="idx">03</span> 環境設定（跨專案固定值）</h2>
+        <p class="hint">預設帶入你目前的開發環境，可直接編輯後儲存，之後每次開新專案自動沿用。</p>
+        <textarea id="envSetup" style="min-height:220px;"></textarea>
+        <div class="btnrow">
+          <button class="action ghost" id="saveEnvBtn">存成範本（複寫環境設定預設）</button>
+        </div>
+      </section>
+
+      <section class="panel" data-step="3">
+        <h2><span class="idx">04</span> 開發協作模式</h2>
+        <p class="hint">你與 AI 的固定分工規則，貼給新對話的 AI 看，讓它立刻知道怎麼配合你。</p>
+        <textarea id="collabMode" style="min-height:200px;"></textarea>
+        <div class="btnrow">
+          <button class="action ghost" id="saveCollabBtn">存成範本（複寫協作模式預設）</button>
+        </div>
+      </section>
+
+      <section class="panel" data-step="4">
+        <h2><span class="idx">05</span> 📓 使用者筆記</h2>
+        <p class="hint">自己隨手記的東西，純自用參考。不會出現在「產生整合文字」的 AI 輸出內容中。</p>
+        <textarea id="userNotes" placeholder="想到什麼就記在這裡..." style="min-height:180px;"></textarea>
+        <div class="btnrow">
+          <button class="action ghost" id="saveNotesBtn">儲存筆記</button>
+        </div>
+      </section>
+
+      <section class="panel" data-step="5">
+        <h2><span class="idx">06</span> 命名規範速查</h2>
+        <p class="hint">固定參考，不需編輯。</p>
+        <table class="ref">
+          <tr><th>項目</th><th>格式</th><th>範例</th></tr>
+          <tr><td>資料夾</td><td><code>nx{系列}_{功能}</code></td><td>nxsport_ump</td></tr>
+          <tr><td>套件名</td><td><code>com.nomaxstudio.nx{系列}_{功能}</code></td><td>com.nomaxstudio.nxsport_ump</td></tr>
+          <tr><td>現有系列</td><td colspan="2">sport / work / life / fin / game（可依新專案性質新增）</td></tr>
+        </table>
+      </section>
+
+      <section class="panel" data-step="6">
+        <h2 style="cursor:pointer;justify-content:space-between;" id="cloudPanelToggle">
+          <span><span class="idx">07</span> ☁️ 雲端同步設定</span>
+          <span id="cloudToggleIcon" style="font-family:var(--mono);font-size:12px;color:var(--text-faint);">▾ 收合</span>
+        </h2>
+        <div id="cloudPanelBody">
+        <p class="hint">設定一次後，「環境設定／協作模式」與「專案存檔」都會改存到雲端，手機、PC 用同一組設定即可同步。此區塊的設定值只存在<b>這台裝置的瀏覽器</b>裡，換裝置要重新貼一次設定（但資料本身是共用的）。</p>
+
+        <div class="cloud-status" id="cloudStatus"><span class="dot"></span><span>尚未連接雲端同步</span></div>
+
+        <div class="warn-box">
+          <b>設定步驟：</b>
+          1. 到 <b>console.firebase.google.com</b> 建立新專案<br>
+          2. 左側選單「Build → Firestore Database」→ 建立資料庫（測試模式即可）<br>
+          3. 左側「專案設定」→ 一般 → 新增網頁應用程式 → 複製顯示的 <b>firebaseConfig</b> 物件，整段貼到下面<br>
+          4. 自訂一組「同步代碼」（像密碼，只有你知道），手機與 PC 都填同一組即可讀到同一份資料
+        </div>
+
+        <label>Firebase 設定（貼上 firebaseConfig 物件）</label>
+        <textarea id="firebaseConfigInput" placeholder='{ apiKey: "...", authDomain: "...", projectId: "...", ... }' style="min-height:120px;"></textarea>
+        <label>同步代碼</label>
+        <input type="text" id="syncCodeInput" placeholder="自訂一組不易被猜到的代碼，例：nomax-sop-9x27">
+
+        <div class="btnrow" style="margin-bottom:6px;">
+          <button class="action" id="cloudConnectBtn">連接雲端</button>
+          <button class="action ghost" id="cloudRefreshBtn">🔄 重新從雲端載入</button>
+          <button class="action ghost" id="cloudDisconnectBtn">中斷連接（回到本機模式）</button>
+        </div>
+
+        <div style="margin-top:22px;padding-top:18px;border-top:1px dashed var(--border-soft);">
+          <label style="margin-bottom:8px;">📝 我的設定紀錄（僅供自己參考，不會出現在「產生整合文字」的 AI 輸出內容中）</label>
+          <div class="warn-box" style="color:var(--text-dim);">
+            <b>建立 Firebase 專案與資料庫：</b><br>
+            1. console.firebase.google.com → 新增專案<br>
+            2. 左側 Build → Firestore Database → 建立資料庫（測試/正式模式皆可）<br>
+            3. 若選正式模式，需到「規則」分頁貼上以下內容並發布，否則預設拒絕所有讀寫：<br>
+            <code style="display:block;background:var(--bg-panel-2);padding:8px 10px;border-radius:6px;margin:6px 0;white-space:pre-wrap;font-size:11px;">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /sopSync/{docId} {
+      allow read, write: if true;
+    }
+  }
+}</code>
+            <b>取得設定值：</b><br>
+            4. 左側「專案設定」→ 一般 → 你的應用程式 → 新增網頁應用程式（不用勾 Hosting）→ 複製 firebaseConfig<br>
+            5. 同一個 Firebase 專案可以重複用在以後的新網頁工具上，不用重新申請——每個新工具換一組不同的「同步代碼」即可讓資料彼此獨立（例：yusn1006、yusn1006-notes）<br><br>
+            <b>已知限制：</b><br>
+            ・在 Claude App 內建預覽視窗中，SDK 檔案能載入，但無法真正連上 Firestore（連線被擋），一定要下載後用手機/PC 的瀏覽器（Chrome/Safari）開啟才會動<br>
+            ・Firebase 設定與同步代碼存在瀏覽器 localStorage，只有真正用瀏覽器開啟時才會被記住並自動連線<br>
+            ・Spark 免費方案有每日讀寫額度上限，個人自用工具正常情況下不會碰到
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" data-step="7">
+        <h2><span class="idx">08</span> 專案存檔</h2>
+        <p class="hint">把目前「專案基本資訊」與「目標與需求」的內容存成一筆專案紀錄，之後可以載入繼續編輯或查詢，也可以刪除。環境設定與協作模式不會存進單筆專案（它們是共用的範本）。</p>
+        <div class="grid2">
+          <div style="grid-column:1/-1;">
+            <label>專案存檔名稱</label>
+            <input type="text" id="projectSaveName" placeholder="預設帶入 App 名稱">
+          </div>
+        </div>
+        <div class="btnrow" style="margin-bottom:20px;">
+          <button class="action" id="saveProjectBtn">存成專案</button>
+        </div>
+        <label style="margin-bottom:10px;">已儲存的專案</label>
+        <div id="projectList"></div>
+      </section>
+
+      <section class="panel" data-step="8">
+        <h2><span class="idx">09</span> 輸出</h2>
+        <p class="hint">整合以上內容為一篇文字，複製後貼給 AI 開始新專案協作。</p>
+        <div class="btnrow" style="margin-bottom:14px;">
+          <button class="action" id="genBtn">產生整合文字</button>
+          <button class="action ghost" id="copyBtn">複製到剪貼簿</button>
+        </div>
+        <div class="output-box" id="outputBox">按「產生整合文字」查看結果...</div>
+        <div class="savebar" id="saveBar"></div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-backdrop" id="installModal">
+  <div class="modal">
+    <h3 id="installTitle">加到主畫面</h3>
+    <ol id="installSteps"></ol>
+    <button class="closeModal" id="closeModal">知道了</button>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="confirmModal">
+  <div class="modal">
+    <h3 id="confirmTitle">確認</h3>
+    <p id="confirmMsg" style="color:var(--text-dim);font-size:13px;line-height:1.7;margin:0 0 16px;"></p>
+    <div class="modal-btns">
+      <button class="closeModal" id="confirmCancel">取消</button>
+      <button class="danger" id="confirmOk">確認</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DEFAULT_ENV = `- Flutter SDK：\`E:\\.Antigravity\\flutter\\bin\`（未加入系統 PATH，指令需用完整路徑，如 \`E:\\.Antigravity\\flutter\\bin\\flutter.bat\`）
+- Android Studio：\`C:\\Program Files\\Android\`
+- PUB_CACHE：\`E:\\.Antigravity\\pub_cache\`
+- Gradle 全域記憶體上限：2GB
+- 建置環境：命令提示字元（cmd）
+- 平台目標：Flutter（Android 優先，iOS 預留）
+- 建置策略：Release Split APK
+- 網頁版：視專案需求另評估（作為 iOS 上架前的替代方案）
+
+flutter create 會偵測到已有 pubspec.yaml 和 lib/main.dart，只會補上缺的 android/、web/、.dart_tool/，不會動到現有程式碼。
+建立指令範例：flutter create --platforms=android,web .`;
+
+const DEFAULT_COLLAB = `- Claude：負責架構設計與複雜邏輯、程式碼產出
+- 使用者：所有終端機操作親自執行
+- 初始化專案：直接依照已知的功能給出全部的專案資料夾基本架構及程式碼壓縮檔案（英文檔名）
+- 優化 App 開發 SOP：開發過程中必要時提醒需要更新到 SOP 的內容
+- 程式碼修改指示格式規定：必須提供「完整檔案路徑」＋「定位錨點」（欲替換區塊的起始行原文、結束行原文），不可用模糊的位置描述
+- 修改範圍過大時，直接提供所需全部程式碼
+- 遇到開發選擇時，直接給出適合該專案的建議
+- 若有不確定內容，先與使用者確認再作業
+- 回覆開發步驟時，每個操作動作需註明：該點擊/操作的具體位置、執行後應注意的訊息或結果，若涉及程式碼替換附上完整路徑＋起訖行定位錨點`;
+
+// ============ 雲端同步（Firestore）============
+let firestoreDb = null;
+let syncCode = null;
+let cloudConnected = false;
+const cloudStatusEl_getter = () => document.getElementById('cloudStatus');
+
+function setCloudStatus(text, connected){
+  const el = cloudStatusEl_getter();
+  el.classList.toggle('connected', !!connected);
+  el.innerHTML = `<span class="dot"></span><span>${text}</span>`;
+}
+
+function loadLocalCloudConfig(){
+  try{ return JSON.parse(localStorage.getItem('sop-cloud-config') || 'null'); }
+  catch(e){ return null; }
+}
+function saveLocalCloudConfig(cfgText, code){
+  try{ localStorage.setItem('sop-cloud-config', JSON.stringify({cfgText, code})); }catch(e){}
+}
+function clearLocalCloudConfig(){
+  try{ localStorage.removeItem('sop-cloud-config'); }catch(e){}
+}
+
+function parseFirebaseConfigText(text){
+  let t = text.trim();
+  t = t.replace(/^\s*(export\s+)?(const|var|let)\s+\w+\s*=\s*/,'').replace(/;\s*$/,'');
+  return new Function('return (' + t + ')')();
+}
+
+function loadFirebaseSDK(){
+  return new Promise((resolve, reject)=>{
+    if(window.firebase && window.firebase.firestore){ resolve(); return; }
+    const s1 = document.createElement('script');
+    s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/firebase/12.16.0/firebase-app-compat.min.js';
+    s1.onload = ()=>{
+      const s2 = document.createElement('script');
+      s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/firebase/12.16.0/firebase-firestore-compat.min.js';
+      s2.onload = ()=> resolve();
+      s2.onerror = ()=> reject(new Error('Firestore SDK 載入失敗'));
+      document.head.appendChild(s2);
+    };
+    s1.onerror = ()=> reject(new Error('Firebase SDK 載入失敗（請確認網路連線，或改用瀏覽器開啟此頁面而非App內預覽）'));
+    document.head.appendChild(s1);
+  });
+}
+
+async function initFirebase(cfgObj, code){
+  await loadFirebaseSDK();
+  if(!window.firebase.apps || !window.firebase.apps.length){
+    window.firebase.initializeApp(cfgObj);
+  }
+  firestoreDb = window.firebase.firestore();
+  try{
+    firestoreDb.settings({ experimentalAutoDetectLongPolling: true, merge: true });
+  }catch(e){ /* settings 已設定過，忽略 */ }
+  syncCode = code;
+  await firestoreDb.collection('sopSync').doc(syncCode).get();
+  cloudConnected = true;
+}
+
+function cloudDocRef(){
+  return firestoreDb.collection('sopSync').doc(syncCode);
+}
+async function cloudGetDoc(){
+  const snap = await cloudDocRef().get();
+  return snap.exists ? snap.data() : { envCollab: null, projects: [] };
+}
+async function cloudSetField(field, value){
+  await cloudDocRef().set({ [field]: value, updatedAt: Date.now() }, { merge: true });
+}
+
+document.getElementById('cloudConnectBtn').onclick = async ()=>{
+  const cfgText = document.getElementById('firebaseConfigInput').value;
+  const code = document.getElementById('syncCodeInput').value.trim();
+  if(!cfgText.trim() || !code){ showToast('請填入 Firebase 設定與同步代碼'); return; }
+  setCloudStatus('連接中...', false);
+  try{
+    const cfgObj = parseFirebaseConfigText(cfgText);
+    await initFirebase(cfgObj, code);
+    saveLocalCloudConfig(cfgText, code);
+    setCloudStatus(`已連接雲端同步（代碼：${escapeHtml(code)}）`, true);
+    showToast('雲端連接成功');
+    await loadDefaults();
+    await renderProjectList();
+    await loadUserNotes();
+  }catch(e){
+    console.error(e);
+    cloudConnected = false;
+    setCloudStatus('連接失敗，請確認設定內容是否正確', false);
+    showToast('連接失敗，請檢查 Firebase 設定與網路連線');
+  }
+};
+
+document.getElementById('cloudRefreshBtn').onclick = async ()=>{
+  if(!cloudConnected){ showToast('尚未連接雲端'); return; }
+  await loadDefaults();
+  await renderProjectList();
+  await loadUserNotes();
+  showToast('已從雲端重新載入');
+};
+
+document.getElementById('cloudDisconnectBtn').onclick = ()=>{
+  askConfirm('中斷雲端連接', '確定要中斷雲端同步嗎？這台裝置會改回本機儲存，資料仍保留在雲端，之後可以重新輸入設定再連回來。', ()=>{
+    cloudConnected = false;
+    firestoreDb = null;
+    syncCode = null;
+    clearLocalCloudConfig();
+    setCloudStatus('尚未連接雲端同步', false);
+    showToast('已中斷雲端連接');
+  });
+};
+
+async function tryAutoConnectCloud(){
+  const saved = loadLocalCloudConfig();
+  if(!saved) return;
+  document.getElementById('firebaseConfigInput').value = saved.cfgText;
+  document.getElementById('syncCodeInput').value = saved.code;
+  setCloudStatus('連接中...', false);
+  try{
+    const cfgObj = parseFirebaseConfigText(saved.cfgText);
+    await initFirebase(cfgObj, saved.code);
+    setCloudStatus(`已連接雲端同步（代碼：${escapeHtml(saved.code)}）`, true);
+  }catch(e){
+    console.error(e);
+    setCloudStatus('自動連接失敗，請確認設定或重新連接', false);
+  }
+}
+// ============ 雲端同步 結束 ============
+
+// ---- 雲端同步面板收合 ----
+const cloudPanelBody = document.getElementById('cloudPanelBody');
+const cloudToggleIcon = document.getElementById('cloudToggleIcon');
+function setCloudCollapsed(collapsed){
+  cloudPanelBody.classList.toggle('collapsed', collapsed);
+  cloudToggleIcon.textContent = collapsed ? '▸ 展開' : '▾ 收合';
+  try{ localStorage.setItem('cloud-panel-collapsed', collapsed ? '1' : '0'); }catch(e){}
+}
+document.getElementById('cloudPanelToggle').onclick = ()=>{
+  setCloudCollapsed(!cloudPanelBody.classList.contains('collapsed'));
+};
+(function initCloudCollapse(){
+  let collapsed = false;
+  try{ collapsed = localStorage.getItem('cloud-panel-collapsed') === '1'; }catch(e){}
+  setCloudCollapsed(collapsed);
+})();
+
+// ---- 使用者筆記（純自用，不進AI輸出）----
+const userNotesEl = document.getElementById('userNotes');
+async function loadUserNotes(){
+  if(cloudConnected){
+    try{
+      const d = await cloudGetDoc();
+      userNotesEl.value = d.userNotes || '';
+      return;
+    }catch(e){ console.error(e); }
+  }
+  try{
+    if(window.storage){
+      const r = await window.storage.get('user-notes', false);
+      userNotesEl.value = r && r.value ? r.value : '';
+      return;
+    }
+  }catch(e){}
+  userNotesEl.value = '';
+}
+document.getElementById('saveNotesBtn').onclick = async ()=>{
+  if(cloudConnected){
+    try{
+      await cloudSetField('userNotes', userNotesEl.value);
+      showToast('筆記已儲存（雲端）');
+      return;
+    }catch(e){
+      console.error(e);
+      showToast('雲端寫入失敗，改存本機');
+    }
+  }
+  try{
+    if(window.storage){
+      await window.storage.set('user-notes', userNotesEl.value, false);
+      showToast('筆記已儲存（本機）');
+      return;
+    }
+    showToast('目前無可用儲存方式，請先設定雲端同步');
+  }catch(e){
+    showToast('儲存失敗，請稍後再試');
+  }
+};
+loadUserNotes();
+
+const steps = ["專案基本資訊","目標與需求","環境設定","協作模式","使用者筆記","命名規範","雲端同步","專案存檔","輸出"];
+const stepnav = document.getElementById('stepnav');
+steps.forEach((label, i) => {
+  const b = document.createElement('button');
+  b.innerHTML = `<span class="n">0${i+1}</span>${label}`;
+  b.onclick = () => document.querySelector(`.panel[data-step="${i}"]`).scrollIntoView({behavior:'smooth', block:'start'});
+  b.dataset.idx = i;
+  stepnav.appendChild(b);
+});
+function setActiveNav(i){
+  [...stepnav.children].forEach((b,idx)=>b.classList.toggle('active', idx===i));
+}
+setActiveNav(0);
+const panels = [...document.querySelectorAll('.panel')];
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      setActiveNav(parseInt(e.target.dataset.step));
+    }
+  });
+}, {rootMargin:"-10% 0px -70% 0px"});
+panels.forEach(p=>io.observe(p));
+
+const seriesSel = document.getElementById('series');
+const seriesCustom = document.getElementById('seriesCustom');
+seriesSel.addEventListener('change', ()=>{
+  seriesCustom.style.display = seriesSel.value === '__custom' ? 'block' : 'none';
+  updateComputed();
+});
+
+function currentSeries(){
+  return seriesSel.value === '__custom' ? (seriesCustom.value.trim() || '{系列}') : seriesSel.value;
+}
+function updateComputed(){
+  const series = currentSeries();
+  const func = document.getElementById('funcCode').value.trim() || '{功能}';
+  document.getElementById('outFolder').textContent = `nx${series}_${func}`;
+  document.getElementById('outPkg').textContent = `com.nomaxstudio.nx${series}_${func}`;
+}
+['funcCode'].forEach(id=>document.getElementById(id).addEventListener('input', updateComputed));
+seriesCustom.addEventListener('input', updateComputed);
+updateComputed();
+
+const envEl = document.getElementById('envSetup');
+const collabEl = document.getElementById('collabMode');
+const saveStatus = document.getElementById('saveStatus');
+
+async function loadDefaults(){
+  if(cloudConnected){
+    try{
+      const d = await cloudGetDoc();
+      if(d.envCollab){
+        envEl.value = d.envCollab.env || DEFAULT_ENV;
+        collabEl.value = d.envCollab.collab || DEFAULT_COLLAB;
+      } else {
+        envEl.value = DEFAULT_ENV;
+        collabEl.value = DEFAULT_COLLAB;
+      }
+      saveStatus.innerHTML = `☁️ <b>雲端</b> 環境／協作預設`;
+      return;
+    }catch(e){
+      console.error(e);
+      showToast('雲端讀取失敗，暫用本機內容');
+    }
+  }
+  try{
+    if(window.storage){
+      const r = await window.storage.get('env-collab-defaults', false);
+      if(r && r.value){
+        const data = JSON.parse(r.value);
+        envEl.value = data.env || DEFAULT_ENV;
+        collabEl.value = data.collab || DEFAULT_COLLAB;
+        saveStatus.innerHTML = `已載入 <b>本機已儲存</b> 的環境／協作預設`;
+        return;
+      }
+    }
+  }catch(e){ /* no saved value yet */ }
+  envEl.value = DEFAULT_ENV;
+  collabEl.value = DEFAULT_COLLAB;
+  saveStatus.innerHTML = `使用<b>初始</b>環境／協作內容（尚未儲存）`;
+}
+loadDefaults();
+tryAutoConnectCloud().then(()=>{
+  if(cloudConnected){
+    loadDefaults();
+    renderProjectList();
+    loadUserNotes();
+  }
+});
+
+const confirmModal = document.getElementById('confirmModal');
+const confirmMsg = document.getElementById('confirmMsg');
+const confirmTitle = document.getElementById('confirmTitle');
+let confirmCallback = null;
+function askConfirm(title, msg, onOk){
+  confirmTitle.textContent = title;
+  confirmMsg.textContent = msg;
+  confirmCallback = onOk;
+  confirmModal.classList.add('show');
+}
+document.getElementById('confirmCancel').onclick = ()=>{ confirmModal.classList.remove('show'); confirmCallback=null; };
+document.getElementById('confirmOk').onclick = ()=>{
+  confirmModal.classList.remove('show');
+  if(confirmCallback) confirmCallback();
+  confirmCallback = null;
+};
+confirmModal.onclick = (e)=>{ if(e.target === confirmModal){ confirmModal.classList.remove('show'); confirmCallback=null; } };
+
+async function getCurrentDefaults(){
+  if(cloudConnected){
+    try{
+      const d = await cloudGetDoc();
+      if(d.envCollab) return d.envCollab;
+    }catch(e){ console.error(e); }
+  }
+  try{
+    if(window.storage){
+      const r = await window.storage.get('env-collab-defaults', false);
+      if(r && r.value) return JSON.parse(r.value);
+    }
+  }catch(e){}
+  return { env: DEFAULT_ENV, collab: DEFAULT_COLLAB };
+}
+
+async function saveDefaultField(kind, newValue){
+  const current = await getCurrentDefaults();
+  const payload = { env: current.env || DEFAULT_ENV, collab: current.collab || DEFAULT_COLLAB };
+  payload[kind] = newValue;
+  if(cloudConnected){
+    try{
+      await cloudSetField('envCollab', payload);
+      return true;
+    }catch(e){
+      console.error(e);
+      showToast('雲端寫入失敗，改存本機');
+    }
+  }
+  try{
+    if(window.storage){
+      await window.storage.set('env-collab-defaults', JSON.stringify(payload), false);
+      return true;
+    }
+    showToast('目前無可用儲存方式，請先設定雲端同步');
+  }catch(e){
+    showToast('儲存失敗，請稍後再試');
+  }
+  return false;
+}
+
+document.getElementById('saveEnvBtn').onclick = ()=>{
+  askConfirm('存成範本', '確定要用目前的「環境設定」內容，複寫掉原本的預設嗎？之後新開專案會直接帶入這次的內容（不會動到「開發協作模式」）。', async ()=>{
+    const ok = await saveDefaultField('env', envEl.value);
+    if(ok){
+      saveStatus.innerHTML = cloudConnected ? `☁️ 已更新 <b>環境設定</b> 預設` : `已儲存 <b>環境設定</b>（本機）預設`;
+      showToast('已複寫環境設定範本');
+    }
+  });
+};
+
+document.getElementById('saveCollabBtn').onclick = ()=>{
+  askConfirm('存成範本', '確定要用目前的「開發協作模式」內容，複寫掉原本的預設嗎？之後新開專案會直接帶入這次的內容（不會動到「環境設定」）。', async ()=>{
+    const ok = await saveDefaultField('collab', collabEl.value);
+    if(ok){
+      saveStatus.innerHTML = cloudConnected ? `☁️ 已更新 <b>協作模式</b> 預設` : `已儲存 <b>協作模式</b>（本機）預設`;
+      showToast('已複寫協作模式範本');
+    }
+  });
+};
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._tm);
+  showToast._tm = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+function buildOutput(){
+  const appName = document.getElementById('appName').value.trim() || '（未填寫）';
+  const verStart = document.getElementById('verStart').value.trim() || '1.0.0';
+  const series = currentSeries();
+  const func = document.getElementById('funcCode').value.trim() || '（未填寫）';
+  const platforms = [...document.querySelectorAll('#platformChecks input:checked')].map(c=>c.value).join(' / ') || '（未選擇）';
+  const folder = document.getElementById('outFolder').textContent;
+  const pkg = document.getElementById('outPkg').textContent;
+  const goal = document.getElementById('goalDesc').value.trim() || '（未填寫）';
+  const reuse = document.getElementById('reuseNote').value.trim();
+  const env = envEl.value.trim();
+  const collab = collabEl.value.trim();
+
+  let out = `# App 開發專案初始化 — ${appName}
+
+## 0｜專案基本資訊
+- App 名稱：${appName}
+- 系列：${series}
+- 功能代號：${func}
+- 資料夾名稱：${folder}
+- 套件名稱：${pkg}
+- 版本起始號：${verStart}（由AI依照改動程度遞增，App內小字顯示）
+- 目標平台：${platforms}
+
+## 1｜專案目標與需求
+${goal}
+`;
+  if(reuse){
+    out += `\n### 相關既有專案 / 可沿用架構\n${reuse}\n`;
+  }
+  out += `
+## 2｜環境設定（跨專案固定值）
+${env}
+
+## 3｜開發協作模式（跨專案固定）
+${collab}
+
+## 4｜命名規範速查
+- 資料夾：nx{系列}_{功能}（例：nxsport_ump）
+- 套件名：com.nomaxstudio.nx{系列}_{功能}
+- 現有系列：sport（運動）、work（生產力）、life（生活/娛樂）、fin（金融）、game（遊戲）——可依新專案性質新增或修改系列代號
+
+---
+請依照以上資訊理解我的開發環境與協作方式，並協助這個專案的初始化工作。若上述內容有遺漏或不清楚之處，請直接提出確認。`;
+  return out;
+}
+
+function collectProjectData(){
+  return {
+    appName: document.getElementById('appName').value,
+    verStart: document.getElementById('verStart').value,
+    series: seriesSel.value,
+    seriesCustom: seriesCustom.value,
+    funcCode: document.getElementById('funcCode').value,
+    platforms: [...document.querySelectorAll('#platformChecks input')].map(c=>c.checked),
+    goalDesc: document.getElementById('goalDesc').value,
+    reuseNote: document.getElementById('reuseNote').value,
+  };
+}
+function applyProjectData(d){
+  document.getElementById('appName').value = d.appName || '';
+  document.getElementById('verStart').value = d.verStart || '1.0.0';
+  seriesSel.value = d.series || 'life';
+  seriesCustom.value = d.seriesCustom || '';
+  seriesCustom.style.display = seriesSel.value === '__custom' ? 'block' : 'none';
+  document.getElementById('funcCode').value = d.funcCode || '';
+  const checks = [...document.querySelectorAll('#platformChecks input')];
+  checks.forEach((c,i)=> c.checked = d.platforms ? !!d.platforms[i] : c.checked);
+  document.getElementById('goalDesc').value = d.goalDesc || '';
+  document.getElementById('reuseNote').value = d.reuseNote || '';
+  updateComputed();
+}
+
+async function getProjects(){
+  if(cloudConnected){
+    try{
+      const d = await cloudGetDoc();
+      return d.projects || [];
+    }catch(e){
+      console.error(e);
+      showToast('雲端讀取失敗');
+    }
+  }
+  try{
+    if(window.storage){
+      const r = await window.storage.get('sop-projects', false);
+      return r && r.value ? JSON.parse(r.value) : [];
+    }
+  }catch(e){}
+  return [];
+}
+async function setProjects(list){
+  if(cloudConnected){
+    try{
+      await cloudSetField('projects', list);
+      return;
+    }catch(e){
+      console.error(e);
+      showToast('雲端寫入失敗，未儲存');
+      throw e;
+    }
+  }
+  if(window.storage){
+    await window.storage.set('sop-projects', JSON.stringify(list), false);
+    return;
+  }
+  showToast('目前無可用儲存方式，請先設定雲端同步');
+  throw new Error('no storage backend');
+}
+
+function fmtDate(ts){
+  const d = new Date(ts);
+  return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+async function renderProjectList(){
+  const list = await getProjects();
+  const box = document.getElementById('projectList');
+  if(!list.length){
+    box.innerHTML = `<div class="empty-note">尚未儲存任何專案</div>`;
+    return;
+  }
+  box.innerHTML = '';
+  list.slice().sort((a,b)=>b.savedAt-a.savedAt).forEach(p=>{
+    const card = document.createElement('div');
+    card.className = 'project-card';
+    card.innerHTML = `
+      <div class="pinfo">
+        <div class="pname">${escapeHtml(p.name)}</div>
+        <div class="pmeta">${fmtDate(p.savedAt)}</div>
+      </div>
+      <div class="pactions">
+        <button class="load">載入</button>
+        <button class="del">刪除</button>
+      </div>`;
+    card.querySelector('.load').onclick = ()=>{
+      applyProjectData(p.data);
+      showToast(`已載入「${p.name}」`);
+      document.querySelector('.panel[data-step="0"]').scrollIntoView({behavior:'smooth'});
+    };
+    card.querySelector('.del').onclick = ()=>{
+      askConfirm('刪除專案', `確定要刪除「${p.name}」這筆存檔嗎？此動作無法復原。`, async ()=>{
+        try{
+          const cur = await getProjects();
+          await setProjects(cur.filter(x=>x.id !== p.id));
+          showToast('已刪除');
+          renderProjectList();
+        }catch(e){ console.error(e); }
+      });
+    };
+    box.appendChild(card);
+  });
+}
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+document.getElementById('saveProjectBtn').onclick = async ()=>{
+  const nameInput = document.getElementById('projectSaveName');
+  const name = nameInput.value.trim() || document.getElementById('appName').value.trim() || '未命名專案';
+  const entry = {
+    id: 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+    name,
+    savedAt: Date.now(),
+    data: collectProjectData()
+  };
+  try{
+    const list = await getProjects();
+    list.push(entry);
+    await setProjects(list);
+    nameInput.value = '';
+    showToast(`已存成專案「${name}」`);
+    renderProjectList();
+  }catch(e){
+    console.error(e);
+  }
+};
+
+renderProjectList();
+
+document.getElementById('genBtn').onclick = ()=>{
+  const text = buildOutput();
+  document.getElementById('outputBox').textContent = text;
+  document.querySelector('.panel[data-step="8"]').scrollIntoView({behavior:'smooth'});
+};
+
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault();
+  deferredInstallPrompt = e;
+});
+
+const installModal = document.getElementById('installModal');
+const installSteps = document.getElementById('installSteps');
+document.getElementById('closeModal').onclick = ()=> installModal.classList.remove('show');
+installModal.onclick = (e)=>{ if(e.target === installModal) installModal.classList.remove('show'); };
+
+function showInstallSteps(stepsHtml){
+  installSteps.innerHTML = stepsHtml;
+  installModal.classList.add('show');
+}
+
+document.getElementById('installBtn').onclick = async ()=>{
+  if(deferredInstallPrompt){
+    deferredInstallPrompt.prompt();
+    const choice = await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    if(choice.outcome === 'accepted'){
+      showToast('已加入主畫面');
+      return;
+    }
+  }
+  const ua = navigator.userAgent;
+  const isIOS = /iPhone|iPad|iPod/.test(ua);
+  const isAndroid = /Android/.test(ua);
+  if(isIOS){
+    showInstallSteps(`
+      <li>點畫面下方（或上方）的 <b>分享</b> 圖示（方框+箭頭）</li>
+      <li>往下捲，點 <b>加入主畫面</b></li>
+      <li>確認名稱後點右上角 <b>新增</b></li>`);
+  } else if(isAndroid){
+    showInstallSteps(`
+      <li>點瀏覽器右上角 <b>⋮ 選單</b></li>
+      <li>選 <b>加到主畫面</b>（或「安裝應用程式」）</li>
+      <li>確認後即完成</li>
+      <li>若在 Claude App 內開啟，請先點右上角用<b>瀏覽器開啟</b>再操作</li>`);
+  } else {
+    showInstallSteps(`
+      <li>用手機瀏覽器（Chrome / Safari）開啟此頁面</li>
+      <li>從瀏覽器選單中選擇「加到主畫面」</li>`);
+  }
+};
+
+document.getElementById('copyBtn').onclick = async ()=>{
+  const box = document.getElementById('outputBox');
+  if(!box.textContent || box.textContent.startsWith('按「產生')){
+    document.getElementById('genBtn').click();
+  }
+  try{
+    await navigator.clipboard.writeText(document.getElementById('outputBox').textContent);
+    showToast('已複製到剪貼簿');
+  }catch(e){
+    showToast('複製失敗，請手動選取文字');
+  }
+};
+</script>
+</body>
+</html>
