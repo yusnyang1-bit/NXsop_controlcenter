@@ -123,14 +123,14 @@
   nav.stepnav button.active .n{color:var(--accent);}
   nav.stepnav button:hover:not(.active){color:var(--text);}
 
-  section.panel{
+  section.app-panel{
     background:var(--bg-panel);
     border:1px solid var(--border);
     border-radius:12px;
     padding:24px 26px;
     margin-bottom:18px;
   }
-  section.panel h2{
+  section.app-panel h2{
     font-size:15px;
     margin:0 0 4px;
     display:flex;
@@ -138,12 +138,12 @@
     gap:8px;
     font-weight:650;
   }
-  section.panel h2 .idx{
+  section.app-panel h2 .idx{
     font-family:var(--mono);
     color:var(--accent);
     font-size:12px;
   }
-  section.panel .hint{
+  section.app-panel .hint{
     color:var(--text-dim);
     font-size:12.5px;
     margin:0 0 18px;
@@ -305,10 +305,46 @@
     max-height:0;
     opacity:0;
   }
-  section.panel h2#cloudPanelToggle{
+  section.app-panel h2#cloudPanelToggle{
     display:flex;
     align-items:center;
   }
+
+  .collapse-icon{font-family:var(--mono);font-size:11px;color:var(--text-faint);flex-shrink:0;}
+  .panel-body-auto{max-height:4000px;overflow:hidden;transition:max-height .3s ease, opacity .25s ease, margin-top .3s ease;opacity:1;}
+  .panel-body-auto.collapsed{max-height:0;opacity:0;}
+.entry-card, .novel-card{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:8px;
+    padding:11px 14px;margin-bottom:8px;flex-wrap:wrap;
+  }
+  .entry-card .einfo, .novel-card .ninfo{min-width:0;flex:1;}
+  .entry-card .ename, .novel-card .nname{font-size:13.5px;color:var(--text);font-weight:600;}
+  .entry-card .etext{font-family:var(--mono);font-size:11.5px;color:var(--text-dim);margin-top:3px;line-height:1.5;}
+  .novel-card .nmeta{font-family:var(--mono);font-size:11px;color:var(--text-faint);margin-top:2px;}
+  .entry-card .eactions, .novel-card .nactions{display:flex;gap:8px;flex-shrink:0;}
+  .entry-card button, .novel-card button{
+    all:unset;cursor:pointer;font-family:var(--mono);font-size:11.5px;
+    padding:6px 11px;border-radius:6px;border:1px solid var(--border);color:var(--text-dim);
+  }
+  .novel-card button.load{color:var(--accent);border-color:var(--accent-dim);}
+  .entry-card button.del, .novel-card button.del{color:#ff6b6b;border-color:rgba(255,107,107,0.3);}
+  
+
+  .mode-tabs{
+    display:flex;gap:8px;margin-bottom:20px;
+  }
+  .mode-tabs button{
+    all:unset;cursor:pointer;flex:1;text-align:center;
+    padding:12px 16px;border-radius:10px;font-size:13.5px;font-weight:600;
+    background:var(--bg-panel);border:1px solid var(--border);color:var(--text-dim);
+  }
+  .mode-tabs button.active{
+    background:var(--accent-soft);color:var(--text);border-color:var(--accent-dim);
+  }
+  .mode-tabs button:hover:not(.active){color:var(--text);}
+  .mode-section{display:none;}
+  .mode-section.active{display:block;}
 </style>
 </head>
 <body>
@@ -317,8 +353,8 @@
   <header>
     <div class="title-block">
       <div class="eyebrow">NOMAX STUDIO — INTERNAL TOOL</div>
-      <h1>App 開發 SOP 導覽</h1>
-      <p>每次啟動新專案的固定流程 — 填寫、確認、輸出，貼給 AI 開始協作</p>
+      <h1 id="mainTitle">App 開發 SOP 導覽</h1>
+      <p id="mainSubtitle">每次啟動新專案的固定流程 — 填寫、確認、輸出，貼給 AI 開始協作</p>
     </div>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <button class="action ghost" id="installBtn" style="padding:8px 14px;">📲 加到主畫面</button>
@@ -326,12 +362,18 @@
     </div>
   </header>
 
+  <div class="mode-tabs" id="modeTabs">
+    <button data-mode="app" class="active">📱 App 開發</button>
+    <button data-mode="novel">📖 小說開發</button>
+  </div>
+
+  <div id="appMode" class="mode-section active">
   <div class="layout">
-    <nav class="stepnav" id="stepnav"></nav>
+    <nav class="stepnav" id="appStepnav"></nav>
 
-    <div id="panels">
+    <div id="appPanelsWrap">
 
-      <section class="panel" data-step="0">
+      <section class="app-panel" data-step="0">
         <h2><span class="idx">01</span> 專案基本資訊</h2>
         <p class="hint">每個新專案填寫一次。資料夾名稱與套件名稱會依命名規範自動組合。</p>
         <div class="grid2">
@@ -374,7 +416,7 @@
         </div>
       </section>
 
-      <section class="panel" data-step="1">
+      <section class="app-panel" data-step="1">
         <h2><span class="idx">02</span> 專案目標與需求簡述</h2>
         <p class="hint">讓 AI 理解「這個 app 要解決什麼、為誰做」。也可以填是否沿用既有專案的架構（避免重工）。</p>
         <label>目標與需求簡述</label>
@@ -383,7 +425,7 @@
         <textarea id="reuseNote" placeholder="例：與 NXBeats 同屬音樂播放器性質，建議沿用其 sqflite 播放清單管理架構、Neumorphism UI 基礎，避免重工。"></textarea>
       </section>
 
-      <section class="panel" data-step="2">
+      <section class="app-panel" data-step="2">
         <h2><span class="idx">03</span> 環境設定（跨專案固定值）</h2>
         <p class="hint">預設帶入你目前的開發環境，可直接編輯後儲存，之後每次開新專案自動沿用。</p>
         <textarea id="envSetup" style="min-height:220px;"></textarea>
@@ -392,7 +434,7 @@
         </div>
       </section>
 
-      <section class="panel" data-step="3">
+      <section class="app-panel" data-step="3">
         <h2><span class="idx">04</span> 開發協作模式</h2>
         <p class="hint">你與 AI 的固定分工規則，貼給新對話的 AI 看，讓它立刻知道怎麼配合你。</p>
         <textarea id="collabMode" style="min-height:200px;"></textarea>
@@ -401,7 +443,7 @@
         </div>
       </section>
 
-      <section class="panel" data-step="4">
+      <section class="app-panel" data-step="4">
         <h2><span class="idx">05</span> 📓 使用者筆記</h2>
         <p class="hint">自己隨手記的東西，純自用參考。不會出現在「產生整合文字」的 AI 輸出內容中。</p>
         <textarea id="userNotes" placeholder="想到什麼就記在這裡..." style="min-height:180px;"></textarea>
@@ -410,7 +452,7 @@
         </div>
       </section>
 
-      <section class="panel" data-step="5">
+      <section class="app-panel" data-step="5">
         <h2><span class="idx">06</span> 命名規範速查</h2>
         <p class="hint">固定參考，不需編輯。</p>
         <table class="ref">
@@ -421,7 +463,7 @@
         </table>
       </section>
 
-      <section class="panel" data-step="6">
+      <section class="app-panel" data-step="6">
         <h2 style="cursor:pointer;justify-content:space-between;" id="cloudPanelToggle">
           <span><span class="idx">07</span> ☁️ 雲端同步設定</span>
           <span id="cloudToggleIcon" style="font-family:var(--mono);font-size:12px;color:var(--text-faint);">▾ 收合</span>
@@ -474,9 +516,10 @@ service cloud.firestore {
             ・Spark 免費方案有每日讀寫額度上限，個人自用工具正常情況下不會碰到
           </div>
         </div>
+        </div>
       </section>
 
-      <section class="panel" data-step="7">
+      <section class="app-panel" data-step="7">
         <h2><span class="idx">08</span> 專案存檔</h2>
         <p class="hint">把目前「專案基本資訊」與「目標與需求」的內容存成一筆專案紀錄，之後可以載入繼續編輯或查詢，也可以刪除。環境設定與協作模式不會存進單筆專案（它們是共用的範本）。</p>
         <div class="grid2">
@@ -492,7 +535,7 @@ service cloud.firestore {
         <div id="projectList"></div>
       </section>
 
-      <section class="panel" data-step="8">
+      <section class="app-panel" data-step="8">
         <h2><span class="idx">09</span> 輸出</h2>
         <p class="hint">整合以上內容為一篇文字，複製後貼給 AI 開始新專案協作。</p>
         <div class="btnrow" style="margin-bottom:14px;">
@@ -504,6 +547,133 @@ service cloud.firestore {
       </section>
 
     </div>
+  </div>
+  </div>
+
+  <div id="novelMode" class="mode-section">
+  <nav class="stepnav" id="novelStepnav"></nav>
+
+  <div id="novelPanelsWrap">
+
+    <section class="novel-panel" data-step="0">
+      <h2><span class="htitle"><span class="idx">01</span> 小說名稱</span></h2>
+      <div class="hint">這本小說的基本識別資訊。</div>
+      <label>書名</label>
+      <input type="text" id="novelTitle" placeholder="小說名稱">
+      <label>一句話簡介（選填）</label>
+      <textarea id="novelLogline" placeholder="用一兩句話描述這個故事..." style="min-height:70px;"></textarea>
+    </section>
+
+    <section class="novel-panel" data-step="1">
+      <h2><span class="htitle"><span class="idx">02</span> 世界觀</span></h2>
+      <div class="hint">魔法體系、曆法、地理、規則等設定，可新增多筆，每筆各自獨立存檔。</div>
+      <label>項目名稱</label>
+      <input type="text" id="worldview_title" placeholder="例：魔法體系 / 曆法 / 貨幣制度">
+      <label>內容說明</label>
+      <textarea id="worldview_content" placeholder="詳細描述..."></textarea>
+      <div class="btnrow"><button class="action" data-key="worldview">新增</button></div>
+      <div id="worldview_list"></div>
+    </section>
+
+    <section class="novel-panel" data-step="2">
+      <h2><span class="htitle"><span class="idx">03</span> 陣營勢力</span></h2>
+      <div class="hint">故事中的組織、國家、勢力，可新增多筆。</div>
+      <label>勢力名稱</label>
+      <input type="text" id="factions_title" placeholder="例：北境守衛軍">
+      <label>勢力說明</label>
+      <textarea id="factions_content" placeholder="背景、立場、與其他勢力的關係..."></textarea>
+      <div class="btnrow"><button class="action" data-key="factions">新增</button></div>
+      <div id="factions_list"></div>
+    </section>
+
+    <section class="novel-panel" data-step="3">
+      <h2><span class="htitle"><span class="idx">04</span> 角色資料</span></h2>
+      <div class="hint">登場角色設定，可新增多筆。</div>
+      <label>角色姓名</label>
+      <input type="text" id="characters_title" placeholder="例：艾莉絲">
+      <label>角色設定</label>
+      <textarea id="characters_content" placeholder="外貌、性格、背景、能力..."></textarea>
+      <div class="btnrow"><button class="action" data-key="characters">新增</button></div>
+      <div id="characters_list"></div>
+    </section>
+
+    <section class="novel-panel" data-step="4">
+      <h2><span class="htitle"><span class="idx">05</span> 場景器具</span></h2>
+      <div class="hint">重要場景、物品、道具設定，可新增多筆。</div>
+      <label>名稱</label>
+      <input type="text" id="scenes_title" placeholder="例：黑森林 / 聖劍">
+      <label>描述</label>
+      <textarea id="scenes_content" placeholder="外觀、特性、在劇情中的作用..."></textarea>
+      <div class="btnrow"><button class="action" data-key="scenes">新增</button></div>
+      <div id="scenes_list"></div>
+    </section>
+
+    <section class="novel-panel" data-step="5">
+      <h2><span class="htitle"><span class="idx">06</span> 章節綱要</span></h2>
+      <div class="hint">每章的大綱重點，可新增多筆，建議依章節順序新增。</div>
+      <label>章節標題</label>
+      <input type="text" id="outline_title" placeholder="例：第一章 命運的開端">
+      <label>大綱內容</label>
+      <textarea id="outline_content" placeholder="本章重點事件..."></textarea>
+      <div class="btnrow"><button class="action" data-key="outline">新增</button></div>
+      <div id="outline_list"></div>
+    </section>
+
+    <section class="novel-panel" data-step="6">
+      <h2><span class="htitle"><span class="idx">07</span> 正式劇情</span></h2>
+      <div class="hint">正式撰寫的章節內文，可新增多筆，建議依章節順序新增。</div>
+      <label>章節標題</label>
+      <input type="text" id="chapters_title" placeholder="例：第一章 命運的開端">
+      <label>正文內容</label>
+      <textarea id="chapters_content" placeholder="正式撰寫的內文..." style="min-height:180px;"></textarea>
+      <div class="btnrow"><button class="action" data-key="chapters">新增</button></div>
+      <div id="chapters_list"></div>
+    </section>
+
+    <section class="novel-panel" data-step="7">
+      <h2><span class="htitle"><span class="idx">08</span> ☁️ 雲端同步設定</span></h2>
+      <div class="hint">設定一次後，手機、PC 用同一組設定即可同步目前這本小說的所有內容。此區塊的設定值只存在這台裝置的瀏覽器裡。</div>
+
+      <div class="cloud-status" id="novelCloudStatus"><span class="dot"></span><span>尚未連接雲端同步</span></div>
+
+      <div class="warn-box">
+        <b>提醒：</b>與「App 開發 SOP 導覽」共用同一個 Firebase 專案沒問題，資料不會互相干擾（各自存在不同的資料集合裡）。同步代碼可以沿用同一組，也可以換一組讓兩邊資料徹底分開。
+      </div>
+
+      <label>Firebase 設定（貼上 firebaseConfig 物件）</label>
+      <textarea id="novelFirebaseConfigInput" placeholder='{ apiKey: "...", authDomain: "...", projectId: "...", ... }' style="min-height:100px;"></textarea>
+      <label>同步代碼</label>
+      <input type="text" id="novelSyncCodeInput" placeholder="例：yusn1006-novel">
+
+      <div class="btnrow">
+        <button class="action" id="novelCloudConnectBtn">連接雲端</button>
+        <button class="action ghost" id="novelCloudRefreshBtn">🔄 重新從雲端載入</button>
+        <button class="action ghost" id="novelCloudDisconnectBtn">中斷連接（回到本機模式）</button>
+      </div>
+    </section>
+
+    <section class="novel-panel" data-step="8">
+      <h2><span class="htitle"><span class="idx">09</span> 小說存檔</span></h2>
+      <div class="hint">把目前正在編輯的整本小說（書名＋所有段落）存成一筆快照，之後可以載入切換到別本小說，或刪除。載入會覆蓋目前正在編輯的內容。</div>
+      <label>存檔名稱</label>
+      <input type="text" id="novelSaveName" placeholder="預設帶入書名">
+      <div class="btnrow"><button class="action" id="saveNovelBtn">存成小說</button></div>
+      <label style="margin-bottom:10px;">已儲存的小說</label>
+      <div id="novelList"></div>
+    </section>
+
+    <section class="novel-panel" data-step="9">
+      <h2><span class="htitle"><span class="idx">10</span> 輸出</span></h2>
+      <div class="hint">整合以上所有段落為一篇文字，複製後貼給 AI 討論劇情或協助寫作。</div>
+      <div class="btnrow">
+        <button class="action" id="novelGenBtn">產生整合文字</button>
+        <button class="action ghost" id="novelCopyBtn">複製到剪貼簿</button>
+      </div>
+      <div class="output-box" id="novelOutputBox">按「產生整合文字」查看結果...</div>
+    </section>
+
+  </div>
+
   </div>
 </div>
 
@@ -636,6 +806,7 @@ document.getElementById('cloudConnectBtn').onclick = async ()=>{
     await loadDefaults();
     await renderProjectList();
     await loadUserNotes();
+    await applyInitialCollapse();
   }catch(e){
     console.error(e);
     cloudConnected = false;
@@ -649,6 +820,7 @@ document.getElementById('cloudRefreshBtn').onclick = async ()=>{
   await loadDefaults();
   await renderProjectList();
   await loadUserNotes();
+  await applyInitialCollapse();
   showToast('已從雲端重新載入');
 };
 
@@ -740,12 +912,49 @@ document.getElementById('saveNotesBtn').onclick = async ()=>{
 };
 loadUserNotes();
 
+// ============ 通用可收合面板（內容為空時預設收合）============
+const collapseSetters = {};
+function makeCollapsible(panel){
+  const h2 = panel.querySelector('h2');
+  const body = document.createElement('div');
+  body.className = 'panel-body-auto';
+  while(h2.nextSibling) body.appendChild(h2.nextSibling);
+  panel.appendChild(body);
+  const icon = document.createElement('span');
+  icon.className = 'collapse-icon';
+  icon.textContent = '▾ 收合';
+  h2.style.cursor = 'pointer';
+  h2.style.justifyContent = 'space-between';
+  h2.appendChild(icon);
+  function setState(collapsed){
+    body.classList.toggle('collapsed', collapsed);
+    icon.textContent = collapsed ? '▸ 展開' : '▾ 收合';
+  }
+  h2.onclick = ()=> setState(!body.classList.contains('collapsed'));
+  return setState;
+}
+[0,1,4,7].forEach(step=>{
+  const panel = document.querySelector(`.app-panel[data-step="${step}"]`);
+  if(panel) collapseSetters[step] = makeCollapsible(panel);
+});
+async function applyInitialCollapse(){
+  if(collapseSetters[0]) collapseSetters[0](!document.getElementById('appName').value.trim());
+  if(collapseSetters[1]) collapseSetters[1](!document.getElementById('goalDesc').value.trim() && !document.getElementById('reuseNote').value.trim());
+  if(collapseSetters[4]) collapseSetters[4](!userNotesEl.value.trim());
+  if(collapseSetters[7]){
+    try{
+      const list = await getProjects();
+      collapseSetters[7](list.length === 0);
+    }catch(e){ collapseSetters[7](true); }
+  }
+}
+
 const steps = ["專案基本資訊","目標與需求","環境設定","協作模式","使用者筆記","命名規範","雲端同步","專案存檔","輸出"];
-const stepnav = document.getElementById('stepnav');
+const stepnav = document.getElementById('appStepnav');
 steps.forEach((label, i) => {
   const b = document.createElement('button');
   b.innerHTML = `<span class="n">0${i+1}</span>${label}`;
-  b.onclick = () => document.querySelector(`.panel[data-step="${i}"]`).scrollIntoView({behavior:'smooth', block:'start'});
+  b.onclick = () => document.querySelector(`.app-panel[data-step="${i}"]`).scrollIntoView({behavior:'smooth', block:'start'});
   b.dataset.idx = i;
   stepnav.appendChild(b);
 });
@@ -753,7 +962,7 @@ function setActiveNav(i){
   [...stepnav.children].forEach((b,idx)=>b.classList.toggle('active', idx===i));
 }
 setActiveNav(0);
-const panels = [...document.querySelectorAll('.panel')];
+const panels = [...document.querySelectorAll('.app-panel')];
 const io = new IntersectionObserver((entries)=>{
   entries.forEach(e=>{
     if(e.isIntersecting){
@@ -1055,7 +1264,7 @@ async function renderProjectList(){
     card.querySelector('.load').onclick = ()=>{
       applyProjectData(p.data);
       showToast(`已載入「${p.name}」`);
-      document.querySelector('.panel[data-step="0"]').scrollIntoView({behavior:'smooth'});
+      document.querySelector('.app-panel[data-step="0"]').scrollIntoView({behavior:'smooth'});
     };
     card.querySelector('.del').onclick = ()=>{
       askConfirm('刪除專案', `確定要刪除「${p.name}」這筆存檔嗎？此動作無法復原。`, async ()=>{
@@ -1100,7 +1309,7 @@ renderProjectList();
 document.getElementById('genBtn').onclick = ()=>{
   const text = buildOutput();
   document.getElementById('outputBox').textContent = text;
-  document.querySelector('.panel[data-step="8"]').scrollIntoView({behavior:'smooth'});
+  document.querySelector('.app-panel[data-step="8"]').scrollIntoView({behavior:'smooth'});
 };
 
 let deferredInstallPrompt = null;
@@ -1162,6 +1371,394 @@ document.getElementById('copyBtn').onclick = async ()=>{
     showToast('複製失敗，請手動選取文字');
   }
 };
+
+(async function initCollapseState(){
+  await loadUserNotes();
+  await renderProjectList();
+  await applyInitialCollapse();
+})();
+
+
+// ============ 模式切換（App / 小說）============
+(function(){
+  const tabs = [...document.querySelectorAll('#modeTabs button')];
+  const appModeEl = document.getElementById('appMode');
+  const novelModeEl = document.getElementById('novelMode');
+  const titleEl = document.getElementById('mainTitle');
+  const subtitleEl = document.getElementById('mainSubtitle');
+  const modeText = {
+    app:   { title:'App 開發 SOP 導覽',  subtitle:'每次啟動新專案的固定流程 — 填寫、確認、輸出，貼給 AI 開始協作' },
+    novel: { title:'小說開發 SOP 導覽', subtitle:'每次開新小說的固定流程 — 分段記錄、獨立存檔、最終輸出整合文本' }
+  };
+  function setMode(mode){
+    tabs.forEach(b=> b.classList.toggle('active', b.dataset.mode === mode));
+    appModeEl.classList.toggle('active', mode === 'app');
+    novelModeEl.classList.toggle('active', mode === 'novel');
+    titleEl.textContent = modeText[mode].title;
+    subtitleEl.textContent = modeText[mode].subtitle;
+    try{ localStorage.setItem('sop-active-mode', mode); }catch(e){}
+  }
+  tabs.forEach(b=> b.onclick = ()=> setMode(b.dataset.mode));
+  let initial = 'app';
+  try{ initial = localStorage.getItem('sop-active-mode') || 'app'; }catch(e){}
+  setMode(initial);
+})();
+
+(function(){
+
+// ============ 小說資料模型 ============
+const SECTIONS = [
+  {key:'worldview',  step:1},
+  {key:'factions',   step:2},
+  {key:'characters', step:3},
+  {key:'scenes',     step:4},
+  {key:'outline',    step:5},
+  {key:'chapters',   step:6}
+];
+let novelData = { title:'', logline:'', worldview:[], factions:[], characters:[], scenes:[], outline:[], chapters:[] };
+
+// ---- 步驟導覽 ----
+const steps = ["小說名稱","世界觀","陣營勢力","角色資料","場景器具","章節綱要","正式劇情","雲端同步","小說存檔","輸出"];
+const novelStepnav = document.getElementById('novelStepnav');
+steps.forEach((label, i) => {
+  const b = document.createElement('button');
+  b.innerHTML = `<span class="n">${String(i+1).padStart(2,'0')}</span>${label}`;
+  b.onclick = () => document.querySelector(`.novel-panel[data-step="${i}"]`).scrollIntoView({behavior:'smooth', block:'start'});
+  novelStepnav.appendChild(b);
+});
+function setActiveNav(i){ [...novelStepnav.children].forEach((b,idx)=>b.classList.toggle('active', idx===i)); }
+setActiveNav(0);
+const panels = [...document.querySelectorAll('.novel-panel')];
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) setActiveNav(parseInt(e.target.dataset.step)); });
+}, {rootMargin:"-10% 0px -70% 0px"});
+panels.forEach(p=>io.observe(p));
+
+// ============ 雲端同步（Firestore，集合：novelSync）============
+let firestoreDb = null;
+let syncCode = null;
+let cloudConnected = false;
+function setCloudStatus(text, connected){
+  const el = document.getElementById('novelCloudStatus');
+  el.classList.toggle('connected', !!connected);
+  el.innerHTML = `<span class="dot"></span><span>${text}</span>`;
+}
+function loadLocalCloudConfig(){
+  try{ return JSON.parse(localStorage.getItem('novel-cloud-config') || 'null'); }catch(e){ return null; }
+}
+function saveLocalCloudConfig(cfgText, code){
+  try{ localStorage.setItem('novel-cloud-config', JSON.stringify({cfgText, code})); }catch(e){}
+}
+function clearLocalCloudConfig(){ try{ localStorage.removeItem('novel-cloud-config'); }catch(e){} }
+function parseFirebaseConfigText(text){
+  let t = text.trim();
+  t = t.replace(/^\s*(export\s+)?(const|var|let)\s+\w+\s*=\s*/,'').replace(/;\s*$/,'');
+  return new Function('return (' + t + ')')();
+}
+function loadFirebaseSDK(){
+  return new Promise((resolve, reject)=>{
+    if(window.firebase && window.firebase.firestore){ resolve(); return; }
+    const s1 = document.createElement('script');
+    s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/firebase/12.16.0/firebase-app-compat.min.js';
+    s1.onload = ()=>{
+      const s2 = document.createElement('script');
+      s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/firebase/12.16.0/firebase-firestore-compat.min.js';
+      s2.onload = ()=> resolve();
+      s2.onerror = ()=> reject(new Error('Firestore SDK 載入失敗'));
+      document.head.appendChild(s2);
+    };
+    s1.onerror = ()=> reject(new Error('Firebase SDK 載入失敗'));
+    document.head.appendChild(s1);
+  });
+}
+async function initFirebase(cfgObj, code){
+  await loadFirebaseSDK();
+  if(!window.firebase.apps || !window.firebase.apps.length){
+    window.firebase.initializeApp(cfgObj);
+  }
+  firestoreDb = window.firebase.firestore();
+  try{ firestoreDb.settings({ experimentalAutoDetectLongPolling: true, merge: true }); }catch(e){}
+  syncCode = code;
+  await firestoreDb.collection('novelSync').doc(syncCode).get();
+  cloudConnected = true;
+}
+function cloudDocRef(){ return firestoreDb.collection('novelSync').doc(syncCode); }
+async function cloudGetDoc(){
+  const snap = await cloudDocRef().get();
+  return snap.exists ? snap.data() : { currentDraft: null, novels: [] };
+}
+async function cloudSetField(field, value){
+  await cloudDocRef().set({ [field]: value, updatedAt: Date.now() }, { merge: true });
+}
+
+document.getElementById('novelCloudConnectBtn').onclick = async ()=>{
+  const cfgText = document.getElementById('novelFirebaseConfigInput').value;
+  const code = document.getElementById('novelSyncCodeInput').value.trim();
+  if(!cfgText.trim() || !code){ showToast('請填入 Firebase 設定與同步代碼'); return; }
+  setCloudStatus('連接中...', false);
+  try{
+    const cfgObj = parseFirebaseConfigText(cfgText);
+    await initFirebase(cfgObj, code);
+    saveLocalCloudConfig(cfgText, code);
+    setCloudStatus(`已連接雲端同步（代碼：${escapeHtml(code)}）`, true);
+    showToast('雲端連接成功');
+    await loadCurrentDraft();
+    await renderNovelList();
+    applyInitialCollapse();
+  }catch(e){
+    console.error(e);
+    cloudConnected = false;
+    setCloudStatus('連接失敗，請確認設定內容是否正確', false);
+    showToast('連接失敗，請檢查 Firebase 設定與網路連線');
+  }
+};
+document.getElementById('novelCloudRefreshBtn').onclick = async ()=>{
+  if(!cloudConnected){ showToast('尚未連接雲端'); return; }
+  await loadCurrentDraft();
+  await renderNovelList();
+  showToast('已從雲端重新載入');
+};
+document.getElementById('novelCloudDisconnectBtn').onclick = ()=>{
+  askConfirm('中斷雲端連接', '確定要中斷雲端同步嗎？這台裝置會改回本機儲存，資料仍保留在雲端。', ()=>{
+    cloudConnected = false; firestoreDb = null; syncCode = null;
+    clearLocalCloudConfig();
+    setCloudStatus('尚未連接雲端同步', false);
+    showToast('已中斷雲端連接');
+  });
+};
+async function tryAutoConnectCloud(){
+  const saved = loadLocalCloudConfig();
+  if(!saved) return;
+  document.getElementById('novelFirebaseConfigInput').value = saved.cfgText;
+  document.getElementById('novelSyncCodeInput').value = saved.code;
+  setCloudStatus('連接中...', false);
+  try{
+    const cfgObj = parseFirebaseConfigText(saved.cfgText);
+    await initFirebase(cfgObj, saved.code);
+    setCloudStatus(`已連接雲端同步（代碼：${escapeHtml(saved.code)}）`, true);
+  }catch(e){
+    console.error(e);
+    setCloudStatus('自動連接失敗，請確認設定或重新連接', false);
+  }
+}
+
+// ============ 目前草稿的讀取／自動存檔 ============
+const titleEl = document.getElementById('novelTitle');
+const loglineEl = document.getElementById('novelLogline');
+
+function applyDraftToUI(){
+  titleEl.value = novelData.title || '';
+  loglineEl.value = novelData.logline || '';
+  SECTIONS.forEach(s => renderEntryList(s.key));
+}
+
+async function loadCurrentDraft(){
+  if(cloudConnected){
+    try{
+      const d = await cloudGetDoc();
+      novelData = d.currentDraft || { title:'', logline:'', worldview:[], factions:[], characters:[], scenes:[], outline:[], chapters:[] };
+      applyDraftToUI();
+      return;
+    }catch(e){ console.error(e); showToast('雲端讀取失敗，暫用本機內容'); }
+  }
+  try{
+    if(window.storage){
+      const r = await window.storage.get('novel-current-draft', false);
+      if(r && r.value){ novelData = JSON.parse(r.value); applyDraftToUI(); return; }
+    }
+  }catch(e){}
+  applyDraftToUI();
+}
+
+async function saveCurrentDraft(){
+  if(cloudConnected){
+    try{ await cloudSetField('currentDraft', novelData); return; }
+    catch(e){ console.error(e); showToast('雲端寫入失敗'); }
+  }
+  try{
+    if(window.storage){ await window.storage.set('novel-current-draft', JSON.stringify(novelData), false); return; }
+  }catch(e){}
+}
+
+titleEl.addEventListener('blur', ()=>{ novelData.title = titleEl.value.trim(); saveCurrentDraft(); });
+loglineEl.addEventListener('blur', ()=>{ novelData.logline = loglineEl.value.trim(); saveCurrentDraft(); });
+
+// ============ 段落條目：新增／刪除 ============
+function addEntry(key){
+  const titleInput = document.getElementById(key+'_title');
+  const contentInput = document.getElementById(key+'_content');
+  const title = titleInput.value.trim();
+  const content = contentInput.value.trim();
+  if(!title && !content){ showToast('請至少填寫標題或內容'); return; }
+  novelData[key].push({ id: 'e_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), title, content });
+  titleInput.value = ''; contentInput.value = '';
+  renderEntryList(key);
+  saveCurrentDraft();
+  showToast('已新增');
+}
+function renderEntryList(key){
+  const box = document.getElementById(key+'_list');
+  const list = novelData[key] || [];
+  if(!list.length){ box.innerHTML = '<div class="empty-note">尚未新增任何項目</div>'; return; }
+  box.innerHTML = '';
+  list.forEach(item=>{
+    const preview = (item.content||'').slice(0,80) + ((item.content||'').length>80 ? '…' : '');
+    const card = document.createElement('div');
+    card.className = 'entry-card';
+    card.innerHTML = `<div class="einfo"><div class="ename">${escapeHtml(item.title||'（未命名）')}</div><div class="etext">${escapeHtml(preview)}</div></div><div class="eactions"><button class="del">刪除</button></div>`;
+    card.querySelector('.del').onclick = ()=>{
+      askConfirm('刪除項目', `確定要刪除「${item.title||'未命名'}」嗎？此動作無法復原。`, ()=>{
+        novelData[key] = novelData[key].filter(x=>x.id!==item.id);
+        renderEntryList(key);
+        saveCurrentDraft();
+        showToast('已刪除');
+      });
+    };
+    box.appendChild(card);
+  });
+}
+document.querySelectorAll('button[data-key]').forEach(b=>{
+  b.onclick = ()=> addEntry(b.dataset.key);
+});
+
+// ============ 小說存檔（多本小說快照）============
+async function getNovels(){
+  if(cloudConnected){
+    try{ const d = await cloudGetDoc(); return d.novels || []; }
+    catch(e){ console.error(e); showToast('雲端讀取失敗'); }
+  }
+  try{
+    if(window.storage){
+      const r = await window.storage.get('novel-saved-list', false);
+      return r && r.value ? JSON.parse(r.value) : [];
+    }
+  }catch(e){}
+  return [];
+}
+async function setNovels(list){
+  if(cloudConnected){
+    try{ await cloudSetField('novels', list); return; }
+    catch(e){ console.error(e); showToast('雲端寫入失敗，未儲存'); throw e; }
+  }
+  if(window.storage){ await window.storage.set('novel-saved-list', JSON.stringify(list), false); return; }
+  showToast('目前無可用儲存方式，請先設定雲端同步');
+  throw new Error('no storage backend');
+}
+function fmtDate(ts){
+  const d = new Date(ts);
+  return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+async function renderNovelList(){
+  const list = await getNovels();
+  const box = document.getElementById('novelList');
+  if(!list.length){ box.innerHTML = '<div class="empty-note">尚未儲存任何小說</div>'; return; }
+  box.innerHTML = '';
+  list.slice().sort((a,b)=>b.savedAt-a.savedAt).forEach(n=>{
+    const card = document.createElement('div');
+    card.className = 'novel-card';
+    card.innerHTML = `<div class="ninfo"><div class="nname">${escapeHtml(n.name)}</div><div class="nmeta">${fmtDate(n.savedAt)}</div></div><div class="nactions"><button class="load">載入</button><button class="del">刪除</button></div>`;
+    card.querySelector('.load').onclick = ()=>{
+      askConfirm('載入小說', `載入「${n.name}」會覆蓋目前正在編輯的內容，確定嗎？`, ()=>{
+        novelData = JSON.parse(JSON.stringify(n.data));
+        applyDraftToUI();
+        saveCurrentDraft();
+        applyInitialCollapse();
+        showToast(`已載入「${n.name}」`);
+        document.querySelector('.novel-panel[data-step="0"]').scrollIntoView({behavior:'smooth'});
+      });
+    };
+    card.querySelector('.del').onclick = ()=>{
+      askConfirm('刪除小說存檔', `確定要刪除「${n.name}」這筆存檔嗎？此動作無法復原（不會刪除目前正在編輯的內容）。`, async ()=>{
+        try{
+          const cur = await getNovels();
+          await setNovels(cur.filter(x=>x.id!==n.id));
+          showToast('已刪除');
+          renderNovelList();
+        }catch(e){ console.error(e); }
+      });
+    };
+    box.appendChild(card);
+  });
+}
+document.getElementById('saveNovelBtn').onclick = async ()=>{
+  const nameInput = document.getElementById('novelSaveName');
+  const name = nameInput.value.trim() || novelData.title || '未命名小說';
+  const entry = { id:'n_'+Date.now()+'_'+Math.random().toString(36).slice(2,7), name, savedAt: Date.now(), data: JSON.parse(JSON.stringify(novelData)) };
+  try{
+    const list = await getNovels();
+    list.push(entry);
+    await setNovels(list);
+    nameInput.value = '';
+    showToast(`已存成小說「${name}」`);
+    renderNovelList();
+  }catch(e){ console.error(e); }
+};
+
+// ============ 輸出 ============
+function sectionText(key, label){
+  const list = novelData[key] || [];
+  if(!list.length) return '';
+  let out = `\n## ${label}\n`;
+  list.forEach((item, i)=>{
+    out += `\n### ${i+1}. ${item.title || '（未命名）'}\n${item.content || ''}\n`;
+  });
+  return out;
+}
+function buildOutput(){
+  let out = `# 小說設定資料 — ${novelData.title || '（未命名）'}\n`;
+  if(novelData.logline) out += `\n一句話簡介：${novelData.logline}\n`;
+  out += sectionText('worldview', '世界觀');
+  out += sectionText('factions', '陣營勢力');
+  out += sectionText('characters', '角色資料');
+  out += sectionText('scenes', '場景器具');
+  out += sectionText('outline', '章節綱要');
+  out += sectionText('chapters', '正式劇情');
+  out += `\n---\n請依照以上設定資料理解這個故事的世界觀與角色，協助我進行後續的劇情發展與寫作。若有不清楚或衝突之處，請直接提出確認。`;
+  return out;
+}
+document.getElementById('novelGenBtn').onclick = ()=>{
+  document.getElementById('novelOutputBox').textContent = buildOutput();
+  document.querySelector('.novel-panel[data-step="9"]').scrollIntoView({behavior:'smooth'});
+};
+document.getElementById('novelCopyBtn').onclick = async ()=>{
+  const box = document.getElementById('novelOutputBox');
+  if(!box.textContent || box.textContent.startsWith('按「產生')){ document.getElementById('novelGenBtn').click(); }
+  try{
+    await navigator.clipboard.writeText(document.getElementById('novelOutputBox').textContent);
+    showToast('已複製到剪貼簿');
+  }catch(e){ showToast('複製失敗，請手動選取文字'); }
+};
+
+// ============ 通用可收合面板（內容為空時預設收合）============
+const collapseSetters = {};
+panels.forEach(p=>{ collapseSetters[p.dataset.step] = makeCollapsible(p); });
+
+function applyInitialCollapse(){
+  collapseSetters['0'](!novelData.title && !novelData.logline);
+  SECTIONS.forEach(s=>{ collapseSetters[String(s.step)]((novelData[s.key]||[]).length === 0); });
+  // 08 雲端同步：未連接且尚未填設定時收合
+  const cfgEmpty = !document.getElementById('novelFirebaseConfigInput').value.trim();
+  collapseSetters['7'](!cloudConnected && cfgEmpty);
+  // 09 小說存檔、10 輸出：一律展開（由renderNovelList/genBtn互動決定內容，不強制收合）
+  collapseSetters['8'](false);
+  collapseSetters['9'](false);
+}
+
+// ============ 初始化 ============
+(async function init(){
+  await loadCurrentDraft();
+  await renderNovelList();
+  applyInitialCollapse();
+  await tryAutoConnectCloud();
+  if(cloudConnected){
+    await loadCurrentDraft();
+    await renderNovelList();
+    applyInitialCollapse();
+  }
+})();
+
+})();
+
 </script>
 </body>
 </html>
