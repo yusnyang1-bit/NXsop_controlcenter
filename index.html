@@ -28,20 +28,20 @@
     --sans: -apple-system, "Segoe UI", "PingFang TC", "Noto Sans TC", system-ui, sans-serif;
   }
   body.light{
-    --bg: #f4f6fb;
-    --bg-panel: #ffffff;
-    --bg-panel-2: #eef1f7;
-    --grid-line: rgba(30,41,59,0.05);
-    --border: #dbe1ec;
-    --border-soft: #e6eaf2;
-    --text: #1b2233;
-    --text-dim: #5a6478;
-    --text-faint: #8891a3;
-    --accent: #2f7dc4;
-    --accent-dim: #a9c9e6;
-    --accent-soft: rgba(47,125,196,0.10);
-    --amber: #b8791c;
-    --amber-soft: rgba(184,121,28,0.12);
+    --bg: #e7e6e0;
+    --bg-panel: #f2f1ea;
+    --bg-panel-2: #e9e7de;
+    --grid-line: rgba(60,55,40,0.05);
+    --border: #d3d0c4;
+    --border-soft: #dcd9cd;
+    --text: #33322c;
+    --text-dim: #6b6a5f;
+    --text-faint: #969486;
+    --accent: #4c7a52;
+    --accent-dim: #a9c2ac;
+    --accent-soft: rgba(76,122,82,0.12);
+    --amber: #9c6f24;
+    --amber-soft: rgba(156,111,36,0.12);
   }
   body{transition: background-color .25s ease, color .25s ease;}
   section.app-panel, section.novel-panel{transition: background-color .25s ease, border-color .25s ease;}
@@ -681,23 +681,12 @@ service cloud.firestore {
 
     <section class="novel-panel" data-step="7">
       <h2><span class="htitle"><span class="idx">08</span> ☁️ 雲端同步設定</span></h2>
-      <div class="hint">設定一次後，手機、PC 用同一組設定即可同步目前這本小說的所有內容。此區塊的設定值只存在這台裝置的瀏覽器裡。</div>
+      <div class="hint">小說資料與「App 開發」分頁共用同一組 Firebase 連線設定，只需在 App 分頁設定一次即可，這裡不用重複設定。</div>
 
-      <div class="cloud-status" id="novelCloudStatus"><span class="dot"></span><span>尚未連接雲端同步</span></div>
+      <div class="cloud-status" id="novelCloudStatus"><span class="dot"></span><span>尚未連接雲端</span></div>
 
       <div class="warn-box">
-        <b>提醒：</b>與「App 開發 SOP 導覽」共用同一個 Firebase 專案沒問題，資料不會互相干擾（各自存在不同的資料集合裡）。同步代碼可以沿用同一組，也可以換一組讓兩邊資料徹底分開。
-      </div>
-
-      <label>Firebase 設定（貼上 firebaseConfig 物件）</label>
-      <textarea id="novelFirebaseConfigInput" placeholder='{ apiKey: "...", authDomain: "...", projectId: "...", ... }' style="min-height:100px;"></textarea>
-      <label>同步代碼</label>
-      <input type="text" id="novelSyncCodeInput" placeholder="例：yusn1006-novel">
-
-      <div class="btnrow">
-        <button class="action" id="novelCloudConnectBtn">連接雲端</button>
-        <button class="action ghost" id="novelCloudRefreshBtn">🔄 重新從雲端載入</button>
-        <button class="action ghost" id="novelCloudDisconnectBtn">中斷連接（回到本機模式）</button>
+        <b>提醒：</b>請切到「App 開發」分頁的「☁️ 雲端同步設定」完成連接，這裡會自動顯示相同的連線狀態。小說與 App 的資料存在不同的資料集合裡，不會互相干擾。
       </div>
     </section>
 
@@ -858,6 +847,7 @@ document.getElementById('cloudConnectBtn').onclick = async ()=>{
     await renderProjectList();
     await loadUserNotes();
     await applyInitialCollapse();
+    if(window.__novelOnCloudChange) await window.__novelOnCloudChange();
   }catch(e){
     console.error(e);
     cloudConnected = false;
@@ -872,17 +862,19 @@ document.getElementById('cloudRefreshBtn').onclick = async ()=>{
   await renderProjectList();
   await loadUserNotes();
   await applyInitialCollapse();
+  if(window.__novelOnCloudChange) await window.__novelOnCloudChange();
   showToast('已從雲端重新載入');
 };
 
 document.getElementById('cloudDisconnectBtn').onclick = ()=>{
-  askConfirm('中斷雲端連接', '確定要中斷雲端同步嗎？這台裝置會改回本機儲存，資料仍保留在雲端，之後可以重新輸入設定再連回來。', ()=>{
+  askConfirm('中斷雲端連接', '確定要中斷雲端同步嗎？這台裝置會改回本機儲存，資料仍保留在雲端，之後可以重新輸入設定再連回來。', async ()=>{
     cloudConnected = false;
     firestoreDb = null;
     syncCode = null;
     clearLocalCloudConfig();
     setCloudStatus('尚未連接雲端同步', false);
     showToast('已中斷雲端連接');
+    if(window.__novelOnCloudChange) await window.__novelOnCloudChange();
   });
 };
 
@@ -896,6 +888,7 @@ async function tryAutoConnectCloud(){
     const cfgObj = parseFirebaseConfigText(saved.cfgText);
     await initFirebase(cfgObj, saved.code);
     setCloudStatus(`已連接雲端同步（代碼：${escapeHtml(saved.code)}）`, true);
+    if(window.__novelOnCloudChange) await window.__novelOnCloudChange();
   }catch(e){
     console.error(e);
     setCloudStatus('自動連接失敗，請確認設定或重新連接', false);
@@ -963,9 +956,11 @@ document.getElementById('saveNotesBtn').onclick = async ()=>{
 };
 loadUserNotes();
 
-// ============ 通用可收合面板（內容為空時預設收合）============
+// ============ 通用可收合面板（記住使用者上次的收合/展開選擇；沒有紀錄時內容為空預設收合）============
 const collapseSetters = {};
 function makeCollapsible(panel){
+  const modeKey = panel.classList.contains('novel-panel') ? 'novel' : 'app';
+  const storageKey = 'panel-collapse:' + modeKey + ':' + panel.dataset.step;
   const h2 = panel.querySelector('h2');
   const body = document.createElement('div');
   body.className = 'panel-body-auto';
@@ -977,11 +972,20 @@ function makeCollapsible(panel){
   h2.style.cursor = 'pointer';
   h2.style.justifyContent = 'space-between';
   h2.appendChild(icon);
-  function setState(collapsed){
+  function setState(collapsed, persist){
     body.classList.toggle('collapsed', collapsed);
     icon.textContent = collapsed ? '▸ 展開' : '▾ 收合';
+    if(persist){
+      try{ localStorage.setItem(storageKey, collapsed ? '1' : '0'); }catch(e){}
+    }
   }
-  h2.onclick = ()=> setState(!body.classList.contains('collapsed'));
+  setState.hasStored = function(){
+    try{ return localStorage.getItem(storageKey) !== null; }catch(e){ return false; }
+  };
+  setState.getStored = function(){
+    try{ return localStorage.getItem(storageKey) === '1'; }catch(e){ return false; }
+  };
+  h2.onclick = ()=> setState(!body.classList.contains('collapsed'), true);
   return setState;
 }
 [0,1,4,7].forEach(step=>{
@@ -989,14 +993,28 @@ function makeCollapsible(panel){
   if(panel) collapseSetters[step] = makeCollapsible(panel);
 });
 async function applyInitialCollapse(){
-  if(collapseSetters[0]) collapseSetters[0](!document.getElementById('appName').value.trim());
-  if(collapseSetters[1]) collapseSetters[1](!document.getElementById('goalDesc').value.trim() && !document.getElementById('reuseNote').value.trim());
-  if(collapseSetters[4]) collapseSetters[4](!userNotesEl.value.trim());
+  if(collapseSetters[0]){
+    const s = collapseSetters[0];
+    s(s.hasStored() ? s.getStored() : !document.getElementById('appName').value.trim());
+  }
+  if(collapseSetters[1]){
+    const s = collapseSetters[1];
+    s(s.hasStored() ? s.getStored() : (!document.getElementById('goalDesc').value.trim() && !document.getElementById('reuseNote').value.trim()));
+  }
+  if(collapseSetters[4]){
+    const s = collapseSetters[4];
+    s(s.hasStored() ? s.getStored() : !userNotesEl.value.trim());
+  }
   if(collapseSetters[7]){
-    try{
-      const list = await getProjects();
-      collapseSetters[7](list.length === 0);
-    }catch(e){ collapseSetters[7](true); }
+    const s = collapseSetters[7];
+    if(s.hasStored()){
+      s(s.getStored());
+    } else {
+      try{
+        const list = await getProjects();
+        s(list.length === 0);
+      }catch(e){ s(true); }
+    }
   }
 }
 
@@ -1511,53 +1529,16 @@ const io = new IntersectionObserver((entries)=>{
 }, {rootMargin:"-10% 0px -70% 0px"});
 panels.forEach(p=>io.observe(p));
 
-// ============ 雲端同步（Firestore，集合：novelSync）============
-let firestoreDb = null;
-let syncCode = null;
-let cloudConnected = false;
-function setCloudStatus(text, connected){
+// ============ 雲端同步（共用 App 分頁的連線，僅資料集合不同：novelSync）============
+function novelSetCloudStatus(){
   const el = document.getElementById('novelCloudStatus');
-  el.classList.toggle('connected', !!connected);
-  el.innerHTML = `<span class="dot"></span><span>${text}</span>`;
-}
-function loadLocalCloudConfig(){
-  try{ return JSON.parse(localStorage.getItem('novel-cloud-config') || 'null'); }catch(e){ return null; }
-}
-function saveLocalCloudConfig(cfgText, code){
-  try{ localStorage.setItem('novel-cloud-config', JSON.stringify({cfgText, code})); }catch(e){}
-}
-function clearLocalCloudConfig(){ try{ localStorage.removeItem('novel-cloud-config'); }catch(e){} }
-function parseFirebaseConfigText(text){
-  let t = text.trim();
-  t = t.replace(/^\s*(export\s+)?(const|var|let)\s+\w+\s*=\s*/,'').replace(/;\s*$/,'');
-  return new Function('return (' + t + ')')();
-}
-function loadFirebaseSDK(){
-  return new Promise((resolve, reject)=>{
-    if(window.firebase && window.firebase.firestore){ resolve(); return; }
-    const s1 = document.createElement('script');
-    s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/firebase/12.16.0/firebase-app-compat.min.js';
-    s1.onload = ()=>{
-      const s2 = document.createElement('script');
-      s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/firebase/12.16.0/firebase-firestore-compat.min.js';
-      s2.onload = ()=> resolve();
-      s2.onerror = ()=> reject(new Error('Firestore SDK 載入失敗'));
-      document.head.appendChild(s2);
-    };
-    s1.onerror = ()=> reject(new Error('Firebase SDK 載入失敗'));
-    document.head.appendChild(s1);
-  });
-}
-async function initFirebase(cfgObj, code){
-  await loadFirebaseSDK();
-  if(!window.firebase.apps || !window.firebase.apps.length){
-    window.firebase.initializeApp(cfgObj);
+  if(cloudConnected){
+    el.classList.add('connected');
+    el.innerHTML = `<span class="dot"></span><span>已連接雲端同步（代碼：${escapeHtml(syncCode||'')}）</span>`;
+  } else {
+    el.classList.remove('connected');
+    el.innerHTML = `<span class="dot"></span><span>尚未連接雲端（請到「App 開發」分頁的雲端同步設定連接）</span>`;
   }
-  firestoreDb = window.firebase.firestore();
-  try{ firestoreDb.settings({ experimentalAutoDetectLongPolling: true, merge: true }); }catch(e){}
-  syncCode = code;
-  await firestoreDb.collection('novelSync').doc(syncCode).get();
-  cloudConnected = true;
 }
 function cloudDocRef(){ return firestoreDb.collection('novelSync').doc(syncCode); }
 async function cloudGetDoc(){
@@ -1567,57 +1548,12 @@ async function cloudGetDoc(){
 async function cloudSetField(field, value){
   await cloudDocRef().set({ [field]: value, updatedAt: Date.now() }, { merge: true });
 }
-
-document.getElementById('novelCloudConnectBtn').onclick = async ()=>{
-  const cfgText = document.getElementById('novelFirebaseConfigInput').value;
-  const code = document.getElementById('novelSyncCodeInput').value.trim();
-  if(!cfgText.trim() || !code){ showToast('請填入 Firebase 設定與同步代碼'); return; }
-  setCloudStatus('連接中...', false);
-  try{
-    const cfgObj = parseFirebaseConfigText(cfgText);
-    await initFirebase(cfgObj, code);
-    saveLocalCloudConfig(cfgText, code);
-    setCloudStatus(`已連接雲端同步（代碼：${escapeHtml(code)}）`, true);
-    showToast('雲端連接成功');
-    await loadCurrentDraft();
-    await renderNovelList();
-    applyInitialCollapse();
-  }catch(e){
-    console.error(e);
-    cloudConnected = false;
-    setCloudStatus('連接失敗，請確認設定內容是否正確', false);
-    showToast('連接失敗，請檢查 Firebase 設定與網路連線');
-  }
-};
-document.getElementById('novelCloudRefreshBtn').onclick = async ()=>{
-  if(!cloudConnected){ showToast('尚未連接雲端'); return; }
+window.__novelOnCloudChange = async function(){
+  novelSetCloudStatus();
   await loadCurrentDraft();
   await renderNovelList();
-  showToast('已從雲端重新載入');
+  applyInitialCollapse();
 };
-document.getElementById('novelCloudDisconnectBtn').onclick = ()=>{
-  askConfirm('中斷雲端連接', '確定要中斷雲端同步嗎？這台裝置會改回本機儲存，資料仍保留在雲端。', ()=>{
-    cloudConnected = false; firestoreDb = null; syncCode = null;
-    clearLocalCloudConfig();
-    setCloudStatus('尚未連接雲端同步', false);
-    showToast('已中斷雲端連接');
-  });
-};
-async function tryAutoConnectCloud(){
-  const saved = loadLocalCloudConfig();
-  if(!saved) return;
-  document.getElementById('novelFirebaseConfigInput').value = saved.cfgText;
-  document.getElementById('novelSyncCodeInput').value = saved.code;
-  setCloudStatus('連接中...', false);
-  try{
-    const cfgObj = parseFirebaseConfigText(saved.cfgText);
-    await initFirebase(cfgObj, saved.code);
-    setCloudStatus(`已連接雲端同步（代碼：${escapeHtml(saved.code)}）`, true);
-  }catch(e){
-    console.error(e);
-    setCloudStatus('自動連接失敗，請確認設定或重新連接', false);
-  }
-}
 
 // ============ 目前草稿的讀取／自動存檔 ============
 const titleEl = document.getElementById('novelTitle');
@@ -1855,27 +1791,26 @@ const collapseSetters = {};
 panels.forEach(p=>{ collapseSetters[p.dataset.step] = makeCollapsible(p); });
 
 function applyInitialCollapse(){
-  collapseSetters['0'](!novelData.title && !novelData.logline);
-  SECTIONS.forEach(s=>{ collapseSetters[String(s.step)]((novelData[s.key]||[]).length === 0); });
-  // 08 雲端同步：未連接且尚未填設定時收合
-  const cfgEmpty = !document.getElementById('novelFirebaseConfigInput').value.trim();
-  collapseSetters['7'](!cloudConnected && cfgEmpty);
-  // 09 小說存檔、10 輸出：一律展開（由renderNovelList/genBtn互動決定內容，不強制收合）
-  collapseSetters['8'](false);
-  collapseSetters['9'](false);
+  const s0 = collapseSetters['0'];
+  s0(s0.hasStored() ? s0.getStored() : (!novelData.title && !novelData.logline));
+  SECTIONS.forEach(s=>{
+    const setter = collapseSetters[String(s.step)];
+    setter(setter.hasStored() ? setter.getStored() : ((novelData[s.key]||[]).length === 0));
+  });
+  const s7 = collapseSetters['7'];
+  s7(s7.hasStored() ? s7.getStored() : false);
+  const s8 = collapseSetters['8'];
+  s8(s8.hasStored() ? s8.getStored() : false);
+  const s9 = collapseSetters['9'];
+  s9(s9.hasStored() ? s9.getStored() : false);
 }
 
 // ============ 初始化 ============
 (async function init(){
+  novelSetCloudStatus();
   await loadCurrentDraft();
   await renderNovelList();
   applyInitialCollapse();
-  await tryAutoConnectCloud();
-  if(cloudConnected){
-    await loadCurrentDraft();
-    await renderNovelList();
-    applyInitialCollapse();
-  }
 })();
 
 })();
