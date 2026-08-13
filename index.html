@@ -392,6 +392,29 @@
     pointer-events:auto;
     transform:translateY(0);
   }
+
+  .ta-wrap{position:relative; margin-bottom:14px;}
+  .ta-wrap textarea{margin-bottom:0; resize:none; display:block; width:100%;}
+  .ta-resize-handle{
+    position:absolute;
+    right:1px;
+    bottom:1px;
+    width:34px;
+    height:34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:ns-resize;
+    color:var(--text-faint);
+    background:var(--bg-panel-2);
+    border-top-left-radius:8px;
+    border:1px solid var(--border-soft);
+    border-right:none;
+    border-bottom:none;
+    touch-action:none;
+    z-index:2;
+  }
+  .ta-resize-handle:active{color:var(--accent);background:var(--accent-soft);}
 </style>
 </head>
 <body>
@@ -625,7 +648,18 @@ service cloud.firestore {
     </section>
 
     <section class="novel-panel" data-step="2">
-      <h2><span class="htitle"><span class="idx">03</span> 陣營勢力</span></h2>
+      <h2><span class="htitle"><span class="idx">03</span> 📝 草稿</span></h2>
+      <div class="hint">還沒整理成正式設定的零散想法、靈感、片段，先丟在這裡，之後再分類到其他區塊。可新增多筆。</div>
+      <label>標題（選填）</label>
+      <input type="text" id="draft_title" placeholder="例：關於結局的想法">
+      <label>內容</label>
+      <textarea id="draft_content" placeholder="任何想法都可以先記下來..."></textarea>
+      <div class="btnrow"><button class="action" data-key="draft">新增</button></div>
+      <div id="draft_list"></div>
+    </section>
+
+    <section class="novel-panel" data-step="3">
+      <h2><span class="htitle"><span class="idx">04</span> 陣營勢力</span></h2>
       <div class="hint">故事中的組織、國家、勢力，可新增多筆。</div>
       <label>勢力名稱</label>
       <input type="text" id="factions_title" placeholder="例：北境守衛軍">
@@ -635,8 +669,8 @@ service cloud.firestore {
       <div id="factions_list"></div>
     </section>
 
-    <section class="novel-panel" data-step="3">
-      <h2><span class="htitle"><span class="idx">04</span> 角色資料</span></h2>
+    <section class="novel-panel" data-step="4">
+      <h2><span class="htitle"><span class="idx">05</span> 角色資料</span></h2>
       <div class="hint">登場角色設定，可新增多筆。</div>
       <label>角色姓名</label>
       <input type="text" id="characters_title" placeholder="例：艾莉絲">
@@ -646,8 +680,8 @@ service cloud.firestore {
       <div id="characters_list"></div>
     </section>
 
-    <section class="novel-panel" data-step="4">
-      <h2><span class="htitle"><span class="idx">05</span> 場景器具</span></h2>
+    <section class="novel-panel" data-step="5">
+      <h2><span class="htitle"><span class="idx">06</span> 場景器具</span></h2>
       <div class="hint">重要場景、物品、道具設定，可新增多筆。</div>
       <label>名稱</label>
       <input type="text" id="scenes_title" placeholder="例：黑森林 / 聖劍">
@@ -657,8 +691,8 @@ service cloud.firestore {
       <div id="scenes_list"></div>
     </section>
 
-    <section class="novel-panel" data-step="5">
-      <h2><span class="htitle"><span class="idx">06</span> 章節綱要</span></h2>
+    <section class="novel-panel" data-step="6">
+      <h2><span class="htitle"><span class="idx">07</span> 章節綱要</span></h2>
       <div class="hint">每章的大綱重點，可新增多筆，建議依章節順序新增。</div>
       <label>章節標題</label>
       <input type="text" id="outline_title" placeholder="例：第一章 命運的開端">
@@ -668,8 +702,8 @@ service cloud.firestore {
       <div id="outline_list"></div>
     </section>
 
-    <section class="novel-panel" data-step="6">
-      <h2><span class="htitle"><span class="idx">07</span> 正式劇情</span></h2>
+    <section class="novel-panel" data-step="7">
+      <h2><span class="htitle"><span class="idx">08</span> 正式劇情</span></h2>
       <div class="hint">正式撰寫的章節內文，可新增多筆，建議依章節順序新增。</div>
       <label>章節標題</label>
       <input type="text" id="chapters_title" placeholder="例：第一章 命運的開端">
@@ -679,8 +713,8 @@ service cloud.firestore {
       <div id="chapters_list"></div>
     </section>
 
-    <section class="novel-panel" data-step="7">
-      <h2><span class="htitle"><span class="idx">08</span> ☁️ 雲端同步設定</span></h2>
+    <section class="novel-panel" data-step="8">
+      <h2><span class="htitle"><span class="idx">09</span> ☁️ 雲端同步設定</span></h2>
       <div class="hint">小說資料與「App 開發」分頁共用同一組 Firebase 連線設定，只需在 App 分頁設定一次即可，這裡不用重複設定。</div>
 
       <div class="cloud-status" id="novelCloudStatus"><span class="dot"></span><span>尚未連接雲端</span></div>
@@ -690,8 +724,8 @@ service cloud.firestore {
       </div>
     </section>
 
-    <section class="novel-panel" data-step="8">
-      <h2><span class="htitle"><span class="idx">09</span> 小說存檔</span></h2>
+    <section class="novel-panel" data-step="9">
+      <h2><span class="htitle"><span class="idx">10</span> 小說存檔</span></h2>
       <div class="hint">把目前正在編輯的整本小說（書名＋所有段落）存成一筆快照，之後可以載入切換到別本小說，或刪除。載入會覆蓋目前正在編輯的內容。</div>
       <label>存檔名稱</label>
       <input type="text" id="novelSaveName" placeholder="預設帶入書名">
@@ -700,8 +734,8 @@ service cloud.firestore {
       <div id="novelList"></div>
     </section>
 
-    <section class="novel-panel" data-step="9">
-      <h2><span class="htitle"><span class="idx">10</span> 輸出</span></h2>
+    <section class="novel-panel" data-step="10">
+      <h2><span class="htitle"><span class="idx">11</span> 輸出</span></h2>
       <div class="hint">整合以上所有段落為一篇文字，複製後貼給 AI 討論劇情或協助寫作。</div>
       <div class="btnrow">
         <button class="action" id="novelGenBtn">產生整合文字</button>
@@ -1348,6 +1382,38 @@ async function renderProjectList(){
     box.appendChild(card);
   });
 }
+function enhanceTextareaResize(ta){
+  if(!ta || ta.dataset.resizeEnhanced) return;
+  ta.dataset.resizeEnhanced = '1';
+  const wrap = document.createElement('div');
+  wrap.className = 'ta-wrap';
+  ta.parentNode.insertBefore(wrap, ta);
+  wrap.appendChild(ta);
+  const handle = document.createElement('div');
+  handle.className = 'ta-resize-handle';
+  handle.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><path d="M13 3 L3 13 M13 8 L8 13 M13 13 L13 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+  wrap.appendChild(handle);
+  let startY = 0, startH = 0;
+  function onMove(e){
+    const y = e.touches ? e.touches[0].clientY : e.clientY;
+    ta.style.height = Math.max(70, startH + (y - startY)) + 'px';
+  }
+  function onUp(){
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+  }
+  handle.addEventListener('pointerdown', (e)=>{
+    e.preventDefault();
+    startY = e.clientY;
+    startH = ta.offsetHeight;
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp);
+  });
+}
+function enhanceAllTextareas(root){
+  (root || document).querySelectorAll('textarea').forEach(enhanceTextareaResize);
+}
+
 function escapeHtml(s){
   return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -1504,16 +1570,17 @@ document.getElementById('copyBtn').onclick = async ()=>{
 // ============ 小說資料模型 ============
 const SECTIONS = [
   {key:'worldview',  step:1},
-  {key:'factions',   step:2},
-  {key:'characters', step:3},
-  {key:'scenes',     step:4},
-  {key:'outline',    step:5},
-  {key:'chapters',   step:6}
+  {key:'draft',      step:2},
+  {key:'factions',   step:3},
+  {key:'characters', step:4},
+  {key:'scenes',     step:5},
+  {key:'outline',    step:6},
+  {key:'chapters',   step:7}
 ];
-let novelData = { title:'', logline:'', worldview:[], factions:[], characters:[], scenes:[], outline:[], chapters:[] };
+let novelData = { title:'', logline:'', worldview:[], draft:[], factions:[], characters:[], scenes:[], outline:[], chapters:[] };
 
 // ---- 步驟導覽 ----
-const steps = ["小說名稱","世界觀","陣營勢力","角色資料","場景器具","章節綱要","正式劇情","雲端同步","小說存檔","輸出"];
+const steps = ["小說名稱","世界觀","草稿","陣營勢力","角色資料","場景器具","章節綱要","正式劇情","雲端同步","小說存檔","輸出"];
 const novelStepnav = document.getElementById('novelStepnav');
 steps.forEach((label, i) => {
   const b = document.createElement('button');
@@ -1569,7 +1636,7 @@ async function loadCurrentDraft(){
   if(cloudConnected){
     try{
       const d = await cloudGetDoc();
-      novelData = d.currentDraft || { title:'', logline:'', worldview:[], factions:[], characters:[], scenes:[], outline:[], chapters:[] };
+      novelData = d.currentDraft || { title:'', logline:'', worldview:[], draft:[], factions:[], characters:[], scenes:[], outline:[], chapters:[] };
       applyDraftToUI();
       return;
     }catch(e){ console.error(e); showToast('雲端讀取失敗，暫用本機內容'); }
@@ -1673,6 +1740,7 @@ function renderEditMode(card, key, item){
   card.appendChild(titleInput);
   card.appendChild(contentInput);
   card.appendChild(btnrow);
+  enhanceTextareaResize(contentInput);
 }
 document.querySelectorAll('button[data-key]').forEach(b=>{
   b.onclick = ()=> addEntry(b.dataset.key);
@@ -1765,6 +1833,7 @@ function buildOutput(){
   let out = `# 小說設定資料 — ${novelData.title || '（未命名）'}\n`;
   if(novelData.logline) out += `\n一句話簡介：${novelData.logline}\n`;
   out += sectionText('worldview', '世界觀');
+  out += sectionText('draft', '草稿');
   out += sectionText('factions', '陣營勢力');
   out += sectionText('characters', '角色資料');
   out += sectionText('scenes', '場景器具');
@@ -1775,7 +1844,7 @@ function buildOutput(){
 }
 document.getElementById('novelGenBtn').onclick = ()=>{
   document.getElementById('novelOutputBox').textContent = buildOutput();
-  document.querySelector('.novel-panel[data-step="9"]').scrollIntoView({behavior:'smooth'});
+  document.querySelector('.novel-panel[data-step="10"]').scrollIntoView({behavior:'smooth'});
 };
 document.getElementById('novelCopyBtn').onclick = async ()=>{
   const box = document.getElementById('novelOutputBox');
@@ -1797,12 +1866,12 @@ function applyInitialCollapse(){
     const setter = collapseSetters[String(s.step)];
     setter(setter.hasStored() ? setter.getStored() : ((novelData[s.key]||[]).length === 0));
   });
-  const s7 = collapseSetters['7'];
-  s7(s7.hasStored() ? s7.getStored() : false);
   const s8 = collapseSetters['8'];
   s8(s8.hasStored() ? s8.getStored() : false);
   const s9 = collapseSetters['9'];
   s9(s9.hasStored() ? s9.getStored() : false);
+  const s10 = collapseSetters['10'];
+  s10(s10.hasStored() ? s10.getStored() : false);
 }
 
 // ============ 初始化 ============
@@ -1814,6 +1883,8 @@ function applyInitialCollapse(){
 })();
 
 })();
+
+enhanceAllTextareas();
 
 </script>
 </body>
