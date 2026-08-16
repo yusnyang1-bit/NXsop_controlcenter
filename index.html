@@ -415,6 +415,30 @@
     z-index:2;
   }
   .ta-resize-handle:active{color:var(--accent);background:var(--accent-soft);}
+
+  .modal.wide{max-width:560px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;}
+  .docs-list{overflow-y:auto;flex:1;}
+  .doc-item{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:8px;
+    padding:11px 14px;margin-bottom:8px;cursor:pointer;
+  }
+  .doc-item:hover{border-color:var(--accent-dim);}
+  .doc-item .dname{font-size:13.5px;color:var(--text);}
+  .doc-item .darrow{color:var(--text-faint);font-family:var(--mono);font-size:12px;cursor:pointer;}
+  .doc-item .dactions{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .doc-item .ddel{
+    all:unset;cursor:pointer;font-family:var(--mono);font-size:11px;color:#ff6b6b;
+    padding:4px 8px;border-radius:6px;border:1px solid rgba(255,107,107,0.3);
+  }
+  .docs-preview{display:flex;flex-direction:column;overflow:hidden;flex:1;}
+  .docs-preview-head{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-shrink:0;}
+  .docs-preview-title{font-size:13.5px;font-weight:600;color:var(--text);}
+  .docs-preview-body{
+    white-space:pre-wrap;font-family:var(--mono);font-size:12px;line-height:1.7;
+    background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:9px;
+    padding:14px;overflow:auto;color:var(--text);margin:0;flex:1;
+  }
 </style>
 </head>
 <body>
@@ -428,6 +452,7 @@
     </div>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <button class="action ghost" id="themeToggleBtn" style="padding:8px 12px;" title="切換深/淺色主題">🌙</button>
+      <button class="action ghost" id="docsBtn" style="padding:8px 14px;">📚 參考資料</button>
       <button class="action ghost" id="installBtn" style="padding:8px 14px;">📲 加到主畫面</button>
       <div class="status-chip" id="saveStatus">環境設定尚未載入</div>
     </div>
@@ -769,6 +794,40 @@ service cloud.firestore {
       <button class="closeModal" id="confirmCancel">取消</button>
       <button class="danger" id="confirmOk">確認</button>
     </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="docsModal">
+  <div class="modal wide">
+    <h3>📚 參考資料</h3>
+
+    <div id="docsListView">
+      <div class="btnrow" style="margin-bottom:12px;">
+        <button class="action ghost" id="docsAddToggleBtn">＋ 新增參考資料</button>
+      </div>
+      <div id="docsAddForm" style="display:none;">
+        <label>標題</label>
+        <input type="text" id="docTitleInput" placeholder="例：App建置SOP">
+        <label>從裝置選取文字檔（.txt / .md，選填，會自動帶入下方內容）</label>
+        <input type="file" id="docFileInput" accept=".txt,.md,text/plain,text/markdown" style="margin-bottom:14px;">
+        <label>內容</label>
+        <textarea id="docContentInput" placeholder="貼上文字，或選取檔案自動帶入..." style="min-height:140px;"></textarea>
+        <div class="btnrow">
+          <button class="action" id="docSaveBtn">儲存</button>
+          <button class="action ghost" id="docCancelAddBtn">取消</button>
+        </div>
+      </div>
+      <div id="docsList" class="docs-list"></div>
+    </div>
+
+    <div id="docsPreview" class="docs-preview" style="display:none;">
+      <div class="docs-preview-head">
+        <button class="closeModal" id="docsBackBtn">← 返回清單</button>
+        <span id="docsPreviewTitle" class="docs-preview-title"></span>
+      </div>
+      <pre id="docsPreviewBody" class="docs-preview-body"></pre>
+    </div>
+    <button class="closeModal" id="closeDocsModal" style="margin-top:14px;">關閉</button>
   </div>
 </div>
 
@@ -1557,12 +1616,189 @@ document.getElementById('copyBtn').onclick = async ()=>{
     novelModeEl.classList.toggle('active', mode === 'novel');
     titleEl.textContent = modeText[mode].title;
     subtitleEl.textContent = modeText[mode].subtitle;
+    window.__activeMode = mode;
     try{ localStorage.setItem('sop-active-mode', mode); }catch(e){}
   }
   tabs.forEach(b=> b.onclick = ()=> setMode(b.dataset.mode));
   let initial = 'app';
   try{ initial = localStorage.getItem('sop-active-mode') || 'app'; }catch(e){}
   setMode(initial);
+})();
+
+// ============ 參考資料（各模式各自獨立；輕量索引+每篇獨立文件存放，各自有獨立的1MB額度）============
+function refDocsCollectionName(mode){ return mode === 'novel' ? 'novelSync' : 'sopSync'; }
+function refParentDocRef(mode){ return firestoreDb.collection(refDocsCollectionName(mode)).doc(syncCode); }
+function refSubCollection(mode){ return refParentDocRef(mode).collection('refDocs'); }
+
+async function getRefDocsIndex(mode){
+  if(cloudConnected){
+    try{
+      const snap = await refParentDocRef(mode).get();
+      const data = snap.exists ? snap.data() : {};
+      return data.refDocsIndex || [];
+    }catch(e){ console.error(e); showToast('雲端讀取失敗'); }
+  }
+  try{
+    if(window.storage){
+      const key = (mode === 'novel' ? 'novel' : 'app') + '-ref-docs-index';
+      const r = await window.storage.get(key, false);
+      return r && r.value ? JSON.parse(r.value) : [];
+    }
+  }catch(e){}
+  return [];
+}
+async function setRefDocsIndex(mode, indexList){
+  if(cloudConnected){
+    try{
+      await refParentDocRef(mode).set({ refDocsIndex: indexList, updatedAt: Date.now() }, { merge: true });
+      return;
+    }catch(e){ console.error(e); showToast('雲端寫入失敗'); throw e; }
+  }
+  if(window.storage){
+    const key = (mode === 'novel' ? 'novel' : 'app') + '-ref-docs-index';
+    await window.storage.set(key, JSON.stringify(indexList), false);
+    return;
+  }
+  showToast('目前無可用儲存方式，請先設定雲端同步');
+  throw new Error('no storage backend');
+}
+async function getRefDocContent(mode, id){
+  if(cloudConnected){
+    try{
+      const snap = await refSubCollection(mode).doc(id).get();
+      return snap.exists ? (snap.data().content || '') : '';
+    }catch(e){ console.error(e); showToast('雲端讀取失敗'); return ''; }
+  }
+  try{
+    if(window.storage){
+      const key = (mode === 'novel' ? 'novel' : 'app') + '-ref-doc-content:' + id;
+      const r = await window.storage.get(key, false);
+      return r && r.value ? r.value : '';
+    }
+  }catch(e){}
+  return '';
+}
+async function setRefDocContent(mode, id, content){
+  if(cloudConnected){
+    try{
+      await refSubCollection(mode).doc(id).set({ content, updatedAt: Date.now() });
+      return;
+    }catch(e){ console.error(e); showToast('雲端寫入失敗'); throw e; }
+  }
+  if(window.storage){
+    const key = (mode === 'novel' ? 'novel' : 'app') + '-ref-doc-content:' + id;
+    await window.storage.set(key, content, false);
+    return;
+  }
+  throw new Error('no storage backend');
+}
+async function deleteRefDocContent(mode, id){
+  if(cloudConnected){
+    try{ await refSubCollection(mode).doc(id).delete(); }catch(e){ console.error(e); }
+    return;
+  }
+  try{
+    if(window.storage){
+      const key = (mode === 'novel' ? 'novel' : 'app') + '-ref-doc-content:' + id;
+      await window.storage.delete(key, false);
+    }
+  }catch(e){}
+}
+
+(function(){
+  const modal = document.getElementById('docsModal');
+  const listViewEl = document.getElementById('docsListView');
+  const listEl = document.getElementById('docsList');
+  const previewEl = document.getElementById('docsPreview');
+  const previewTitleEl = document.getElementById('docsPreviewTitle');
+  const previewBodyEl = document.getElementById('docsPreviewBody');
+  const addForm = document.getElementById('docsAddForm');
+  const titleInput = document.getElementById('docTitleInput');
+  const contentInput = document.getElementById('docContentInput');
+  const fileInput = document.getElementById('docFileInput');
+
+  async function renderDocsList(){
+    listViewEl.style.display = '';
+    previewEl.style.display = 'none';
+    const mode = window.__activeMode || 'app';
+    const index = await getRefDocsIndex(mode);
+    if(!index.length){
+      listEl.innerHTML = '<div class="empty-note">尚未新增任何參考資料，點上方「＋ 新增參考資料」加入第一份。</div>';
+      return;
+    }
+    listEl.innerHTML = '';
+    index.slice().sort((a,b)=>(b.addedAt||0)-(a.addedAt||0)).forEach(meta=>{
+      const item = document.createElement('div');
+      item.className = 'doc-item';
+      item.innerHTML = `<span class="dname">${escapeHtml(meta.title)}</span><div class="dactions"><span class="darrow">開啟 →</span><button class="ddel">刪除</button></div>`;
+      item.querySelector('.darrow').onclick = async ()=>{
+        listViewEl.style.display = 'none';
+        previewEl.style.display = 'flex';
+        previewTitleEl.textContent = meta.title;
+        previewBodyEl.textContent = '載入中...';
+        const content = await getRefDocContent(mode, meta.id);
+        previewBodyEl.textContent = content;
+      };
+      item.querySelector('.ddel').onclick = (e)=>{
+        e.stopPropagation();
+        askConfirm('刪除參考資料', `確定要刪除「${meta.title}」嗎？此動作無法復原。`, async ()=>{
+          try{
+            const mode2 = window.__activeMode || 'app';
+            const cur = await getRefDocsIndex(mode2);
+            await setRefDocsIndex(mode2, cur.filter(x=>x.id!==meta.id));
+            await deleteRefDocContent(mode2, meta.id);
+            showToast('已刪除');
+            renderDocsList();
+          }catch(err){ console.error(err); }
+        });
+      };
+      listEl.appendChild(item);
+    });
+  }
+
+  fileInput.addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{ contentInput.value = reader.result; };
+    reader.readAsText(file);
+    if(!titleInput.value.trim()){
+      titleInput.value = file.name.replace(/\.(txt|md)$/i, '');
+    }
+  });
+
+  document.getElementById('docsAddToggleBtn').onclick = ()=>{
+    addForm.style.display = addForm.style.display === 'none' ? 'block' : 'none';
+  };
+  document.getElementById('docCancelAddBtn').onclick = ()=>{
+    titleInput.value = ''; contentInput.value = ''; fileInput.value = '';
+    addForm.style.display = 'none';
+  };
+  document.getElementById('docSaveBtn').onclick = async ()=>{
+    const title = titleInput.value.trim();
+    const content = contentInput.value.trim();
+    if(!title || !content){ showToast('請填寫標題與內容'); return; }
+    const mode = window.__activeMode || 'app';
+    try{
+      const id = 'd_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+      await setRefDocContent(mode, id, content);
+      const index = await getRefDocsIndex(mode);
+      index.push({ id, title, addedAt: Date.now() });
+      await setRefDocsIndex(mode, index);
+      titleInput.value = ''; contentInput.value = ''; fileInput.value = '';
+      addForm.style.display = 'none';
+      showToast('已新增參考資料');
+      renderDocsList();
+    }catch(e){ console.error(e); }
+  };
+
+  document.getElementById('docsBtn').onclick = ()=>{
+    renderDocsList();
+    modal.classList.add('show');
+  };
+  document.getElementById('docsBackBtn').onclick = renderDocsList;
+  document.getElementById('closeDocsModal').onclick = ()=> modal.classList.remove('show');
+  modal.onclick = (e)=>{ if(e.target === modal) modal.classList.remove('show'); };
 })();
 
 (function(){
