@@ -513,43 +513,7 @@
       </section>
 
       <section class="app-panel" data-step="1">
-        <h2><span class="idx">02</span> 專案目標與需求簡述</h2>
-        <p class="hint">讓 AI 理解「這個 app 要解決什麼、為誰做」。也可以填是否沿用既有專案的架構（避免重工）。</p>
-        <label>目標與需求簡述</label>
-        <textarea id="goalDesc" placeholder="這個app要解決什麼問題？主要功能是什麼？目標使用者是誰？&#10;（可貼上你原本的功能規格筆記，不必整理成正式格式）" style="min-height:140px;"></textarea>
-        <label>相關既有專案 / 可沿用架構（若無可留空）</label>
-        <textarea id="reuseNote" placeholder="例：與 NXBeats 同屬音樂播放器性質，建議沿用其 sqflite 播放清單管理架構、Neumorphism UI 基礎，避免重工。"></textarea>
-      </section>
-
-      <section class="app-panel" data-step="2">
-        <h2><span class="idx">03</span> 環境設定（跨專案固定值）</h2>
-        <p class="hint">預設帶入你目前的開發環境，可直接編輯後儲存，之後每次開新專案自動沿用。</p>
-        <textarea id="envSetup" style="min-height:220px;"></textarea>
-        <div class="btnrow">
-          <button class="action ghost" id="saveEnvBtn">存成範本（複寫環境設定預設）</button>
-        </div>
-      </section>
-
-      <section class="app-panel" data-step="3">
-        <h2><span class="idx">04</span> 開發協作模式</h2>
-        <p class="hint">你與 AI 的固定分工規則，貼給新對話的 AI 看，讓它立刻知道怎麼配合你。</p>
-        <textarea id="collabMode" style="min-height:200px;"></textarea>
-        <div class="btnrow">
-          <button class="action ghost" id="saveCollabBtn">存成範本（複寫協作模式預設）</button>
-        </div>
-      </section>
-
-      <section class="app-panel" data-step="4">
-        <h2><span class="idx">05</span> 📓 使用者筆記</h2>
-        <p class="hint">自己隨手記的東西，純自用參考。不會出現在「產生整合文字」的 AI 輸出內容中。</p>
-        <textarea id="userNotes" placeholder="想到什麼就記在這裡..." style="min-height:180px;"></textarea>
-        <div class="btnrow">
-          <button class="action ghost" id="saveNotesBtn">儲存筆記</button>
-        </div>
-      </section>
-
-      <section class="app-panel" data-step="5">
-        <h2><span class="idx">06</span> 命名規範速查</h2>
+        <h2><span class="idx">02</span> 命名規範速查</h2>
         <p class="hint">固定參考，不需編輯。</p>
         <table class="ref">
           <tr><th>項目</th><th>格式</th><th>範例</th></tr>
@@ -561,8 +525,44 @@
         <table class="ref">
           <tr><th>平台</th><th>允許字元</th><th>備註</th></tr>
           <tr><td>Android</td><td>小寫英文字母、數字、底線 <code>_</code></td><td>區段（用 <code>.</code> 分隔）開頭不能是數字，不能用 Java 保留字；本工具自動轉小寫、空白與符號一律轉底線</td></tr>
-          <tr><td>iOS</td><td>英文字母、數字、連字號 <code>-</code></td><td>官方規則<b>不建議用底線</b>，若同專案要跨 Android／iOS，最好統一只用英文字母＋數字，避免底線在iOS端造成問題</td></tr>
+          <tr><td>iOS</td><td>英文字母、數字、句點 <code>.</code>、連字號 <code>-</code></td><td>官方規則<b>不建議用底線</b>，若同專案要跨 Android／iOS，最好統一只用英文字母＋數字，避免底線在iOS端造成問題</td></tr>
         </table>
+      </section>
+
+      <section class="app-panel" data-step="2">
+        <h2><span class="idx">03</span> 專案目標與需求簡述</h2>
+        <p class="hint">讓 AI 理解「這個 app 要解決什麼、為誰做」。也可以填是否沿用既有專案的架構（避免重工）。</p>
+        <label>目標與需求簡述</label>
+        <textarea id="goalDesc" placeholder="這個app要解決什麼問題？主要功能是什麼？目標使用者是誰？&#10;（可貼上你原本的功能規格筆記，不必整理成正式格式）" style="min-height:140px;"></textarea>
+        <label>相關既有專案 / 可沿用架構（若無可留空）</label>
+        <textarea id="reuseNote" placeholder="例：與 NXBeats 同屬音樂播放器性質，建議沿用其 sqflite 播放清單管理架構、Neumorphism UI 基礎，避免重工。"></textarea>
+      </section>
+
+      <section class="app-panel" data-step="3">
+        <h2><span class="idx">04</span> 環境設定（跨專案固定值）</h2>
+        <p class="hint">預設帶入你目前的開發環境，可直接編輯後儲存，之後每次開新專案自動沿用。</p>
+        <textarea id="envSetup" style="min-height:220px;"></textarea>
+        <div class="btnrow">
+          <button class="action ghost" id="saveEnvBtn">存成範本（複寫環境設定預設）</button>
+        </div>
+      </section>
+
+      <section class="app-panel" data-step="4">
+        <h2><span class="idx">05</span> 開發協作模式</h2>
+        <p class="hint">你與 AI 的固定分工規則，貼給新對話的 AI 看，讓它立刻知道怎麼配合你。</p>
+        <textarea id="collabMode" style="min-height:200px;"></textarea>
+        <div class="btnrow">
+          <button class="action ghost" id="saveCollabBtn">存成範本（複寫協作模式預設）</button>
+        </div>
+      </section>
+
+      <section class="app-panel" data-step="5">
+        <h2><span class="idx">06</span> 📓 使用者筆記</h2>
+        <p class="hint">自己隨手記的東西，純自用參考。不會出現在「產生整合文字」的 AI 輸出內容中。</p>
+        <textarea id="userNotes" placeholder="想到什麼就記在這裡..." style="min-height:180px;"></textarea>
+        <div class="btnrow">
+          <button class="action ghost" id="saveNotesBtn">儲存筆記</button>
+        </div>
       </section>
 
       <section class="app-panel" data-step="6">
@@ -1087,7 +1087,7 @@ function makeCollapsible(panel){
   h2.onclick = ()=> setState(!body.classList.contains('collapsed'), true);
   return setState;
 }
-[0,1,4,7].forEach(step=>{
+[0,2,5,7].forEach(step=>{
   const panel = document.querySelector(`.app-panel[data-step="${step}"]`);
   if(panel) collapseSetters[step] = makeCollapsible(panel);
 });
@@ -1096,12 +1096,12 @@ async function applyInitialCollapse(){
     const s = collapseSetters[0];
     s(s.hasStored() ? s.getStored() : !document.getElementById('appName').value.trim());
   }
-  if(collapseSetters[1]){
-    const s = collapseSetters[1];
+  if(collapseSetters[2]){
+    const s = collapseSetters[2];
     s(s.hasStored() ? s.getStored() : (!document.getElementById('goalDesc').value.trim() && !document.getElementById('reuseNote').value.trim()));
   }
-  if(collapseSetters[4]){
-    const s = collapseSetters[4];
+  if(collapseSetters[5]){
+    const s = collapseSetters[5];
     s(s.hasStored() ? s.getStored() : !userNotesEl.value.trim());
   }
   if(collapseSetters[7]){
@@ -1117,7 +1117,7 @@ async function applyInitialCollapse(){
   }
 }
 
-const steps = ["專案基本資訊","目標與需求","環境設定","協作模式","使用者筆記","命名規範","雲端同步","專案存檔","輸出"];
+const steps = ["專案基本資訊","命名規範","目標與需求","環境設定","協作模式","使用者筆記","雲端同步","專案存檔","輸出"];
 const stepnav = document.getElementById('appStepnav');
 steps.forEach((label, i) => {
   const b = document.createElement('button');
