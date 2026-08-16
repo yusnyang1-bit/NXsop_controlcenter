@@ -557,6 +557,12 @@
           <tr><td>套件名</td><td><code>com.nomaxstudio.nx{系列}_{功能}</code></td><td>com.nomaxstudio.nxsport_ump</td></tr>
           <tr><td>現有系列</td><td colspan="2">sport / work / life / fin / game（可依新專案性質新增）</td></tr>
         </table>
+        <p class="hint" style="margin-top:14px;margin-bottom:6px;">套件名稱（Package Name / Bundle ID）允許字元官方規則：</p>
+        <table class="ref">
+          <tr><th>平台</th><th>允許字元</th><th>備註</th></tr>
+          <tr><td>Android</td><td>小寫英文字母、數字、底線 <code>_</code></td><td>區段（用 <code>.</code> 分隔）開頭不能是數字，不能用 Java 保留字；本工具自動轉小寫、空白與符號一律轉底線</td></tr>
+          <tr><td>iOS</td><td>英文字母、數字、連字號 <code>-</code></td><td>官方規則<b>不建議用底線</b>，若同專案要跨 Android／iOS，最好統一只用英文字母＋數字，避免底線在iOS端造成問題</td></tr>
+        </table>
       </section>
 
       <section class="app-panel" data-step="6">
@@ -1141,12 +1147,25 @@ seriesSel.addEventListener('change', ()=>{
   updateComputed();
 });
 
+function sanitizePkgSegment(s){
+  // Android/Java 套件區段規則：只能小寫字母、數字、底線，且開頭不能是數字
+  let out = (s || '')
+    .toLowerCase()
+    .normalize('NFKD').replace(/[\u0300-\u036f]/g, '') // 去除重音符號
+    .replace(/[^a-z0-9_]/g, '_')   // 其他字元(含空白、符號)一律轉底線
+    .replace(/_+/g, '_')           // 連續底線合併
+    .replace(/^_+|_+$/g, '');      // 去除頭尾底線
+  if(/^[0-9]/.test(out)) out = '_' + out; // 開頭不能是數字
+  return out;
+}
 function currentSeries(){
-  return seriesSel.value === '__custom' ? (seriesCustom.value.trim() || '{系列}') : seriesSel.value;
+  const raw = seriesSel.value === '__custom' ? seriesCustom.value.trim() : seriesSel.value;
+  return sanitizePkgSegment(raw) || '{系列}';
 }
 function updateComputed(){
   const series = currentSeries();
-  const func = document.getElementById('funcCode').value.trim() || '{功能}';
+  const funcRaw = document.getElementById('funcCode').value.trim();
+  const func = funcRaw ? (sanitizePkgSegment(funcRaw) || '{功能}') : '{功能}';
   document.getElementById('outFolder').textContent = `nx${series}_${func}`;
   document.getElementById('outPkg').textContent = `com.nomaxstudio.nx${series}_${func}`;
 }
