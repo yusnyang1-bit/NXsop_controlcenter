@@ -518,7 +518,7 @@
         <table class="ref">
           <tr><th>項目</th><th>格式</th><th>範例</th></tr>
           <tr><td>資料夾</td><td><code>nx{系列}_{功能}</code></td><td>nxsport_ump</td></tr>
-          <tr><td>套件名</td><td><code>com.nomaxstudio.nx{系列}_{功能}</code></td><td>com.nomaxstudio.nxsport_ump</td></tr>
+          <tr><td>套件名</td><td><code>com.nomaxstudio.nx.{系列}.{功能}</code></td><td>com.nomaxstudio.nx.sport.ump</td></tr>
           <tr><td>現有系列</td><td colspan="2">sport / work / life / fin / game（可依新專案性質新增）</td></tr>
         </table>
         <p class="hint" style="margin-top:14px;margin-bottom:6px;">套件名稱（Package Name / Bundle ID）允許字元官方規則：</p>
@@ -544,6 +544,7 @@
         <textarea id="envSetup" style="min-height:220px;"></textarea>
         <div class="btnrow">
           <button class="action ghost" id="saveEnvBtn">存成範本（複寫環境設定預設）</button>
+          <button class="action ghost" id="copyEnvBtn">📋 複製內容</button>
         </div>
       </section>
 
@@ -553,6 +554,7 @@
         <textarea id="collabMode" style="min-height:200px;"></textarea>
         <div class="btnrow">
           <button class="action ghost" id="saveCollabBtn">存成範本（複寫協作模式預設）</button>
+          <button class="action ghost" id="copyCollabBtn">📋 複製內容</button>
         </div>
       </section>
 
@@ -562,6 +564,7 @@
         <textarea id="userNotes" placeholder="想到什麼就記在這裡..." style="min-height:180px;"></textarea>
         <div class="btnrow">
           <button class="action ghost" id="saveNotesBtn">儲存筆記</button>
+          <button class="action ghost" id="copyNotesBtn">📋 複製內容</button>
         </div>
       </section>
 
@@ -664,7 +667,7 @@ service cloud.firestore {
       <input type="text" id="novelTitle" placeholder="小說名稱">
       <label>一句話簡介（選填）</label>
       <textarea id="novelLogline" placeholder="用一兩句話描述這個故事..." style="min-height:70px;"></textarea>
-      <div class="btnrow"><button class="action ghost" id="saveNovelTitleBtn">儲存</button></div>
+      <div class="btnrow"><button class="action ghost" id="saveNovelTitleBtn">儲存</button><button class="action ghost" id="copyNovelTitleBtn">📋 複製內容</button></div>
     </section>
 
     <section class="novel-panel" data-step="1">
@@ -674,7 +677,7 @@ service cloud.firestore {
       <input type="text" id="worldview_title" placeholder="例：魔法體系 / 曆法 / 貨幣制度">
       <label>內容說明</label>
       <textarea id="worldview_content" placeholder="詳細描述..."></textarea>
-      <div class="btnrow"><button class="action" data-key="worldview">新增</button></div>
+      <div class="btnrow"><button class="action" data-key="worldview">新增</button><button class="action ghost" data-copy-key="worldview">📋 複製本區塊</button></div>
       <div id="worldview_list"></div>
     </section>
 
@@ -685,7 +688,7 @@ service cloud.firestore {
       <input type="text" id="draft_title" placeholder="例：關於結局的想法">
       <label>內容</label>
       <textarea id="draft_content" placeholder="任何想法都可以先記下來..."></textarea>
-      <div class="btnrow"><button class="action" data-key="draft">新增</button></div>
+      <div class="btnrow"><button class="action" data-key="draft">新增</button><button class="action ghost" data-copy-key="draft">📋 複製本區塊</button></div>
       <div id="draft_list"></div>
     </section>
 
@@ -696,7 +699,7 @@ service cloud.firestore {
       <input type="text" id="factions_title" placeholder="例：北境守衛軍">
       <label>勢力說明</label>
       <textarea id="factions_content" placeholder="背景、立場、與其他勢力的關係..."></textarea>
-      <div class="btnrow"><button class="action" data-key="factions">新增</button></div>
+      <div class="btnrow"><button class="action" data-key="factions">新增</button><button class="action ghost" data-copy-key="factions">📋 複製本區塊</button></div>
       <div id="factions_list"></div>
     </section>
 
@@ -707,7 +710,7 @@ service cloud.firestore {
       <input type="text" id="characters_title" placeholder="例：艾莉絲">
       <label>角色設定</label>
       <textarea id="characters_content" placeholder="外貌、性格、背景、能力..."></textarea>
-      <div class="btnrow"><button class="action" data-key="characters">新增</button></div>
+      <div class="btnrow"><button class="action" data-key="characters">新增</button><button class="action ghost" data-copy-key="characters">📋 複製本區塊</button></div>
       <div id="characters_list"></div>
     </section>
 
@@ -718,7 +721,7 @@ service cloud.firestore {
       <input type="text" id="scenes_title" placeholder="例：黑森林 / 聖劍">
       <label>描述</label>
       <textarea id="scenes_content" placeholder="外觀、特性、在劇情中的作用..."></textarea>
-      <div class="btnrow"><button class="action" data-key="scenes">新增</button></div>
+      <div class="btnrow"><button class="action" data-key="scenes">新增</button><button class="action ghost" data-copy-key="scenes">📋 複製本區塊</button></div>
       <div id="scenes_list"></div>
     </section>
 
@@ -729,7 +732,7 @@ service cloud.firestore {
       <input type="text" id="outline_title" placeholder="例：第一章 命運的開端">
       <label>大綱內容</label>
       <textarea id="outline_content" placeholder="本章重點事件..."></textarea>
-      <div class="btnrow"><button class="action" data-key="outline">新增</button></div>
+      <div class="btnrow"><button class="action" data-key="outline">新增</button><button class="action ghost" data-copy-key="outline">📋 複製本區塊</button></div>
       <div id="outline_list"></div>
     </section>
 
@@ -740,7 +743,7 @@ service cloud.firestore {
       <input type="text" id="chapters_title" placeholder="例：第一章 命運的開端">
       <label>正文內容</label>
       <textarea id="chapters_content" placeholder="正式撰寫的內文..." style="min-height:180px;"></textarea>
-      <div class="btnrow"><button class="action" data-key="chapters">新增</button></div>
+      <div class="btnrow"><button class="action" data-key="chapters">新增</button><button class="action ghost" data-copy-key="chapters">📋 複製本區塊</button></div>
       <div id="chapters_list"></div>
     </section>
 
@@ -1167,7 +1170,7 @@ function updateComputed(){
   const funcRaw = document.getElementById('funcCode').value.trim();
   const func = funcRaw ? (sanitizePkgSegment(funcRaw) || '{功能}') : '{功能}';
   document.getElementById('outFolder').textContent = `nx${series}_${func}`;
-  document.getElementById('outPkg').textContent = `com.nomaxstudio.nx${series}_${func}`;
+  document.getElementById('outPkg').textContent = `com.nomaxstudio.nx.${series}.${func}`;
 }
 ['funcCode'].forEach(id=>document.getElementById(id).addEventListener('input', updateComputed));
 seriesCustom.addEventListener('input', updateComputed);
@@ -1279,6 +1282,10 @@ async function saveDefaultField(kind, newValue){
   return false;
 }
 
+document.getElementById('copyEnvBtn').onclick = ()=> copyTextToClipboard(envEl.value);
+document.getElementById('copyCollabBtn').onclick = ()=> copyTextToClipboard(collabEl.value);
+document.getElementById('copyNotesBtn').onclick = ()=> copyTextToClipboard(userNotesEl.value);
+
 document.getElementById('saveEnvBtn').onclick = ()=>{
   askConfirm('存成範本', '確定要用目前的「環境設定」內容，複寫掉原本的預設嗎？之後新開專案會直接帶入這次的內容（不會動到「開發協作模式」）。', async ()=>{
     const ok = await saveDefaultField('env', envEl.value);
@@ -1346,7 +1353,7 @@ ${collab}
 
 ## 4｜命名規範速查
 - 資料夾：nx{系列}_{功能}（例：nxsport_ump）
-- 套件名：com.nomaxstudio.nx{系列}_{功能}
+- 套件名：com.nomaxstudio.nx.{系列}.{功能}
 - 現有系列：sport（運動）、work（生產力）、life（生活/娛樂）、fin（金融）、game（遊戲）——可依新專案性質新增或修改系列代號
 
 ---
@@ -1490,6 +1497,16 @@ function enhanceTextareaResize(ta){
 }
 function enhanceAllTextareas(root){
   (root || document).querySelectorAll('textarea').forEach(enhanceTextareaResize);
+}
+
+async function copyTextToClipboard(text){
+  if(!text || !text.trim()){ showToast('沒有可複製的內容'); return; }
+  try{
+    await navigator.clipboard.writeText(text);
+    showToast('已複製到剪貼簿');
+  }catch(e){
+    showToast('複製失敗，請手動選取文字');
+  }
 }
 
 function escapeHtml(s){
@@ -1923,6 +1940,10 @@ document.getElementById('saveNovelTitleBtn').onclick = async ()=>{
   await saveCurrentDraft();
   showToast('已儲存');
 };
+document.getElementById('copyNovelTitleBtn').onclick = ()=>{
+  const text = [titleEl.value.trim(), loglineEl.value.trim()].filter(Boolean).join('\n');
+  copyTextToClipboard(text);
+};
 
 // ============ 段落條目：新增／刪除 ============
 function addEntry(key){
@@ -1999,6 +2020,15 @@ function renderEditMode(card, key, item){
 }
 document.querySelectorAll('button[data-key]').forEach(b=>{
   b.onclick = ()=> addEntry(b.dataset.key);
+});
+
+const SECTION_LABELS = { worldview:'世界觀', draft:'草稿', factions:'陣營勢力', characters:'角色資料', scenes:'場景器具', outline:'章節綱要', chapters:'正式劇情' };
+document.querySelectorAll('button[data-copy-key]').forEach(b=>{
+  b.onclick = ()=>{
+    const key = b.dataset.copyKey;
+    const label = SECTION_LABELS[key] || key;
+    copyTextToClipboard(sectionText(key, label).trim());
+  };
 });
 
 // ============ 小說存檔（多本小說快照）============
