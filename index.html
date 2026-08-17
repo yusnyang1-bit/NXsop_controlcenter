@@ -518,7 +518,7 @@
         <table class="ref">
           <tr><th>項目</th><th>格式</th><th>範例</th></tr>
           <tr><td>資料夾</td><td><code>nx{系列}_{功能}</code></td><td>nxsport_ump</td></tr>
-          <tr><td>套件名</td><td><code>com.nomaxstudio.nx.{系列}.{功能}</code></td><td>com.nomaxstudio.nx.sport.ump</td></tr>
+          <tr><td>套件名</td><td><code>com.nomaxstudio.nx{系列}.{功能}</code></td><td>com.nomaxstudio.nxsport.ump</td></tr>
           <tr><td>現有系列</td><td colspan="2">sport / work / life / fin / game（可依新專案性質新增）</td></tr>
         </table>
         <p class="hint" style="margin-top:14px;margin-bottom:6px;">套件名稱（Package Name / Bundle ID）允許字元官方規則：</p>
@@ -1170,7 +1170,7 @@ function updateComputed(){
   const funcRaw = document.getElementById('funcCode').value.trim();
   const func = funcRaw ? (sanitizePkgSegment(funcRaw) || '{功能}') : '{功能}';
   document.getElementById('outFolder').textContent = `nx${series}_${func}`;
-  document.getElementById('outPkg').textContent = `com.nomaxstudio.nx.${series}.${func}`;
+  document.getElementById('outPkg').textContent = `com.nomaxstudio.nx${series}.${func}`;
 }
 ['funcCode'].forEach(id=>document.getElementById(id).addEventListener('input', updateComputed));
 seriesCustom.addEventListener('input', updateComputed);
@@ -1353,7 +1353,7 @@ ${collab}
 
 ## 4｜命名規範速查
 - 資料夾：nx{系列}_{功能}（例：nxsport_ump）
-- 套件名：com.nomaxstudio.nx.{系列}.{功能}
+- 套件名：com.nomaxstudio.nx{系列}.{功能}
 - 現有系列：sport（運動）、work（生產力）、life（生活/娛樂）、fin（金融）、game（遊戲）——可依新專案性質新增或修改系列代號
 
 ---
