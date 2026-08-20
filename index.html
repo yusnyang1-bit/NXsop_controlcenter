@@ -44,7 +44,7 @@
     --amber-soft: rgba(156,111,36,0.12);
   }
   body{transition: background-color .25s ease, color .25s ease;}
-  section.app-panel, section.novel-panel{transition: background-color .25s ease, border-color .25s ease;}
+  section.app-panel, section.novel-panel, section.pc-panel{transition: background-color .25s ease, border-color .25s ease;}
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
@@ -141,14 +141,14 @@
   nav.stepnav button.active .n{color:var(--accent);}
   nav.stepnav button:hover:not(.active){color:var(--text);}
 
-  section.app-panel, section.novel-panel{
+  section.app-panel, section.novel-panel, section.pc-panel{
     background:var(--bg-panel);
     border:1px solid var(--border);
     border-radius:12px;
     padding:24px 26px;
     margin-bottom:18px;
   }
-  section.app-panel h2, section.novel-panel h2{
+  section.app-panel h2, section.novel-panel h2, section.pc-panel h2{
     font-size:15px;
     margin:0 0 4px;
     display:flex;
@@ -156,12 +156,12 @@
     gap:8px;
     font-weight:650;
   }
-  section.app-panel h2 .idx, section.novel-panel h2 .idx{
+  section.app-panel h2 .idx, section.novel-panel h2 .idx, section.pc-panel h2 .idx{
     font-family:var(--mono);
     color:var(--accent);
     font-size:12px;
   }
-  section.app-panel .hint, section.novel-panel .hint{
+  section.app-panel .hint, section.novel-panel .hint, section.pc-panel .hint{
     color:var(--text-dim);
     font-size:12.5px;
     margin:0 0 18px;
@@ -331,6 +331,19 @@
   .collapse-icon{font-family:var(--mono);font-size:11px;color:var(--text-faint);flex-shrink:0;}
   .panel-body-auto{max-height:4000px;overflow:hidden;transition:max-height .3s ease, opacity .25s ease, margin-top .3s ease;opacity:1;}
   .panel-body-auto.collapsed{max-height:0;opacity:0;}
+.pc-item{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:8px;
+  padding:9px 12px;margin-bottom:8px;
+}
+.pc-item input[type=checkbox]{width:18px;height:18px;flex-shrink:0;accent-color:var(--accent);}
+.pc-item .pc-name{flex:1 1 120px;min-width:100px;margin-bottom:0;}
+.pc-item .pc-note{flex:2 1 160px;min-width:120px;margin-bottom:0;}
+.pc-item .pc-del{
+  all:unset;cursor:pointer;font-family:var(--mono);font-size:11px;color:#ff6b6b;
+  padding:6px 10px;border-radius:6px;border:1px solid rgba(255,107,107,0.3);flex-shrink:0;
+}
+
 .entry-card, .novel-card{
     display:flex;align-items:center;justify-content:space-between;gap:10px;
     background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:8px;
@@ -461,6 +474,7 @@
   <div class="mode-tabs" id="modeTabs">
     <button data-mode="app" class="active">📱 App 開發</button>
     <button data-mode="novel">📖 小說開發</button>
+    <button data-mode="pc">🖥️ 電腦設備</button>
   </div>
 
   <div id="appMode" class="mode-section active">
@@ -781,6 +795,84 @@ service cloud.firestore {
   </div>
 
   </div>
+
+  <div id="pcMode" class="mode-section">
+  <nav class="stepnav" id="pcStepnav"></nav>
+
+  <div id="pcPanelsWrap">
+
+    <section class="pc-panel" data-step="0">
+      <h2><span class="htitle"><span class="idx">01</span> 🖥️ 現役電腦零組件</span></h2>
+      <div class="hint">目前正在使用的電腦零組件檢核清單，勾選已裝、填型號備註，也可自由新增項目。</div>
+      <div id="activeParts_list"></div>
+      <div class="btnrow">
+        <button class="action ghost" id="activeParts_add">＋ 新增項目</button>
+        <button class="action ghost" data-copy-pc="activeParts">📋 複製本區塊</button>
+      </div>
+    </section>
+
+    <section class="pc-panel" data-step="1">
+      <h2><span class="htitle"><span class="idx">02</span> 🖥️ 備用電腦零組件</span></h2>
+      <div class="hint">備用/閒置的電腦零組件檢核清單，格式同上，資料獨立。</div>
+      <div id="spareParts_list"></div>
+      <div class="btnrow">
+        <button class="action ghost" id="spareParts_add">＋ 新增項目</button>
+        <button class="action ghost" data-copy-pc="spareParts">📋 複製本區塊</button>
+      </div>
+    </section>
+
+    <section class="pc-panel" data-step="2">
+      <h2><span class="htitle"><span class="idx">03</span> 重灌流程與須知</span></h2>
+      <div class="hint">重灌電腦的固定流程、注意事項，自由編輯。</div>
+      <textarea id="reinstallNotes" placeholder="例：重灌前備份清單、BIOS設定、驅動程式安裝順序..." style="min-height:180px;"></textarea>
+      <div class="btnrow">
+        <button class="action ghost" id="saveReinstallBtn">儲存</button>
+        <button class="action ghost" id="copyReinstallBtn">📋 複製內容</button>
+      </div>
+    </section>
+
+    <section class="pc-panel" data-step="3">
+      <h2><span class="htitle"><span class="idx">04</span> 軟體相關</span></h2>
+      <div class="hint">常用軟體清單、下載連結、授權序號備註等，自由編輯。</div>
+      <textarea id="softwareNotes" placeholder="例：必裝軟體清單、下載連結、序號備註..." style="min-height:180px;"></textarea>
+      <div class="btnrow">
+        <button class="action ghost" id="saveSoftwareBtn">儲存</button>
+        <button class="action ghost" id="copySoftwareBtn">📋 複製內容</button>
+      </div>
+    </section>
+
+    <section class="pc-panel" data-step="4">
+      <h2><span class="htitle"><span class="idx">05</span> 📓 使用者筆記</span></h2>
+      <div class="hint">自己隨手記的東西，純自用參考。</div>
+      <textarea id="pcUserNotes" placeholder="想到什麼就記在這裡..." style="min-height:180px;"></textarea>
+      <div class="btnrow">
+        <button class="action ghost" id="savePcNotesBtn">儲存</button>
+        <button class="action ghost" id="copyPcNotesBtn">📋 複製內容</button>
+      </div>
+    </section>
+
+    <section class="pc-panel" data-step="5">
+      <h2><span class="htitle"><span class="idx">06</span> ☁️ 雲端同步設定</span></h2>
+      <div class="hint">與「App 開發」分頁共用同一組 Firebase 連線設定，只需在 App 分頁設定一次即可。</div>
+      <div class="cloud-status" id="pcCloudStatus"><span class="dot"></span><span>尚未連接雲端</span></div>
+      <div class="warn-box">
+        <b>提醒：</b>請切到「App 開發」分頁的「☁️ 雲端同步設定」完成連接，這裡會自動顯示相同的連線狀態。此分頁的資料存在獨立的資料集合裡，不會跟其他分頁互相干擾。
+      </div>
+    </section>
+
+    <section class="pc-panel" data-step="6">
+      <h2><span class="htitle"><span class="idx">07</span> 輸出</span></h2>
+      <div class="hint">整合以上所有段落為一篇文字，複製後貼給 AI 或存檔備查。</div>
+      <div class="btnrow">
+        <button class="action" id="pcGenBtn">產生整合文字</button>
+        <button class="action ghost" id="pcCopyBtn">複製到剪貼簿</button>
+      </div>
+      <div class="output-box" id="pcOutputBox">按「產生整合文字」查看結果...</div>
+    </section>
+
+  </div>
+
+  </div>
 </div>
 
 <button id="backToTopBtn" title="回到頂部">↑</button>
@@ -950,6 +1042,7 @@ document.getElementById('cloudConnectBtn').onclick = async ()=>{
     await loadUserNotes();
     await applyInitialCollapse();
     if(window.__novelOnCloudChange) await window.__novelOnCloudChange();
+    if(window.__pcOnCloudChange) await window.__pcOnCloudChange();
   }catch(e){
     console.error(e);
     cloudConnected = false;
@@ -965,6 +1058,7 @@ document.getElementById('cloudRefreshBtn').onclick = async ()=>{
   await loadUserNotes();
   await applyInitialCollapse();
   if(window.__novelOnCloudChange) await window.__novelOnCloudChange();
+  if(window.__pcOnCloudChange) await window.__pcOnCloudChange();
   showToast('已從雲端重新載入');
 };
 
@@ -977,6 +1071,7 @@ document.getElementById('cloudDisconnectBtn').onclick = ()=>{
     setCloudStatus('尚未連接雲端同步', false);
     showToast('已中斷雲端連接');
     if(window.__novelOnCloudChange) await window.__novelOnCloudChange();
+    if(window.__pcOnCloudChange) await window.__pcOnCloudChange();
   });
 };
 
@@ -991,6 +1086,7 @@ async function tryAutoConnectCloud(){
     await initFirebase(cfgObj, saved.code);
     setCloudStatus(`已連接雲端同步（代碼：${escapeHtml(saved.code)}）`, true);
     if(window.__novelOnCloudChange) await window.__novelOnCloudChange();
+    if(window.__pcOnCloudChange) await window.__pcOnCloudChange();
   }catch(e){
     console.error(e);
     setCloudStatus('自動連接失敗，請確認設定或重新連接', false);
@@ -1640,16 +1736,19 @@ document.getElementById('copyBtn').onclick = async ()=>{
   const tabs = [...document.querySelectorAll('#modeTabs button')];
   const appModeEl = document.getElementById('appMode');
   const novelModeEl = document.getElementById('novelMode');
+  const pcModeEl = document.getElementById('pcMode');
   const titleEl = document.getElementById('mainTitle');
   const subtitleEl = document.getElementById('mainSubtitle');
   const modeText = {
     app:   { title:'App 開發 SOP 導覽',  subtitle:'每次啟動新專案的固定流程 — 填寫、確認、輸出，貼給 AI 開始協作' },
-    novel: { title:'小說開發 SOP 導覽', subtitle:'每次開新小說的固定流程 — 分段記錄、獨立存檔、最終輸出整合文本' }
+    novel: { title:'小說開發 SOP 導覽', subtitle:'每次開新小說的固定流程 — 分段記錄、獨立存檔、最終輸出整合文本' },
+    pc:    { title:'電腦設備導覽', subtitle:'零組件檢核、重灌流程、軟體清單 — 一次整理，隨時查閱' }
   };
   function setMode(mode){
     tabs.forEach(b=> b.classList.toggle('active', b.dataset.mode === mode));
     appModeEl.classList.toggle('active', mode === 'app');
     novelModeEl.classList.toggle('active', mode === 'novel');
+    pcModeEl.classList.toggle('active', mode === 'pc');
     titleEl.textContent = modeText[mode].title;
     subtitleEl.textContent = modeText[mode].subtitle;
     window.__activeMode = mode;
@@ -2167,6 +2266,237 @@ function applyInitialCollapse(){
   applyInitialCollapse();
 })();
 
+})();
+
+// ============ 電腦設備導覽（App/小說 模式外的第三個分頁）============
+(function(){
+  const DEFAULT_PARTS = ['CPU','主機板','記憶體','顯卡','硬碟','電源','機殼','散熱'].map(name=>({
+    id: 'p_' + Math.random().toString(36).slice(2,8), name, checked:false, note:''
+  }));
+  let pcData = {
+    activeParts: DEFAULT_PARTS.map(p=>({...p})),
+    spareParts: DEFAULT_PARTS.map(p=>({...p})),
+    reinstallNotes: '',
+    software: '',
+    userNotes: ''
+  };
+
+  function pcSetCloudStatus(){
+    const el = document.getElementById('pcCloudStatus');
+    if(cloudConnected){
+      el.classList.add('connected');
+      el.innerHTML = `<span class="dot"></span><span>已連接雲端同步（代碼：${escapeHtml(syncCode||'')}）</span>`;
+    } else {
+      el.classList.remove('connected');
+      el.innerHTML = `<span class="dot"></span><span>尚未連接雲端（請到「App 開發」分頁的雲端同步設定連接）</span>`;
+    }
+  }
+  function pcDocRef(){ return firestoreDb.collection('pcSync').doc(syncCode); }
+  async function pcCloudGetDoc(){
+    const snap = await pcDocRef().get();
+    return snap.exists ? snap.data() : { pcDraft: null };
+  }
+  async function pcCloudSetField(field, value){
+    await pcDocRef().set({ [field]: value, updatedAt: Date.now() }, { merge: true });
+  }
+
+  async function loadPcDraft(){
+    if(cloudConnected){
+      try{
+        const d = await pcCloudGetDoc();
+        if(d.pcDraft) pcData = d.pcDraft;
+        applyPcDraftToUI();
+        return;
+      }catch(e){ console.error(e); showToast('雲端讀取失敗，暫用本機內容'); }
+    }
+    try{
+      if(window.storage){
+        const r = await window.storage.get('pc-draft', false);
+        if(r && r.value){ pcData = JSON.parse(r.value); applyPcDraftToUI(); return; }
+      }
+    }catch(e){}
+    applyPcDraftToUI();
+  }
+  async function savePcDraft(){
+    if(cloudConnected){
+      try{ await pcCloudSetField('pcDraft', pcData); return; }
+      catch(e){ console.error(e); showToast('雲端寫入失敗'); }
+    }
+    try{
+      if(window.storage){ await window.storage.set('pc-draft', JSON.stringify(pcData), false); return; }
+    }catch(e){}
+  }
+
+  function applyPcDraftToUI(){
+    renderPartsList('activeParts');
+    renderPartsList('spareParts');
+    document.getElementById('reinstallNotes').value = pcData.reinstallNotes || '';
+    document.getElementById('softwareNotes').value = pcData.software || '';
+    document.getElementById('pcUserNotes').value = pcData.userNotes || '';
+  }
+
+  function renderPartsList(key){
+    const box = document.getElementById(key + '_list');
+    const list = pcData[key] || [];
+    box.innerHTML = '';
+    list.forEach(item=>{
+      const row = document.createElement('div');
+      row.className = 'pc-item';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!item.checked;
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.className = 'pc-name';
+      nameInput.placeholder = '項目名稱';
+      nameInput.value = item.name || '';
+      const noteInput = document.createElement('input');
+      noteInput.type = 'text';
+      noteInput.className = 'pc-note';
+      noteInput.placeholder = '型號／備註';
+      noteInput.value = item.note || '';
+      const delBtn = document.createElement('button');
+      delBtn.className = 'pc-del';
+      delBtn.textContent = '刪除';
+
+      cb.onchange = ()=>{ item.checked = cb.checked; savePcDraft(); };
+      nameInput.addEventListener('blur', ()=>{ item.name = nameInput.value.trim(); savePcDraft(); });
+      noteInput.addEventListener('blur', ()=>{ item.note = noteInput.value.trim(); savePcDraft(); });
+      delBtn.onclick = ()=>{
+        askConfirm('刪除項目', `確定要刪除「${item.name || '未命名'}」嗎？`, ()=>{
+          pcData[key] = pcData[key].filter(x=>x.id !== item.id);
+          renderPartsList(key);
+          savePcDraft();
+          showToast('已刪除');
+        });
+      };
+
+      row.appendChild(cb);
+      row.appendChild(nameInput);
+      row.appendChild(noteInput);
+      row.appendChild(delBtn);
+      box.appendChild(row);
+    });
+  }
+
+  document.getElementById('activeParts_add').onclick = ()=>{
+    pcData.activeParts.push({ id:'p_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), name:'', checked:false, note:'' });
+    renderPartsList('activeParts');
+    savePcDraft();
+  };
+  document.getElementById('spareParts_add').onclick = ()=>{
+    pcData.spareParts.push({ id:'p_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), name:'', checked:false, note:'' });
+    renderPartsList('spareParts');
+    savePcDraft();
+  };
+
+  const reinstallEl = document.getElementById('reinstallNotes');
+  const softwareEl = document.getElementById('softwareNotes');
+  const pcNotesEl = document.getElementById('pcUserNotes');
+
+  document.getElementById('saveReinstallBtn').onclick = async ()=>{
+    pcData.reinstallNotes = reinstallEl.value.trim();
+    await savePcDraft();
+    showToast('已儲存');
+  };
+  document.getElementById('saveSoftwareBtn').onclick = async ()=>{
+    pcData.software = softwareEl.value.trim();
+    await savePcDraft();
+    showToast('已儲存');
+  };
+  document.getElementById('savePcNotesBtn').onclick = async ()=>{
+    pcData.userNotes = pcNotesEl.value.trim();
+    await savePcDraft();
+    showToast('已儲存');
+  };
+  document.getElementById('copyReinstallBtn').onclick = ()=> copyTextToClipboard(reinstallEl.value);
+  document.getElementById('copySoftwareBtn').onclick = ()=> copyTextToClipboard(softwareEl.value);
+  document.getElementById('copyPcNotesBtn').onclick = ()=> copyTextToClipboard(pcNotesEl.value);
+
+  function partsText(key, label){
+    const list = pcData[key] || [];
+    if(!list.length) return '';
+    let out = `\n## ${label}\n`;
+    list.forEach(item=>{
+      out += `- [${item.checked ? 'x' : ' '}] ${item.name || '（未命名）'}${item.note ? '　備註：' + item.note : ''}\n`;
+    });
+    return out;
+  }
+  document.querySelectorAll('button[data-copy-pc]').forEach(b=>{
+    b.onclick = ()=>{
+      const key = b.dataset.copyPc;
+      const label = key === 'activeParts' ? '現役電腦零組件' : '備用電腦零組件';
+      copyTextToClipboard(partsText(key, label).trim());
+    };
+  });
+
+  function buildPcOutput(){
+    let out = `# 電腦設備資料\n`;
+    out += partsText('activeParts', '現役電腦零組件');
+    out += partsText('spareParts', '備用電腦零組件');
+    if(pcData.reinstallNotes) out += `\n## 重灌流程與須知\n${pcData.reinstallNotes}\n`;
+    if(pcData.software) out += `\n## 軟體相關\n${pcData.software}\n`;
+    out += `\n---\n請依照以上電腦設備資料協助我判斷或處理相關問題。若有不清楚之處，請直接提出確認。`;
+    return out;
+  }
+  document.getElementById('pcGenBtn').onclick = ()=>{
+    document.getElementById('pcOutputBox').textContent = buildPcOutput();
+    document.querySelector('.pc-panel[data-step="6"]').scrollIntoView({behavior:'smooth'});
+  };
+  document.getElementById('pcCopyBtn').onclick = async ()=>{
+    const box = document.getElementById('pcOutputBox');
+    if(!box.textContent || box.textContent.startsWith('按「產生')){ document.getElementById('pcGenBtn').click(); }
+    copyTextToClipboard(document.getElementById('pcOutputBox').textContent);
+  };
+
+  // ---- 步驟導覽 ----
+  const pcSteps = ["現役零組件","備用零組件","重灌流程","軟體相關","使用者筆記","雲端同步","輸出"];
+  const pcStepnav = document.getElementById('pcStepnav');
+  pcSteps.forEach((label, i)=>{
+    const b = document.createElement('button');
+    b.innerHTML = `<span class="n">${String(i+1).padStart(2,'0')}</span>${label}`;
+    b.onclick = ()=> document.querySelector(`.pc-panel[data-step="${i}"]`).scrollIntoView({behavior:'smooth', block:'start'});
+    pcStepnav.appendChild(b);
+  });
+  function pcSetActiveNav(i){ [...pcStepnav.children].forEach((b,idx)=>b.classList.toggle('active', idx===i)); }
+  pcSetActiveNav(0);
+  const pcPanels = [...document.querySelectorAll('.pc-panel')];
+  const pcIo = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting) pcSetActiveNav(parseInt(e.target.dataset.step)); });
+  }, {rootMargin:"-10% 0px -70% 0px"});
+  pcPanels.forEach(p=>pcIo.observe(p));
+
+  // ---- 可收合面板（沿用共用 makeCollapsible）----
+  const pcCollapseSetters = {};
+  pcPanels.forEach(p=>{ pcCollapseSetters[p.dataset.step] = makeCollapsible(p); });
+  function applyPcCollapse(){
+    const s0 = pcCollapseSetters['0'];
+    s0(s0.hasStored() ? s0.getStored() : false);
+    const s1 = pcCollapseSetters['1'];
+    s1(s1.hasStored() ? s1.getStored() : false);
+    const s2 = pcCollapseSetters['2'];
+    s2(s2.hasStored() ? s2.getStored() : !pcData.reinstallNotes);
+    const s3 = pcCollapseSetters['3'];
+    s3(s3.hasStored() ? s3.getStored() : !pcData.software);
+    const s4 = pcCollapseSetters['4'];
+    s4(s4.hasStored() ? s4.getStored() : !pcData.userNotes);
+    const s5 = pcCollapseSetters['5'];
+    s5(s5.hasStored() ? s5.getStored() : false);
+    const s6 = pcCollapseSetters['6'];
+    s6(s6.hasStored() ? s6.getStored() : false);
+  }
+
+  window.__pcOnCloudChange = async function(){
+    pcSetCloudStatus();
+    await loadPcDraft();
+    applyPcCollapse();
+  };
+
+  (async function initPc(){
+    pcSetCloudStatus();
+    await loadPcDraft();
+    applyPcCollapse();
+  })();
 })();
 
 enhanceAllTextareas();
