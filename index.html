@@ -430,7 +430,8 @@
   .ta-resize-handle:active{color:var(--accent);background:var(--accent-soft);}
 
   .modal.wide{max-width:560px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;}
-  .docs-list{overflow-y:auto;flex:1;}
+  #docsListView{flex:1;min-height:0;overflow-y:auto;padding-right:2px;}
+  .docs-list{}
   .doc-item{
     display:flex;align-items:center;justify-content:space-between;gap:10px;
     background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:8px;
@@ -444,7 +445,14 @@
     all:unset;cursor:pointer;font-family:var(--mono);font-size:11px;color:#ff6b6b;
     padding:4px 8px;border-radius:6px;border:1px solid rgba(255,107,107,0.3);
   }
-  .docs-preview{display:flex;flex-direction:column;overflow:hidden;flex:1;}
+  .doc-item .dmove{
+    all:unset;cursor:pointer;font-family:var(--mono);font-size:12px;color:var(--text-dim);
+    padding:4px 7px;border-radius:6px;border:1px solid var(--border-soft);
+  }
+  .doc-item .dmove:hover{color:var(--accent);border-color:var(--accent-dim);}
+  .doc-item .dmove:disabled{opacity:0.3;cursor:default;}
+  .doc-item .dmove:disabled:hover{color:var(--text-dim);border-color:var(--border-soft);}
+  .docs-preview{display:flex;flex-direction:column;overflow:hidden;flex:1;min-height:0;}
   .docs-preview-head{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-shrink:0;}
   .docs-preview-title{font-size:13.5px;font-weight:600;color:var(--text);}
   .docs-preview-body{
@@ -1862,10 +1870,13 @@ async function deleteRefDocContent(mode, id){
       return;
     }
     listEl.innerHTML = '';
-    index.slice().sort((a,b)=>(b.addedAt||0)-(a.addedAt||0)).forEach(meta=>{
+    index.forEach((meta, i)=>{
       const item = document.createElement('div');
       item.className = 'doc-item';
-      item.innerHTML = `<span class="dname">${escapeHtml(meta.title)}</span><div class="dactions"><span class="darrow">開啟 →</span><button class="ddel">刪除</button></div>`;
+      item.innerHTML = `<span class="dname">${escapeHtml(meta.title)}</span><div class="dactions"><button class="dmove" ${i===0?'disabled':''}>▲</button><button class="dmove" ${i===index.length-1?'disabled':''}>▼</button><span class="darrow">開啟 →</span><button class="ddel">刪除</button></div>`;
+      const moveBtns = item.querySelectorAll('.dmove');
+      moveBtns[0].onclick = (e)=>{ e.stopPropagation(); moveDocIndex(mode, meta.id, -1); };
+      moveBtns[1].onclick = (e)=>{ e.stopPropagation(); moveDocIndex(mode, meta.id, 1); };
       item.querySelector('.darrow').onclick = async ()=>{
         listViewEl.style.display = 'none';
         previewEl.style.display = 'flex';
@@ -1889,6 +1900,17 @@ async function deleteRefDocContent(mode, id){
       };
       listEl.appendChild(item);
     });
+  }
+
+  async function moveDocIndex(mode, id, direction){
+    const list = await getRefDocsIndex(mode);
+    const i = list.findIndex(x=>x.id===id);
+    if(i===-1) return;
+    const j = i + direction;
+    if(j<0 || j>=list.length) return;
+    const tmp = list[i]; list[i] = list[j]; list[j] = tmp;
+    await setRefDocsIndex(mode, list);
+    renderDocsList();
   }
 
   fileInput.addEventListener('change', (e)=>{
