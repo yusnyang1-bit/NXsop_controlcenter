@@ -1737,6 +1737,22 @@ document.getElementById('copyBtn').onclick = async ()=>{
     btn.classList.toggle('show', window.scrollY > 400);
   }, {passive:true});
   btn.onclick = ()=> window.scrollTo({top:0, behavior:'smooth'});
+
+  // 縮放/視覺可視區域變動時，重新貼齊實際看得到的右下角，避免被縮放推出畫面外
+  if(window.visualViewport){
+    const vv = window.visualViewport;
+    const MARGIN_R = 20, MARGIN_B = 24, SIZE = 46;
+    function reposition(){
+      btn.style.position = 'fixed';
+      btn.style.right = 'auto';
+      btn.style.bottom = 'auto';
+      btn.style.left = Math.round(vv.offsetLeft + vv.width - SIZE - MARGIN_R) + 'px';
+      btn.style.top = Math.round(vv.offsetTop + vv.height - SIZE - MARGIN_B) + 'px';
+    }
+    vv.addEventListener('resize', reposition);
+    vv.addEventListener('scroll', reposition);
+    reposition();
+  }
 })();
 
 // ============ 模式切換（App / 小說）============
