@@ -936,8 +936,14 @@ service cloud.firestore {
       <div class="docs-preview-head">
         <button class="closeModal" id="docsBackBtn">← 返回清單</button>
         <span id="docsPreviewTitle" class="docs-preview-title"></span>
+        <button class="action ghost" id="docsEditBtn" style="margin-left:auto;">✏️ 編輯</button>
       </div>
       <pre id="docsPreviewBody" class="docs-preview-body"></pre>
+      <textarea id="docsEditBody" class="docs-preview-body" style="display:none;min-height:260px;"></textarea>
+      <div class="btnrow" id="docsEditActions" style="display:none;margin-top:10px;">
+        <button class="action" id="docsSaveEditBtn">儲存</button>
+        <button class="action ghost" id="docsCancelEditBtn">取消</button>
+      </div>
     </div>
     <button class="closeModal" id="closeDocsModal" style="margin-top:14px;">關閉</button>
   </div>
@@ -1851,6 +1857,36 @@ async function deleteRefDocContent(mode, id){
   const titleInput = document.getElementById('docTitleInput');
   const contentInput = document.getElementById('docContentInput');
   const fileInput = document.getElementById('docFileInput');
+  let currentPreviewDoc = null;
+
+  const editBtn = document.getElementById('docsEditBtn');
+  const editBodyEl = document.getElementById('docsEditBody');
+  const editActionsEl = document.getElementById('docsEditActions');
+
+  editBtn.onclick = ()=>{
+    if(!currentPreviewDoc) return;
+    editBodyEl.value = previewBodyEl.textContent;
+    previewBodyEl.style.display = 'none';
+    editBodyEl.style.display = '';
+    editActionsEl.style.display = '';
+  };
+  document.getElementById('docsCancelEditBtn').onclick = ()=>{
+    editBodyEl.style.display = 'none';
+    editActionsEl.style.display = 'none';
+    previewBodyEl.style.display = '';
+  };
+  document.getElementById('docsSaveEditBtn').onclick = async ()=>{
+    if(!currentPreviewDoc) return;
+    const newContent = editBodyEl.value;
+    try{
+      await setRefDocContent(currentPreviewDoc.mode, currentPreviewDoc.id, newContent);
+      previewBodyEl.textContent = newContent;
+      editBodyEl.style.display = 'none';
+      editActionsEl.style.display = 'none';
+      previewBodyEl.style.display = '';
+      showToast('已儲存並同步到雲端');
+    }catch(e){ console.error(e); showToast('儲存失敗，請確認雲端連線'); }
+  };
 
   async function renderDocsList(){
     listViewEl.style.display = '';
@@ -1874,8 +1910,12 @@ async function deleteRefDocContent(mode, id){
         previewEl.style.display = 'flex';
         previewTitleEl.textContent = meta.title;
         previewBodyEl.textContent = '載入中...';
+        previewBodyEl.style.display = '';
+        document.getElementById('docsEditBody').style.display = 'none';
+        document.getElementById('docsEditActions').style.display = 'none';
         const content = await getRefDocContent(mode, meta.id);
         previewBodyEl.textContent = content;
+        currentPreviewDoc = { mode, id: meta.id, title: meta.title };
       };
       item.querySelector('.ddel').onclick = (e)=>{
         e.stopPropagation();
