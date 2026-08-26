@@ -612,15 +612,14 @@
           4. 自訂一組「同步代碼」（像密碼，只有你知道），手機與 PC 都填同一組即可讀到同一份資料
         </div>
 
-        <label>Firebase 設定（貼上 firebaseConfig 物件）</label>
-        <textarea id="firebaseConfigInput" placeholder='{ apiKey: "...", authDomain: "...", projectId: "...", ... }' style="min-height:120px;"></textarea>
-        <label>同步代碼</label>
-        <input type="text" id="syncCodeInput" placeholder="自訂一組不易被猜到的代碼，例：nomax-sop-9x27">
+        <p class="hint" style="color:var(--text-faint);">此設定已寫死在程式碼中，畫面僅供顯示核對，不可編輯。</p>
+        <label>Firebase 設定（唯讀）</label>
+        <textarea id="firebaseConfigInput" readonly style="min-height:120px;opacity:0.6;cursor:not-allowed;"></textarea>
+        <label>同步代碼（唯讀）</label>
+        <input type="text" id="syncCodeInput" readonly style="opacity:0.6;cursor:not-allowed;">
 
         <div class="btnrow" style="margin-bottom:6px;">
-          <button class="action" id="cloudConnectBtn">連接雲端</button>
           <button class="action ghost" id="cloudRefreshBtn">🔄 重新從雲端載入</button>
-          <button class="action ghost" id="cloudDisconnectBtn">中斷連接（回到本機模式）</button>
         </div>
 
         <div style="margin-top:22px;padding-top:18px;border-top:1px dashed var(--border-soft);">
@@ -1048,31 +1047,6 @@ async function cloudSetField(field, value){
   await cloudDocRef().set({ [field]: value, updatedAt: Date.now() }, { merge: true });
 }
 
-document.getElementById('cloudConnectBtn').onclick = async ()=>{
-  const cfgText = document.getElementById('firebaseConfigInput').value;
-  const code = document.getElementById('syncCodeInput').value.trim();
-  if(!cfgText.trim() || !code){ showToast('請填入 Firebase 設定與同步代碼'); return; }
-  setCloudStatus('連接中...', false);
-  try{
-    const cfgObj = parseFirebaseConfigText(cfgText);
-    await initFirebase(cfgObj, code);
-    saveLocalCloudConfig(cfgText, code);
-    setCloudStatus(`已連接雲端同步（代碼：${escapeHtml(code)}）`, true);
-    showToast('雲端連接成功');
-    await loadDefaults();
-    await renderProjectList();
-    await loadUserNotes();
-    await applyInitialCollapse();
-    if(window.__novelOnCloudChange) await window.__novelOnCloudChange();
-    if(window.__pcOnCloudChange) await window.__pcOnCloudChange();
-  }catch(e){
-    console.error(e);
-    cloudConnected = false;
-    setCloudStatus('連接失敗，請確認設定內容是否正確', false);
-    showToast('連接失敗，請檢查 Firebase 設定與網路連線');
-  }
-};
-
 document.getElementById('cloudRefreshBtn').onclick = async ()=>{
   if(!cloudConnected){ showToast('尚未連接雲端'); return; }
   await loadDefaults();
@@ -1082,19 +1056,6 @@ document.getElementById('cloudRefreshBtn').onclick = async ()=>{
   if(window.__novelOnCloudChange) await window.__novelOnCloudChange();
   if(window.__pcOnCloudChange) await window.__pcOnCloudChange();
   showToast('已從雲端重新載入');
-};
-
-document.getElementById('cloudDisconnectBtn').onclick = ()=>{
-  askConfirm('中斷雲端連接', '確定要中斷雲端同步嗎？這台裝置會改回本機儲存，資料仍保留在雲端，之後可以重新輸入設定再連回來。', async ()=>{
-    cloudConnected = false;
-    firestoreDb = null;
-    syncCode = null;
-    clearLocalCloudConfig();
-    setCloudStatus('尚未連接雲端同步', false);
-    showToast('已中斷雲端連接');
-    if(window.__novelOnCloudChange) await window.__novelOnCloudChange();
-    if(window.__pcOnCloudChange) await window.__pcOnCloudChange();
-  });
 };
 
 async function tryAutoConnectCloud(){
