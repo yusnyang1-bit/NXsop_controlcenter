@@ -971,6 +971,16 @@ const DEFAULT_COLLAB = `- Claude：負責架構設計與複雜邏輯、程式碼
 let firestoreDb = null;
 let syncCode = null;
 let cloudConnected = false;
+const DEFAULT_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAUQ3fsReHMznx5-4Il9voSm4vbagZS8XM",
+  authDomain: "app-assist-nx.firebaseapp.com",
+  projectId: "app-assist-nx",
+  storageBucket: "app-assist-nx.firebasestorage.app",
+  messagingSenderId: "400525153952",
+  appId: "1:400525153952:web:3fd0db9872fb733d745bc5",
+  measurementId: "G-J9F31HZPTX"
+};
+const DEFAULT_SYNC_CODE = "yusn1006";
 const cloudStatusEl_getter = () => document.getElementById('cloudStatus');
 
 function setCloudStatus(text, connected){
@@ -1089,14 +1099,14 @@ document.getElementById('cloudDisconnectBtn').onclick = ()=>{
 
 async function tryAutoConnectCloud(){
   const saved = loadLocalCloudConfig();
-  if(!saved) return;
-  document.getElementById('firebaseConfigInput').value = saved.cfgText;
-  document.getElementById('syncCodeInput').value = saved.code;
+  const cfgObj = saved ? parseFirebaseConfigText(saved.cfgText) : DEFAULT_FIREBASE_CONFIG;
+  const code = saved ? saved.code : DEFAULT_SYNC_CODE;
+  document.getElementById('firebaseConfigInput').value = saved ? saved.cfgText : JSON.stringify(DEFAULT_FIREBASE_CONFIG, null, 2);
+  document.getElementById('syncCodeInput').value = code;
   setCloudStatus('連接中...', false);
   try{
-    const cfgObj = parseFirebaseConfigText(saved.cfgText);
-    await initFirebase(cfgObj, saved.code);
-    setCloudStatus(`已連接雲端同步（代碼：${escapeHtml(saved.code)}）`, true);
+    await initFirebase(cfgObj, code);
+    setCloudStatus(`已連接雲端同步（代碼：${escapeHtml(code)}）`, true);
     if(window.__novelOnCloudChange) await window.__novelOnCloudChange();
     if(window.__pcOnCloudChange) await window.__pcOnCloudChange();
   }catch(e){
