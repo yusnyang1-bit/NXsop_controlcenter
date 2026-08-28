@@ -7,44 +7,44 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="SOP導覽">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0d2023">
+<meta name="theme-color" content="#10161d">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
   :root{
-    --bg: #0d2023;
-    --bg-panel: #143032;
-    --bg-panel-2: #1a3d3f;
-    --grid-line: rgba(240,160,80,0.05);
-    --border: #2c4e50;
-    --border-soft: #23403f;
-    --text: #f2ead9;
-    --text-dim: #a9b8b0;
-    --text-faint: #6f8078;
-    --accent: #f0a050;
-    --accent-dim: #8a6a3c;
-    --accent-soft: rgba(240,160,80,0.14);
-    --amber: #e8973f;
-    --amber-soft: rgba(232,151,63,0.12);
+    --bg: #10161d;
+    --bg-panel: #171f28;
+    --bg-panel-2: #1e2833;
+    --grid-line: rgba(140,165,190,0.05);
+    --border: #2c3a48;
+    --border-soft: #22303c;
+    --text: #e8ecf0;
+    --text-dim: #9aa8b5;
+    --text-faint: #667584;
+    --accent: #7fa3c4;
+    --accent-dim: #48607a;
+    --accent-soft: rgba(127,163,196,0.14);
+    --amber: #c99a5f;
+    --amber-soft: rgba(201,154,95,0.12);
     --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
     --sans: -apple-system, "Segoe UI", "PingFang TC", "Noto Sans TC", system-ui, sans-serif;
   }
   body.light{
-    --bg: #e7e6e0;
-    --bg-panel: #f2f1ea;
-    --bg-panel-2: #e9e7de;
-    --grid-line: rgba(60,55,40,0.05);
-    --border: #d3d0c4;
-    --border-soft: #dcd9cd;
-    --text: #33322c;
-    --text-dim: #6b6a5f;
-    --text-faint: #969486;
-    --accent: #4c7a52;
-    --accent-dim: #a9c2ac;
-    --accent-soft: rgba(76,122,82,0.12);
-    --amber: #9c6f24;
-    --amber-soft: rgba(156,111,36,0.12);
+    --bg: #e3e7eb;
+    --bg-panel: #eef1f4;
+    --bg-panel-2: #e2e7ec;
+    --grid-line: rgba(70,95,120,0.05);
+    --border: #cad3db;
+    --border-soft: #d5dce2;
+    --text: #2c333b;
+    --text-dim: #5a6672;
+    --text-faint: #8993a0;
+    --accent: #4a6f8a;
+    --accent-dim: #a4bccb;
+    --accent-soft: rgba(74,111,138,0.12);
+    --amber: #8a7048;
+    --amber-soft: rgba(138,112,72,0.12);
   }
   body{transition: background-color .25s ease, color .25s ease;}
   section.app-panel, section.novel-panel, section.pc-panel{transition: background-color .25s ease, border-color .25s ease;}
@@ -58,7 +58,7 @@
     color:var(--text);
     font-family:var(--sans);
     min-height:100vh;
-    padding:32px 24px 80px;
+    padding:18px 18px 40px;
   }
   .wrap{max-width:1180px;margin:0 auto;}
 
@@ -68,8 +68,8 @@
     justify-content:space-between;
     gap:24px;
     border-bottom:1px solid var(--border);
-    padding-bottom:20px;
-    margin-bottom:28px;
+    padding-bottom:12px;
+    margin-bottom:16px;
     flex-wrap:wrap;
   }
   .title-block .eyebrow{
@@ -114,8 +114,8 @@
     background:var(--bg);
     border:1px solid var(--border);
     border-radius:10px;
-    padding:8px;
-    margin-bottom:20px;
+    padding:5px;
+    margin-bottom:12px;
   }
   nav.stepnav button{
     all:unset;
@@ -123,7 +123,7 @@
     display:flex;
     align-items:baseline;
     gap:7px;
-    padding:8px 12px;
+    padding:6px 10px;
     border-radius:7px;
     font-size:12.5px;
     color:var(--text-dim);
@@ -148,8 +148,8 @@
     background:var(--bg-panel);
     border:1px solid var(--border);
     border-radius:12px;
-    padding:24px 26px;
-    margin-bottom:18px;
+    padding:15px 18px;
+    margin-bottom:10px;
   }
   section.app-panel h2, section.novel-panel h2, section.pc-panel h2{
     font-size:15px;
@@ -167,8 +167,8 @@
   section.app-panel .hint, section.novel-panel .hint, section.pc-panel .hint{
     color:var(--text-dim);
     font-size:12.5px;
-    margin:0 0 18px;
-    line-height:1.6;
+    margin:0 0 10px;
+    line-height:1.45;
   }
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
   @media (max-width:600px){.grid2{grid-template-columns:1fr;}}
@@ -186,10 +186,10 @@
     border:1px solid var(--border-soft);
     color:var(--text);
     border-radius:7px;
-    padding:9px 11px;
+    padding:7px 10px;
     font-size:13.5px;
     font-family:var(--sans);
-    margin-bottom:14px;
+    margin-bottom:9px;
     resize:vertical;
   }
   input[type=text]:focus, select:focus, textarea:focus{
@@ -197,40 +197,40 @@
     border-color:var(--accent);
     box-shadow:0 0 0 3px var(--accent-soft);
   }
-  textarea{font-family:var(--mono);font-size:12.5px;line-height:1.6;min-height:110px;}
+  textarea{font-family:var(--mono);font-size:12.5px;line-height:1.5;min-height:88px;}
   .computed{
     font-family:var(--mono);
     font-size:12.5px;
     background:var(--bg-panel-2);
     border:1px dashed var(--border-soft);
     border-radius:7px;
-    padding:9px 11px;
+    padding:6px 9px;
     color:var(--accent);
-    margin-bottom:14px;
+    margin-bottom:8px;
     word-break:break-all;
   }
   .computed .lbl{color:var(--text-faint);font-family:var(--sans);display:block;font-size:11px;margin-bottom:2px;}
-  .checks{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+  .checks{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:4px;}
   .checks label{
     display:flex;align-items:center;gap:6px;
     font-family:var(--sans);color:var(--text);font-size:13px;
     background:var(--bg-panel-2);border:1px solid var(--border-soft);
-    padding:7px 12px;border-radius:20px;cursor:pointer;
+    padding:5px 10px;border-radius:20px;cursor:pointer;
   }
   .checks input{margin:0;}
 
   table.ref{width:100%;border-collapse:collapse;font-size:12.5px;font-family:var(--mono);}
   table.ref th, table.ref td{
-    text-align:left;padding:7px 10px;border-bottom:1px solid var(--border-soft);color:var(--text-dim);
+    text-align:left;padding:5px 8px;border-bottom:1px solid var(--border-soft);color:var(--text-dim);
   }
   table.ref th{color:var(--text-faint);font-weight:500;}
 
-  .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px;}
   button.action{
     all:unset;cursor:pointer;
     font-family:var(--sans);font-size:13px;font-weight:600;
-    padding:9px 16px;border-radius:7px;
-    background:var(--accent);color:#1c130a;
+    padding:7px 14px;border-radius:7px;
+    background:var(--accent);color:#10161d;
   }
   button.action.ghost{
     background:transparent;color:var(--text-dim);border:1px solid var(--border);
@@ -246,8 +246,8 @@
     background:var(--bg-panel-2);
     border:1px solid var(--border-soft);
     border-radius:9px;
-    padding:18px;
-    max-height:460px;
+    padding:13px;
+    max-height:400px;
     overflow:auto;
     color:var(--text);
   }
@@ -271,10 +271,10 @@
   .modal-backdrop.show{display:flex;}
   .modal{
     background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;
-    padding:22px 22px 18px;max-width:360px;width:100%;
+    padding:16px 16px 12px;max-width:360px;width:100%;
   }
-  .modal h3{margin:0 0 12px;font-size:15px;}
-  .modal ol{margin:0 0 16px;padding-left:20px;color:var(--text-dim);font-size:13px;line-height:1.9;}
+  .modal h3{margin:0 0 8px;font-size:15px;}
+  .modal ol{margin:0 0 10px;padding-left:20px;color:var(--text-dim);font-size:13px;line-height:1.55;}
   .modal ol b{color:var(--text);}
   .modal .closeModal{
     all:unset;cursor:pointer;color:var(--accent);font-family:var(--mono);font-size:12.5px;
@@ -287,7 +287,7 @@
   .project-card{
     display:flex;align-items:center;justify-content:space-between;gap:10px;
     background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:8px;
-    padding:11px 14px;margin-bottom:8px;flex-wrap:wrap;
+    padding:8px 12px;margin-bottom:6px;flex-wrap:wrap;
   }
   .project-card .pinfo{min-width:0;}
   .project-card .pname{font-size:13.5px;color:var(--text);font-weight:600;}
@@ -305,14 +305,14 @@
     display:flex;align-items:center;gap:8px;flex-wrap:wrap;
     font-family:var(--mono);font-size:12px;color:var(--text-dim);
     background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:8px;
-    padding:10px 13px;margin-bottom:16px;
+    padding:7px 11px;margin-bottom:10px;
   }
   .cloud-status .dot{width:8px;height:8px;border-radius:50%;background:var(--text-faint);flex-shrink:0;}
   .cloud-status.connected .dot{background:#4ade80;}
   .cloud-status.connected{color:var(--text);}
   .warn-box{
     background:var(--amber-soft);border:1px solid rgba(232,163,61,0.35);border-radius:8px;
-    padding:11px 14px;font-size:12px;color:var(--text-dim);line-height:1.7;margin-bottom:16px;
+    padding:8px 12px;font-size:12px;color:var(--text-dim);line-height:1.5;margin-bottom:10px;
   }
   .warn-box b{color:var(--amber);}
 
@@ -337,7 +337,7 @@
 .pc-item{
   display:flex;align-items:center;gap:8px;flex-wrap:wrap;
   background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:8px;
-  padding:9px 12px;margin-bottom:8px;
+  padding:7px 10px;margin-bottom:6px;
 }
 .pc-item input[type=checkbox]{width:18px;height:18px;flex-shrink:0;accent-color:var(--accent);}
 .pc-item .pc-name{flex:1 1 120px;min-width:100px;margin-bottom:0;}
@@ -350,7 +350,7 @@
 .entry-card, .novel-card{
     display:flex;align-items:center;justify-content:space-between;gap:10px;
     background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:8px;
-    padding:11px 14px;margin-bottom:8px;flex-wrap:wrap;
+    padding:8px 12px;margin-bottom:6px;flex-wrap:wrap;
   }
   .entry-card .einfo, .novel-card .ninfo{min-width:0;flex:1;}
   .entry-card .ename, .novel-card .nname{font-size:13.5px;color:var(--text);font-weight:600;}
@@ -367,11 +367,11 @@
   
 
   .mode-tabs{
-    display:flex;gap:8px;margin-bottom:20px;
+    display:flex;gap:6px;margin-bottom:12px;
   }
   .mode-tabs button{
     all:unset;cursor:pointer;flex:1;text-align:center;
-    padding:12px 16px;border-radius:10px;font-size:13.5px;font-weight:600;
+    padding:9px 14px;border-radius:10px;font-size:13.5px;font-weight:600;
     background:var(--bg-panel);border:1px solid var(--border);color:var(--text-dim);
   }
   .mode-tabs button.active{
@@ -409,7 +409,7 @@
     transform:translateY(0);
   }
 
-  .ta-wrap{position:relative; margin-bottom:14px;}
+  .ta-wrap{position:relative; margin-bottom:9px;}
   .ta-wrap textarea{margin-bottom:0; resize:none; display:block; width:100%;}
   .ta-resize-handle{
     position:absolute;
@@ -438,7 +438,7 @@
   .doc-item{
     display:flex;align-items:center;justify-content:space-between;gap:10px;
     background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:8px;
-    padding:11px 14px;margin-bottom:8px;cursor:pointer;
+    padding:8px 12px;margin-bottom:6px;cursor:pointer;
   }
   .doc-item:hover{border-color:var(--accent-dim);}
   .doc-item .dname{font-size:13.5px;color:var(--text);}
@@ -456,12 +456,12 @@
   .doc-item .dmove:disabled{opacity:0.3;cursor:default;}
   .doc-item .dmove:disabled:hover{color:var(--text-dim);border-color:var(--border-soft);}
   .docs-preview{display:flex;flex-direction:column;overflow:hidden;flex:1;min-height:0;}
-  .docs-preview-head{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-shrink:0;}
+  .docs-preview-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-shrink:0;}
   .docs-preview-title{font-size:13.5px;font-weight:600;color:var(--text);}
   .docs-preview-body{
     white-space:pre-wrap;font-family:var(--mono);font-size:12px;line-height:1.7;
     background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:9px;
-    padding:14px;overflow:auto;color:var(--text);margin:0;flex:1;
+    padding:11px;overflow:auto;color:var(--text);margin:0;flex:1;
   }
 </style>
 </head>
@@ -559,7 +559,7 @@
         <h2><span class="idx">03</span> 專案目標與需求簡述</h2>
         <p class="hint">讓 AI 理解「這個 app 要解決什麼、為誰做」。也可以填是否沿用既有專案的架構（避免重工）。</p>
         <label>目標與需求簡述</label>
-        <textarea id="goalDesc" placeholder="這個app要解決什麼問題？主要功能是什麼？目標使用者是誰？&#10;（可貼上你原本的功能規格筆記，不必整理成正式格式）" style="min-height:140px;"></textarea>
+        <textarea id="goalDesc" placeholder="這個app要解決什麼問題？主要功能是什麼？目標使用者是誰？&#10;（可貼上你原本的功能規格筆記，不必整理成正式格式）" style="min-height:105px;"></textarea>
         <label>相關既有專案 / 可沿用架構（若無可留空）</label>
         <textarea id="reuseNote" placeholder="例：與 NXBeats 同屬音樂播放器性質，建議沿用其 sqflite 播放清單管理架構、Neumorphism UI 基礎，避免重工。"></textarea>
       </section>
@@ -567,7 +567,7 @@
       <section class="app-panel" data-step="3">
         <h2><span class="idx">04</span> 環境設定（跨專案固定值）</h2>
         <p class="hint">預設帶入你目前的開發環境，可直接編輯後儲存，之後每次開新專案自動沿用。</p>
-        <textarea id="envSetup" style="min-height:220px;"></textarea>
+        <textarea id="envSetup" style="min-height:170px;"></textarea>
         <div class="btnrow">
           <button class="action ghost" id="saveEnvBtn">存成範本（複寫環境設定預設）</button>
           <button class="action ghost" id="copyEnvBtn">📋 複製內容</button>
@@ -577,7 +577,7 @@
       <section class="app-panel" data-step="4">
         <h2><span class="idx">05</span> 開發協作模式</h2>
         <p class="hint">你與 AI 的固定分工規則，貼給新對話的 AI 看，讓它立刻知道怎麼配合你。</p>
-        <textarea id="collabMode" style="min-height:200px;"></textarea>
+        <textarea id="collabMode" style="min-height:155px;"></textarea>
         <div class="btnrow">
           <button class="action ghost" id="saveCollabBtn">存成範本（複寫協作模式預設）</button>
           <button class="action ghost" id="copyCollabBtn">📋 複製內容</button>
@@ -587,7 +587,7 @@
       <section class="app-panel" data-step="5">
         <h2><span class="idx">06</span> 📓 使用者筆記</h2>
         <p class="hint">自己隨手記的東西，純自用參考。不會出現在「產生整合文字」的 AI 輸出內容中。</p>
-        <textarea id="userNotes" placeholder="想到什麼就記在這裡..." style="min-height:180px;"></textarea>
+        <textarea id="userNotes" placeholder="想到什麼就記在這裡..." style="min-height:135px;"></textarea>
         <div class="btnrow">
           <button class="action ghost" id="saveNotesBtn">儲存筆記</button>
           <button class="action ghost" id="copyNotesBtn">📋 複製內容</button>
@@ -614,7 +614,7 @@
 
         <p class="hint" style="color:var(--text-faint);">此設定已寫死在程式碼中，畫面僅供顯示核對，不可編輯。</p>
         <label>Firebase 設定（唯讀）</label>
-        <textarea id="firebaseConfigInput" readonly style="min-height:120px;opacity:0.6;cursor:not-allowed;"></textarea>
+        <textarea id="firebaseConfigInput" readonly style="min-height:95px;opacity:0.6;cursor:not-allowed;"></textarea>
         <label>同步代碼（唯讀）</label>
         <input type="text" id="syncCodeInput" readonly style="opacity:0.6;cursor:not-allowed;">
 
@@ -622,7 +622,7 @@
           <button class="action ghost" id="cloudRefreshBtn">🔄 重新從雲端載入</button>
         </div>
 
-        <div style="margin-top:22px;padding-top:18px;border-top:1px dashed var(--border-soft);">
+        <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border-soft);">
           <label style="margin-bottom:8px;">📝 我的設定紀錄（僅供自己參考，不會出現在「產生整合文字」的 AI 輸出內容中）</label>
           <div class="warn-box" style="color:var(--text-dim);">
             <b>建立 Firebase 專案與資料庫：</b><br>
@@ -658,7 +658,7 @@ service cloud.firestore {
             <input type="text" id="projectSaveName" placeholder="預設帶入 App 名稱">
           </div>
         </div>
-        <div class="btnrow" style="margin-bottom:20px;">
+        <div class="btnrow" style="margin-bottom:12px;">
           <button class="action" id="saveProjectBtn">存成專案</button>
         </div>
         <label style="margin-bottom:10px;">已儲存的專案</label>
@@ -691,7 +691,7 @@ service cloud.firestore {
       <label>書名</label>
       <input type="text" id="novelTitle" placeholder="小說名稱">
       <label>一句話簡介（選填）</label>
-      <textarea id="novelLogline" placeholder="用一兩句話描述這個故事..." style="min-height:70px;"></textarea>
+      <textarea id="novelLogline" placeholder="用一兩句話描述這個故事..." style="min-height:56px;"></textarea>
       <div class="btnrow"><button class="action ghost" id="saveNovelTitleBtn">儲存</button><button class="action ghost" id="copyNovelTitleBtn">📋 複製內容</button></div>
     </section>
 
@@ -767,7 +767,7 @@ service cloud.firestore {
       <label>章節標題</label>
       <input type="text" id="chapters_title" placeholder="例：第一章 命運的開端">
       <label>正文內容</label>
-      <textarea id="chapters_content" placeholder="正式撰寫的內文..." style="min-height:180px;"></textarea>
+      <textarea id="chapters_content" placeholder="正式撰寫的內文..." style="min-height:135px;"></textarea>
       <div class="btnrow"><button class="action" data-key="chapters">新增</button><button class="action ghost" data-copy-key="chapters">📋 複製本區塊</button></div>
       <div id="chapters_list"></div>
     </section>
@@ -835,7 +835,7 @@ service cloud.firestore {
     <section class="pc-panel" data-step="2">
       <h2><span class="htitle"><span class="idx">03</span> 重灌流程與須知</span></h2>
       <div class="hint">重灌電腦的固定流程、注意事項，自由編輯。</div>
-      <textarea id="reinstallNotes" placeholder="例：重灌前備份清單、BIOS設定、驅動程式安裝順序..." style="min-height:180px;"></textarea>
+      <textarea id="reinstallNotes" placeholder="例：重灌前備份清單、BIOS設定、驅動程式安裝順序..." style="min-height:135px;"></textarea>
       <div class="btnrow">
         <button class="action ghost" id="saveReinstallBtn">儲存</button>
         <button class="action ghost" id="copyReinstallBtn">📋 複製內容</button>
@@ -845,7 +845,7 @@ service cloud.firestore {
     <section class="pc-panel" data-step="3">
       <h2><span class="htitle"><span class="idx">04</span> 軟體相關</span></h2>
       <div class="hint">常用軟體清單、下載連結、授權序號備註等，自由編輯。</div>
-      <textarea id="softwareNotes" placeholder="例：必裝軟體清單、下載連結、序號備註..." style="min-height:180px;"></textarea>
+      <textarea id="softwareNotes" placeholder="例：必裝軟體清單、下載連結、序號備註..." style="min-height:135px;"></textarea>
       <div class="btnrow">
         <button class="action ghost" id="saveSoftwareBtn">儲存</button>
         <button class="action ghost" id="copySoftwareBtn">📋 複製內容</button>
@@ -855,7 +855,7 @@ service cloud.firestore {
     <section class="pc-panel" data-step="4">
       <h2><span class="htitle"><span class="idx">05</span> 📓 使用者筆記</span></h2>
       <div class="hint">自己隨手記的東西，純自用參考。</div>
-      <textarea id="pcUserNotes" placeholder="想到什麼就記在這裡..." style="min-height:180px;"></textarea>
+      <textarea id="pcUserNotes" placeholder="想到什麼就記在這裡..." style="min-height:135px;"></textarea>
       <div class="btnrow">
         <button class="action ghost" id="savePcNotesBtn">儲存</button>
         <button class="action ghost" id="copyPcNotesBtn">📋 複製內容</button>
@@ -911,7 +911,10 @@ service cloud.firestore {
 
 <div class="modal-backdrop" id="docsModal">
   <div class="modal wide">
-    <h3>📚 參考資料</h3>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-shrink:0;">
+      <h3 style="margin:0;">📚 參考資料</h3>
+      <button class="closeModal" id="closeDocsModal">✕ 關閉</button>
+    </div>
 
     <div id="docsListView">
       <div class="btnrow" style="margin-bottom:12px;">
@@ -923,7 +926,7 @@ service cloud.firestore {
         <label>從裝置選取文字檔（.txt / .md，選填，會自動帶入下方內容）</label>
         <input type="file" id="docFileInput" accept=".txt,.md,text/plain,text/markdown" style="margin-bottom:14px;">
         <label>內容</label>
-        <textarea id="docContentInput" placeholder="貼上文字，或選取檔案自動帶入..." style="min-height:140px;"></textarea>
+        <textarea id="docContentInput" placeholder="貼上文字，或選取檔案自動帶入..." style="min-height:105px;"></textarea>
         <div class="btnrow">
           <button class="action" id="docSaveBtn">儲存</button>
           <button class="action ghost" id="docCancelAddBtn">取消</button>
@@ -933,19 +936,19 @@ service cloud.firestore {
     </div>
 
     <div id="docsPreview" class="docs-preview" style="display:none;">
-      <div class="docs-preview-head">
+      <div class="docs-preview-head" style="flex-wrap:wrap;">
         <button class="closeModal" id="docsBackBtn">← 返回清單</button>
         <span id="docsPreviewTitle" class="docs-preview-title"></span>
-        <button class="action ghost" id="docsEditBtn" style="margin-left:auto;">✏️ 編輯</button>
+        <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="action ghost" id="docsCopyBtn">📋 複製</button>
+          <button class="action ghost" id="docsEditBtn">✏️ 編輯</button>
+          <button class="action" id="docsSaveEditBtn" style="display:none;">儲存</button>
+          <button class="action ghost" id="docsCancelEditBtn" style="display:none;">取消</button>
+        </div>
       </div>
       <pre id="docsPreviewBody" class="docs-preview-body"></pre>
-      <textarea id="docsEditBody" class="docs-preview-body" style="display:none;min-height:260px;"></textarea>
-      <div class="btnrow" id="docsEditActions" style="display:none;margin-top:10px;">
-        <button class="action" id="docsSaveEditBtn">儲存</button>
-        <button class="action ghost" id="docsCancelEditBtn">取消</button>
-      </div>
+      <textarea id="docsEditBody" class="docs-preview-body" style="display:none;min-height:200px;"></textarea>
     </div>
-    <button class="closeModal" id="closeDocsModal" style="margin-top:14px;">關閉</button>
   </div>
 </div>
 
@@ -1861,31 +1864,43 @@ async function deleteRefDocContent(mode, id){
 
   const editBtn = document.getElementById('docsEditBtn');
   const editBodyEl = document.getElementById('docsEditBody');
-  const editActionsEl = document.getElementById('docsEditActions');
+  const saveEditBtn = document.getElementById('docsSaveEditBtn');
+  const cancelEditBtn = document.getElementById('docsCancelEditBtn');
+  const copyDocBtn = document.getElementById('docsCopyBtn');
 
   editBtn.onclick = ()=>{
     if(!currentPreviewDoc) return;
     editBodyEl.value = previewBodyEl.textContent;
     previewBodyEl.style.display = 'none';
     editBodyEl.style.display = '';
-    editActionsEl.style.display = '';
+    editBtn.style.display = 'none';
+    saveEditBtn.style.display = '';
+    cancelEditBtn.style.display = '';
   };
-  document.getElementById('docsCancelEditBtn').onclick = ()=>{
+  cancelEditBtn.onclick = ()=>{
     editBodyEl.style.display = 'none';
-    editActionsEl.style.display = 'none';
+    saveEditBtn.style.display = 'none';
+    cancelEditBtn.style.display = 'none';
+    editBtn.style.display = '';
     previewBodyEl.style.display = '';
   };
-  document.getElementById('docsSaveEditBtn').onclick = async ()=>{
+  saveEditBtn.onclick = async ()=>{
     if(!currentPreviewDoc) return;
     const newContent = editBodyEl.value;
     try{
       await setRefDocContent(currentPreviewDoc.mode, currentPreviewDoc.id, newContent);
       previewBodyEl.textContent = newContent;
       editBodyEl.style.display = 'none';
-      editActionsEl.style.display = 'none';
+      saveEditBtn.style.display = 'none';
+      cancelEditBtn.style.display = 'none';
+      editBtn.style.display = '';
       previewBodyEl.style.display = '';
       showToast('已儲存並同步到雲端');
     }catch(e){ console.error(e); showToast('儲存失敗，請確認雲端連線'); }
+  };
+  copyDocBtn.onclick = ()=>{
+    const text = editBodyEl.style.display !== 'none' ? editBodyEl.value : previewBodyEl.textContent;
+    copyTextToClipboard(text);
   };
 
   async function renderDocsList(){
@@ -1912,7 +1927,9 @@ async function deleteRefDocContent(mode, id){
         previewBodyEl.textContent = '載入中...';
         previewBodyEl.style.display = '';
         document.getElementById('docsEditBody').style.display = 'none';
-        document.getElementById('docsEditActions').style.display = 'none';
+        document.getElementById('docsEditBtn').style.display = '';
+        document.getElementById('docsSaveEditBtn').style.display = 'none';
+        document.getElementById('docsCancelEditBtn').style.display = 'none';
         const content = await getRefDocContent(mode, meta.id);
         previewBodyEl.textContent = content;
         currentPreviewDoc = { mode, id: meta.id, title: meta.title };
