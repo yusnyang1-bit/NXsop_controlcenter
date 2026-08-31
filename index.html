@@ -7,44 +7,44 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="SOP導覽">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#10161d">
+<meta name="theme-color" content="#0c1524">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
   :root{
-    --bg: #10161d;
-    --bg-panel: #171f28;
-    --bg-panel-2: #1e2833;
-    --grid-line: rgba(140,165,190,0.05);
-    --border: #2c3a48;
-    --border-soft: #22303c;
-    --text: #e8ecf0;
-    --text-dim: #9aa8b5;
-    --text-faint: #667584;
-    --accent: #7fa3c4;
-    --accent-dim: #48607a;
-    --accent-soft: rgba(127,163,196,0.14);
-    --amber: #c99a5f;
-    --amber-soft: rgba(201,154,95,0.12);
+    --bg: #0c1524;
+    --bg-panel: #131d30;
+    --bg-panel-2: #1b2942;
+    --grid-line: rgba(140,170,210,0.06);
+    --border: #2a3b58;
+    --border-soft: #202e48;
+    --text: #eef3f8;
+    --text-dim: #9fb0c8;
+    --text-faint: #647591;
+    --accent: #5fb86f;
+    --accent-dim: #3a6b44;
+    --accent-soft: rgba(95,184,111,0.16);
+    --amber: #f0a83f;
+    --amber-soft: rgba(240,168,63,0.14);
     --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
     --sans: -apple-system, "Segoe UI", "PingFang TC", "Noto Sans TC", system-ui, sans-serif;
   }
   body.light{
-    --bg: #e3e7eb;
-    --bg-panel: #eef1f4;
-    --bg-panel-2: #e2e7ec;
-    --grid-line: rgba(70,95,120,0.05);
-    --border: #cad3db;
-    --border-soft: #d5dce2;
-    --text: #2c333b;
-    --text-dim: #5a6672;
-    --text-faint: #8993a0;
-    --accent: #4a6f8a;
-    --accent-dim: #a4bccb;
-    --accent-soft: rgba(74,111,138,0.12);
-    --amber: #8a7048;
-    --amber-soft: rgba(138,112,72,0.12);
+    --bg: #e8f1fa;
+    --bg-panel: #f6fafe;
+    --bg-panel-2: #e1edf7;
+    --grid-line: rgba(60,100,150,0.05);
+    --border: #c3d7ea;
+    --border-soft: #d7e6f2;
+    --text: #1f2c3a;
+    --text-dim: #55697d;
+    --text-faint: #8697aa;
+    --accent: #3f8f52;
+    --accent-dim: #a9d3b3;
+    --accent-soft: rgba(63,143,82,0.14);
+    --amber: #c9861f;
+    --amber-soft: rgba(201,134,31,0.12);
   }
   body{transition: background-color .25s ease, color .25s ease;}
   section.app-panel, section.novel-panel, section.pc-panel{transition: background-color .25s ease, border-color .25s ease;}
@@ -230,7 +230,7 @@
     all:unset;cursor:pointer;
     font-family:var(--sans);font-size:13px;font-weight:600;
     padding:7px 14px;border-radius:7px;
-    background:var(--accent);color:#10161d;
+    background:var(--accent);color:#0c1524;
   }
   button.action.ghost{
     background:transparent;color:var(--text-dim);border:1px solid var(--border);
@@ -434,6 +434,8 @@
 
   .modal.wide{max-width:560px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;}
   #docsListView{flex:1;min-height:0;overflow-y:auto;padding-right:2px;}
+  .doc-group-title{font-size:11.5px;font-family:var(--mono);color:var(--text-faint);text-transform:uppercase;letter-spacing:0.05em;margin:12px 0 4px;padding-left:2px;}
+  .doc-group-title:first-child{margin-top:0;}
   .docs-list{}
   .doc-item{
     display:flex;align-items:center;justify-content:space-between;gap:10px;
@@ -484,6 +486,7 @@
 
   <div class="mode-tabs" id="modeTabs">
     <button data-mode="app" class="active">📱 App 開發</button>
+    <button data-mode="notebook">📝 記事本</button>
     <button data-mode="novel">📖 小說開發</button>
     <button data-mode="pc">🖥️ 電腦設備</button>
   </div>
@@ -592,6 +595,20 @@
           <button class="action ghost" id="saveNotesBtn">儲存筆記</button>
           <button class="action ghost" id="copyNotesBtn">📋 複製內容</button>
         </div>
+
+        <p class="hint" style="margin-top:14px;font-family:var(--mono);color:var(--text-faint);">06-1 補充筆記</p>
+        <textarea id="userNotes2" placeholder="想到什麼就記在這裡..." style="min-height:135px;"></textarea>
+        <div class="btnrow">
+          <button class="action ghost" id="saveNotesBtn2">儲存筆記</button>
+          <button class="action ghost" id="copyNotesBtn2">📋 複製內容</button>
+        </div>
+
+        <p class="hint" style="margin-top:14px;font-family:var(--mono);color:var(--text-faint);">06-2 補充筆記</p>
+        <textarea id="userNotes3" placeholder="想到什麼就記在這裡..." style="min-height:135px;"></textarea>
+        <div class="btnrow">
+          <button class="action ghost" id="saveNotesBtn3">儲存筆記</button>
+          <button class="action ghost" id="copyNotesBtn3">📋 複製內容</button>
+        </div>
       </section>
 
       <section class="app-panel" data-step="6">
@@ -678,6 +695,50 @@ service cloud.firestore {
 
     </div>
   </div>
+  </div>
+
+  <div id="notebookMode" class="mode-section">
+    <div class="app-panel">
+      <div id="nbListView">
+        <div class="btnrow" style="margin-bottom:12px;">
+          <button class="action ghost" id="nbAddToggleBtn">＋ 新增記事</button>
+        </div>
+        <div id="nbAddForm" style="display:none;">
+          <label>分類</label>
+          <select id="nbCategorySelect">
+            <option value="專案">專案</option>
+            <option value="生活">生活</option>
+            <option value="工作">工作</option>
+            <option value="自訂">自訂...</option>
+          </select>
+          <input type="text" id="nbCategoryCustomInput" placeholder="輸入自訂分類名稱" style="display:none;">
+          <label>標題</label>
+          <input type="text" id="nbTitleInput" placeholder="例：03 旅遊計畫">
+          <label>內容</label>
+          <textarea id="nbContentInput" placeholder="寫點什麼..." style="min-height:150px;"></textarea>
+          <div class="btnrow">
+            <button class="action" id="nbSaveBtn">儲存</button>
+            <button class="action ghost" id="nbCancelAddBtn">取消</button>
+          </div>
+        </div>
+        <div id="nbList" class="docs-list"></div>
+      </div>
+
+      <div id="nbPreview" class="docs-preview" style="display:none;">
+        <div class="docs-preview-head" style="flex-wrap:wrap;">
+          <button class="closeModal" id="nbBackBtn">← 返回清單</button>
+          <span id="nbPreviewTitle" class="docs-preview-title"></span>
+          <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="action ghost" id="nbCopyBtn">📋 複製</button>
+            <button class="action ghost" id="nbEditBtn">✏️ 編輯</button>
+            <button class="action" id="nbSaveEditBtn" style="display:none;">儲存</button>
+            <button class="action ghost" id="nbCancelEditBtn" style="display:none;">取消</button>
+          </div>
+        </div>
+        <pre id="nbPreviewBody" class="docs-preview-body" style="max-height:55vh;"></pre>
+        <textarea id="nbEditBody" class="docs-preview-body" style="display:none;max-height:55vh;min-height:200px;"></textarea>
+      </div>
+    </div>
   </div>
 
   <div id="novelMode" class="mode-section">
@@ -1104,47 +1165,54 @@ document.getElementById('cloudPanelToggle').onclick = ()=>{
 })();
 
 // ---- 使用者筆記（純自用，不進AI輸出）----
-const userNotesEl = document.getElementById('userNotes');
-async function loadUserNotes(){
-  if(cloudConnected){
-    try{
-      const d = await cloudGetDoc();
-      userNotesEl.value = d.userNotes || '';
-      return;
-    }catch(e){ console.error(e); }
-  }
-  try{
-    if(window.storage){
-      const r = await window.storage.get('user-notes', false);
-      userNotesEl.value = r && r.value ? r.value : '';
-      return;
+function setupNoteField(textareaId, fieldName, storageKey, saveBtnId, copyBtnId){
+  const el = document.getElementById(textareaId);
+  async function load(){
+    if(cloudConnected){
+      try{
+        const d = await cloudGetDoc();
+        el.value = d[fieldName] || '';
+        return;
+      }catch(e){ console.error(e); }
     }
-  }catch(e){}
-  userNotesEl.value = '';
-}
-document.getElementById('saveNotesBtn').onclick = async ()=>{
-  if(cloudConnected){
     try{
-      await cloudSetField('userNotes', userNotesEl.value);
-      showToast('筆記已儲存（雲端）');
-      return;
+      if(window.storage){
+        const r = await window.storage.get(storageKey, false);
+        el.value = r && r.value ? r.value : '';
+        return;
+      }
+    }catch(e){}
+    el.value = '';
+  }
+  document.getElementById(saveBtnId).onclick = async ()=>{
+    if(cloudConnected){
+      try{
+        await cloudSetField(fieldName, el.value);
+        showToast('筆記已儲存（雲端）');
+        return;
+      }catch(e){
+        console.error(e);
+        showToast('雲端寫入失敗，改存本機');
+      }
+    }
+    try{
+      if(window.storage){
+        await window.storage.set(storageKey, el.value, false);
+        showToast('筆記已儲存（本機）');
+        return;
+      }
+      showToast('目前無可用儲存方式，請先設定雲端同步');
     }catch(e){
-      console.error(e);
-      showToast('雲端寫入失敗，改存本機');
+      showToast('儲存失敗，請稍後再試');
     }
-  }
-  try{
-    if(window.storage){
-      await window.storage.set('user-notes', userNotesEl.value, false);
-      showToast('筆記已儲存（本機）');
-      return;
-    }
-    showToast('目前無可用儲存方式，請先設定雲端同步');
-  }catch(e){
-    showToast('儲存失敗，請稍後再試');
-  }
-};
-loadUserNotes();
+  };
+  document.getElementById(copyBtnId).onclick = ()=> copyTextToClipboard(el.value);
+  load();
+  return el;
+}
+const userNotesEl = setupNoteField('userNotes', 'userNotes', 'user-notes', 'saveNotesBtn', 'copyNotesBtn');
+setupNoteField('userNotes2', 'userNotes2', 'user-notes-2', 'saveNotesBtn2', 'copyNotesBtn2');
+setupNoteField('userNotes3', 'userNotes3', 'user-notes-3', 'saveNotesBtn3', 'copyNotesBtn3');
 
 // ============ 通用可收合面板（記住使用者上次的收合/展開選擇；沒有紀錄時內容為空預設收合）============
 const collapseSetters = {};
@@ -1373,7 +1441,6 @@ async function saveDefaultField(kind, newValue){
 
 document.getElementById('copyEnvBtn').onclick = ()=> copyTextToClipboard(envEl.value);
 document.getElementById('copyCollabBtn').onclick = ()=> copyTextToClipboard(collabEl.value);
-document.getElementById('copyNotesBtn').onclick = ()=> copyTextToClipboard(userNotesEl.value);
 
 document.getElementById('saveEnvBtn').onclick = ()=>{
   askConfirm('存成範本', '確定要用目前的「環境設定」內容，複寫掉原本的預設嗎？之後新開專案會直接帶入這次的內容（不會動到「開發協作模式」）。', async ()=>{
@@ -1744,18 +1811,21 @@ document.getElementById('copyBtn').onclick = async ()=>{
 (function(){
   const tabs = [...document.querySelectorAll('#modeTabs button')];
   const appModeEl = document.getElementById('appMode');
+  const notebookModeEl = document.getElementById('notebookMode');
   const novelModeEl = document.getElementById('novelMode');
   const pcModeEl = document.getElementById('pcMode');
   const titleEl = document.getElementById('mainTitle');
   const subtitleEl = document.getElementById('mainSubtitle');
   const modeText = {
-    app:   { title:'App 開發 SOP 導覽',  subtitle:'每次啟動新專案的固定流程 — 填寫、確認、輸出，貼給 AI 開始協作' },
-    novel: { title:'小說開發 SOP 導覽', subtitle:'每次開新小說的固定流程 — 分段記錄、獨立存檔、最終輸出整合文本' },
-    pc:    { title:'電腦設備導覽', subtitle:'零組件檢核、重灌流程、軟體清單 — 一次整理，隨時查閱' }
+    app:      { title:'App 開發 SOP 導覽',  subtitle:'每次啟動新專案的固定流程 — 填寫、確認、輸出，貼給 AI 開始協作' },
+    notebook: { title:'記事本', subtitle:'自由分類的隨手記事 — 專案、生活，想到什麼就記下來' },
+    novel:    { title:'小說開發 SOP 導覽', subtitle:'每次開新小說的固定流程 — 分段記錄、獨立存檔、最終輸出整合文本' },
+    pc:       { title:'電腦設備導覽', subtitle:'零組件檢核、重灌流程、軟體清單 — 一次整理，隨時查閱' }
   };
   function setMode(mode){
     tabs.forEach(b=> b.classList.toggle('active', b.dataset.mode === mode));
     appModeEl.classList.toggle('active', mode === 'app');
+    notebookModeEl.classList.toggle('active', mode === 'notebook');
     novelModeEl.classList.toggle('active', mode === 'novel');
     pcModeEl.classList.toggle('active', mode === 'pc');
     titleEl.textContent = modeText[mode].title;
@@ -1770,7 +1840,8 @@ document.getElementById('copyBtn').onclick = async ()=>{
 })();
 
 // ============ 參考資料（各模式各自獨立；輕量索引+每篇獨立文件存放，各自有獨立的1MB額度）============
-function refDocsCollectionName(mode){ return mode === 'novel' ? 'novelSync' : 'sopSync'; }
+function refDocsCollectionName(mode){ return mode === 'novel' ? 'novelSync' : mode === 'notebook' ? 'notebookSync' : 'sopSync'; }
+function refLocalPrefix(mode){ return mode === 'novel' ? 'novel' : mode === 'notebook' ? 'notebook' : 'app'; }
 function refParentDocRef(mode){ return firestoreDb.collection(refDocsCollectionName(mode)).doc(syncCode); }
 function refSubCollection(mode){ return refParentDocRef(mode).collection('refDocs'); }
 
@@ -1784,7 +1855,7 @@ async function getRefDocsIndex(mode){
   }
   try{
     if(window.storage){
-      const key = (mode === 'novel' ? 'novel' : 'app') + '-ref-docs-index';
+      const key = refLocalPrefix(mode) + '-ref-docs-index';
       const r = await window.storage.get(key, false);
       return r && r.value ? JSON.parse(r.value) : [];
     }
@@ -1799,7 +1870,7 @@ async function setRefDocsIndex(mode, indexList){
     }catch(e){ console.error(e); showToast('雲端寫入失敗'); throw e; }
   }
   if(window.storage){
-    const key = (mode === 'novel' ? 'novel' : 'app') + '-ref-docs-index';
+    const key = refLocalPrefix(mode) + '-ref-docs-index';
     await window.storage.set(key, JSON.stringify(indexList), false);
     return;
   }
@@ -1815,7 +1886,7 @@ async function getRefDocContent(mode, id){
   }
   try{
     if(window.storage){
-      const key = (mode === 'novel' ? 'novel' : 'app') + '-ref-doc-content:' + id;
+      const key = refLocalPrefix(mode) + '-ref-doc-content:' + id;
       const r = await window.storage.get(key, false);
       return r && r.value ? r.value : '';
     }
@@ -1830,7 +1901,7 @@ async function setRefDocContent(mode, id, content){
     }catch(e){ console.error(e); showToast('雲端寫入失敗'); throw e; }
   }
   if(window.storage){
-    const key = (mode === 'novel' ? 'novel' : 'app') + '-ref-doc-content:' + id;
+    const key = refLocalPrefix(mode) + '-ref-doc-content:' + id;
     await window.storage.set(key, content, false);
     return;
   }
@@ -1843,30 +1914,41 @@ async function deleteRefDocContent(mode, id){
   }
   try{
     if(window.storage){
-      const key = (mode === 'novel' ? 'novel' : 'app') + '-ref-doc-content:' + id;
+      const key = refLocalPrefix(mode) + '-ref-doc-content:' + id;
       await window.storage.delete(key, false);
     }
   }catch(e){}
 }
 
-(function(){
-  const modal = document.getElementById('docsModal');
-  const listViewEl = document.getElementById('docsListView');
-  const listEl = document.getElementById('docsList');
-  const previewEl = document.getElementById('docsPreview');
-  const previewTitleEl = document.getElementById('docsPreviewTitle');
-  const previewBodyEl = document.getElementById('docsPreviewBody');
-  const addForm = document.getElementById('docsAddForm');
-  const titleInput = document.getElementById('docTitleInput');
-  const contentInput = document.getElementById('docContentInput');
-  const fileInput = document.getElementById('docFileInput');
+// 通用「清單＋內容」面板產生器：參考資料（modal）與記事本（內嵌頁）共用
+function initDocsPanel(cfg){
+  const ids = cfg.ids;
+  const modal = cfg.isModal ? document.getElementById(ids.modal) : null;
+  const listViewEl = document.getElementById(ids.listView);
+  const listEl = document.getElementById(ids.list);
+  const previewEl = document.getElementById(ids.preview);
+  const previewTitleEl = document.getElementById(ids.previewTitle);
+  const previewBodyEl = document.getElementById(ids.previewBody);
+  const addForm = document.getElementById(ids.addForm);
+  const titleInput = document.getElementById(ids.titleInput);
+  const contentInput = document.getElementById(ids.contentInput);
+  const fileInput = ids.fileInput ? document.getElementById(ids.fileInput) : null;
+  const categorySelect = ids.categorySelect ? document.getElementById(ids.categorySelect) : null;
+  const categoryCustomInput = ids.categoryCustomInput ? document.getElementById(ids.categoryCustomInput) : null;
+  const categories = cfg.categories || null;
   let currentPreviewDoc = null;
 
-  const editBtn = document.getElementById('docsEditBtn');
-  const editBodyEl = document.getElementById('docsEditBody');
-  const saveEditBtn = document.getElementById('docsSaveEditBtn');
-  const cancelEditBtn = document.getElementById('docsCancelEditBtn');
-  const copyDocBtn = document.getElementById('docsCopyBtn');
+  const editBtn = document.getElementById(ids.editBtn);
+  const editBodyEl = document.getElementById(ids.editBody);
+  const saveEditBtn = document.getElementById(ids.saveEditBtn);
+  const cancelEditBtn = document.getElementById(ids.cancelEditBtn);
+  const copyBtn = document.getElementById(ids.copyBtn);
+
+  if(categorySelect && categoryCustomInput){
+    categorySelect.onchange = ()=>{
+      categoryCustomInput.style.display = categorySelect.value === '自訂' ? '' : 'none';
+    };
+  }
 
   editBtn.onclick = ()=>{
     if(!currentPreviewDoc) return;
@@ -1898,114 +1980,212 @@ async function deleteRefDocContent(mode, id){
       showToast('已儲存並同步到雲端');
     }catch(e){ console.error(e); showToast('儲存失敗，請確認雲端連線'); }
   };
-  copyDocBtn.onclick = ()=>{
+  copyBtn.onclick = ()=>{
     const text = editBodyEl.style.display !== 'none' ? editBodyEl.value : previewBodyEl.textContent;
     copyTextToClipboard(text);
   };
 
-  async function renderDocsList(){
-    listViewEl.style.display = '';
-    previewEl.style.display = 'none';
-    const mode = window.__activeMode || 'app';
-    const index = await getRefDocsIndex(mode);
-    if(!index.length){
-      listEl.innerHTML = '<div class="empty-note">尚未新增任何參考資料，點上方「＋ 新增參考資料」加入第一份。</div>';
-      return;
-    }
-    listEl.innerHTML = '';
-    index.forEach((meta, i)=>{
-      const item = document.createElement('div');
-      item.className = 'doc-item';
-      item.innerHTML = `<span class="dname">${escapeHtml(meta.title)}</span><div class="dactions"><button class="dmove" ${i===0?'disabled':''}>▲</button><button class="dmove" ${i===index.length-1?'disabled':''}>▼</button><span class="darrow">開啟 →</span><button class="ddel">刪除</button></div>`;
-      const moveBtns = item.querySelectorAll('.dmove');
-      moveBtns[0].onclick = (e)=>{ e.stopPropagation(); moveDocIndex(mode, meta.id, -1); };
-      moveBtns[1].onclick = (e)=>{ e.stopPropagation(); moveDocIndex(mode, meta.id, 1); };
-      item.querySelector('.darrow').onclick = async ()=>{
-        listViewEl.style.display = 'none';
-        previewEl.style.display = 'flex';
-        previewTitleEl.textContent = meta.title;
-        previewBodyEl.textContent = '載入中...';
-        previewBodyEl.style.display = '';
-        document.getElementById('docsEditBody').style.display = 'none';
-        document.getElementById('docsEditBtn').style.display = '';
-        document.getElementById('docsSaveEditBtn').style.display = 'none';
-        document.getElementById('docsCancelEditBtn').style.display = 'none';
-        const content = await getRefDocContent(mode, meta.id);
-        previewBodyEl.textContent = content;
-        currentPreviewDoc = { mode, id: meta.id, title: meta.title };
-      };
-      item.querySelector('.ddel').onclick = (e)=>{
-        e.stopPropagation();
-        askConfirm('刪除參考資料', `確定要刪除「${meta.title}」嗎？此動作無法復原。`, async ()=>{
-          try{
-            const mode2 = window.__activeMode || 'app';
-            const cur = await getRefDocsIndex(mode2);
-            await setRefDocsIndex(mode2, cur.filter(x=>x.id!==meta.id));
-            await deleteRefDocContent(mode2, meta.id);
-            showToast('已刪除');
-            renderDocsList();
-          }catch(err){ console.error(err); }
-        });
-      };
-      listEl.appendChild(item);
+  function openPreview(mode, meta){
+    listViewEl.style.display = 'none';
+    previewEl.style.display = 'flex';
+    previewTitleEl.textContent = meta.title;
+    previewBodyEl.textContent = '載入中...';
+    previewBodyEl.style.display = '';
+    editBodyEl.style.display = 'none';
+    editBtn.style.display = '';
+    saveEditBtn.style.display = 'none';
+    cancelEditBtn.style.display = 'none';
+    getRefDocContent(mode, meta.id).then(content=>{
+      previewBodyEl.textContent = content;
+      currentPreviewDoc = { mode, id: meta.id, title: meta.title };
     });
   }
 
-  async function moveDocIndex(mode, id, direction){
+  function buildItemEl(meta, mode, isFirst, isLast){
+    const item = document.createElement('div');
+    item.className = 'doc-item';
+    item.innerHTML = `<span class="dname">${escapeHtml(meta.title)}</span><div class="dactions"><button class="dmove" ${isFirst?'disabled':''}>▲</button><button class="dmove" ${isLast?'disabled':''}>▼</button><span class="darrow">開啟 →</span><button class="ddel">刪除</button></div>`;
+    const moveBtns = item.querySelectorAll('.dmove');
+    moveBtns[0].onclick = (e)=>{ e.stopPropagation(); moveIndex(meta.id, -1); };
+    moveBtns[1].onclick = (e)=>{ e.stopPropagation(); moveIndex(meta.id, 1); };
+    item.querySelector('.darrow').onclick = ()=> openPreview(mode, meta);
+    item.querySelector('.ddel').onclick = (e)=>{
+      e.stopPropagation();
+      askConfirm('刪除' + cfg.itemLabel, `確定要刪除「${meta.title}」嗎？此動作無法復原。`, async ()=>{
+        try{
+          const mode2 = cfg.getMode();
+          const cur = await getRefDocsIndex(mode2);
+          await setRefDocsIndex(mode2, cur.filter(x=>x.id!==meta.id));
+          await deleteRefDocContent(mode2, meta.id);
+          showToast('已刪除');
+          renderList();
+        }catch(err){ console.error(err); }
+      });
+    };
+    return item;
+  }
+
+  async function renderList(){
+    listViewEl.style.display = '';
+    previewEl.style.display = 'none';
+    const mode = cfg.getMode();
+    let index = await getRefDocsIndex(mode);
+    if(!index.length && cfg.seedDefaults && cfg.seedDefaults.length){
+      for(const d of cfg.seedDefaults){
+        const id = 'd_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+        await setRefDocContent(mode, id, d.content || '');
+        index.push({ id, title: d.title, addedAt: Date.now(), category: d.category || null });
+      }
+      await setRefDocsIndex(mode, index);
+    }
+    if(!index.length){
+      listEl.innerHTML = `<div class="empty-note">${cfg.emptyText}</div>`;
+      return;
+    }
+    listEl.innerHTML = '';
+    if(categories){
+      const knownCats = categories.filter(c=>c!=='自訂');
+      const groupMap = {};
+      const groupOrder = [];
+      index.forEach(meta=>{
+        const cat = meta.category || knownCats[0];
+        if(!groupMap[cat]){ groupMap[cat] = []; groupOrder.push(cat); }
+        groupMap[cat].push(meta);
+      });
+      const orderedCats = knownCats.filter(c=>groupMap[c]).concat(groupOrder.filter(c=>!knownCats.includes(c)));
+      orderedCats.forEach(cat=>{
+        const head = document.createElement('div');
+        head.className = 'doc-group-title';
+        head.textContent = cat;
+        listEl.appendChild(head);
+        const items = groupMap[cat];
+        items.forEach((meta, gi)=>{
+          listEl.appendChild(buildItemEl(meta, mode, gi===0, gi===items.length-1));
+        });
+      });
+    } else {
+      index.forEach((meta, i)=>{
+        listEl.appendChild(buildItemEl(meta, mode, i===0, i===index.length-1));
+      });
+    }
+  }
+
+  async function moveIndex(id, direction){
+    const mode = cfg.getMode();
     const list = await getRefDocsIndex(mode);
     const i = list.findIndex(x=>x.id===id);
     if(i===-1) return;
-    const j = i + direction;
+    let j;
+    if(categories){
+      const cat = list[i].category || (categories.filter(c=>c!=='自訂'))[0];
+      j = i;
+      do{ j += direction; }while(j>=0 && j<list.length && (list[j].category || cat) !== cat);
+    } else {
+      j = i + direction;
+    }
     if(j<0 || j>=list.length) return;
     const tmp = list[i]; list[i] = list[j]; list[j] = tmp;
     await setRefDocsIndex(mode, list);
-    renderDocsList();
+    renderList();
   }
 
-  fileInput.addEventListener('change', (e)=>{
-    const file = e.target.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = ()=>{ contentInput.value = reader.result; };
-    reader.readAsText(file);
-    if(!titleInput.value.trim()){
-      titleInput.value = file.name.replace(/\.(txt|md)$/i, '');
-    }
-  });
+  if(fileInput){
+    fileInput.addEventListener('change', (e)=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = ()=>{ contentInput.value = reader.result; };
+      reader.readAsText(file);
+      if(!titleInput.value.trim()){
+        titleInput.value = file.name.replace(/\.(txt|md)$/i, '');
+      }
+    });
+  }
 
-  document.getElementById('docsAddToggleBtn').onclick = ()=>{
+  document.getElementById(ids.addToggleBtn).onclick = ()=>{
     addForm.style.display = addForm.style.display === 'none' ? 'block' : 'none';
   };
-  document.getElementById('docCancelAddBtn').onclick = ()=>{
-    titleInput.value = ''; contentInput.value = ''; fileInput.value = '';
+  document.getElementById(ids.cancelAddBtn).onclick = ()=>{
+    titleInput.value = ''; contentInput.value = ''; if(fileInput) fileInput.value = '';
+    if(categorySelect) categorySelect.selectedIndex = 0;
+    if(categoryCustomInput){ categoryCustomInput.value = ''; categoryCustomInput.style.display = 'none'; }
     addForm.style.display = 'none';
   };
-  document.getElementById('docSaveBtn').onclick = async ()=>{
+  document.getElementById(ids.saveBtn).onclick = async ()=>{
     const title = titleInput.value.trim();
     const content = contentInput.value.trim();
     if(!title || !content){ showToast('請填寫標題與內容'); return; }
-    const mode = window.__activeMode || 'app';
+    let category = null;
+    if(categorySelect){
+      category = categorySelect.value;
+      if(category === '自訂'){
+        const custom = categoryCustomInput ? categoryCustomInput.value.trim() : '';
+        category = custom || '自訂';
+      }
+    }
+    const mode = cfg.getMode();
     try{
       const id = 'd_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
       await setRefDocContent(mode, id, content);
       const index = await getRefDocsIndex(mode);
-      index.push({ id, title, addedAt: Date.now() });
+      index.push({ id, title, addedAt: Date.now(), category });
       await setRefDocsIndex(mode, index);
-      titleInput.value = ''; contentInput.value = ''; fileInput.value = '';
+      titleInput.value = ''; contentInput.value = ''; if(fileInput) fileInput.value = '';
+      if(categorySelect) categorySelect.selectedIndex = 0;
+      if(categoryCustomInput){ categoryCustomInput.value = ''; categoryCustomInput.style.display = 'none'; }
       addForm.style.display = 'none';
-      showToast('已新增參考資料');
-      renderDocsList();
+      showToast('已新增' + cfg.itemLabel);
+      renderList();
     }catch(e){ console.error(e); }
   };
 
-  document.getElementById('docsBtn').onclick = ()=>{
-    renderDocsList();
-    modal.classList.add('show');
-  };
-  document.getElementById('docsBackBtn').onclick = renderDocsList;
-  document.getElementById('closeDocsModal').onclick = ()=> modal.classList.remove('show');
-  modal.onclick = (e)=>{ if(e.target === modal) modal.classList.remove('show'); };
-})();
+  document.getElementById(ids.backBtn).onclick = renderList;
+
+  if(cfg.isModal){
+    document.getElementById(ids.openBtn).onclick = ()=>{
+      renderList();
+      modal.classList.add('show');
+    };
+    document.getElementById(ids.closeBtn).onclick = ()=> modal.classList.remove('show');
+    modal.onclick = (e)=>{ if(e.target === modal) modal.classList.remove('show'); };
+  } else {
+    renderList();
+  }
+}
+
+initDocsPanel({
+  getMode: ()=> window.__activeMode || 'app',
+  isModal: true,
+  emptyText: '尚未新增任何參考資料，點上方「＋ 新增參考資料」加入第一份。',
+  itemLabel: '參考資料',
+  ids: {
+    modal:'docsModal', listView:'docsListView', list:'docsList', preview:'docsPreview',
+    previewTitle:'docsPreviewTitle', previewBody:'docsPreviewBody', addForm:'docsAddForm',
+    titleInput:'docTitleInput', contentInput:'docContentInput', fileInput:'docFileInput',
+    addToggleBtn:'docsAddToggleBtn', cancelAddBtn:'docCancelAddBtn', saveBtn:'docSaveBtn',
+    editBtn:'docsEditBtn', editBody:'docsEditBody', saveEditBtn:'docsSaveEditBtn',
+    cancelEditBtn:'docsCancelEditBtn', copyBtn:'docsCopyBtn', backBtn:'docsBackBtn',
+    openBtn:'docsBtn', closeBtn:'closeDocsModal'
+  }
+});
+
+initDocsPanel({
+  getMode: ()=> 'notebook',
+  isModal: false,
+  emptyText: '尚未新增任何記事。',
+  itemLabel: '記事',
+  categories: ['專案','生活','工作','自訂'],
+  seedDefaults: [ { title:'01 專案', content:'', category:'專案' }, { title:'02 生活', content:'', category:'生活' } ],
+  ids: {
+    listView:'nbListView', list:'nbList', preview:'nbPreview',
+    previewTitle:'nbPreviewTitle', previewBody:'nbPreviewBody', addForm:'nbAddForm',
+    titleInput:'nbTitleInput', contentInput:'nbContentInput', fileInput:null,
+    categorySelect:'nbCategorySelect', categoryCustomInput:'nbCategoryCustomInput',
+    addToggleBtn:'nbAddToggleBtn', cancelAddBtn:'nbCancelAddBtn', saveBtn:'nbSaveBtn',
+    editBtn:'nbEditBtn', editBody:'nbEditBody', saveEditBtn:'nbSaveEditBtn',
+    cancelEditBtn:'nbCancelEditBtn', copyBtn:'nbCopyBtn', backBtn:'nbBackBtn'
+  }
+});
 
 (function(){
 
