@@ -1165,6 +1165,7 @@ document.getElementById('cloudPanelToggle').onclick = ()=>{
 })();
 
 // ---- 使用者筆記（純自用，不進AI輸出）----
+const noteFieldLoaders = [];
 function setupNoteField(textareaId, fieldName, storageKey, saveBtnId, copyBtnId){
   const el = document.getElementById(textareaId);
   async function load(){
@@ -1207,12 +1208,17 @@ function setupNoteField(textareaId, fieldName, storageKey, saveBtnId, copyBtnId)
     }
   };
   document.getElementById(copyBtnId).onclick = ()=> copyTextToClipboard(el.value);
+  noteFieldLoaders.push(load);
   load();
   return el;
 }
 const userNotesEl = setupNoteField('userNotes', 'userNotes', 'user-notes', 'saveNotesBtn', 'copyNotesBtn');
 setupNoteField('userNotes2', 'userNotes2', 'user-notes-2', 'saveNotesBtn2', 'copyNotesBtn2');
 setupNoteField('userNotes3', 'userNotes3', 'user-notes-3', 'saveNotesBtn3', 'copyNotesBtn3');
+async function loadUserNotes(){
+  await Promise.all(noteFieldLoaders.map(fn=>fn()));
+}
+
 
 // ============ 通用可收合面板（記住使用者上次的收合/展開選擇；沒有紀錄時內容為空預設收合）============
 const collapseSetters = {};
@@ -2031,12 +2037,17 @@ function initDocsPanel(cfg){
     const mode = cfg.getMode();
     let index = await getRefDocsIndex(mode);
     if(!index.length && cfg.seedDefaults && cfg.seedDefaults.length){
-      for(const d of cfg.seedDefaults){
-        const id = 'd_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
-        await setRefDocContent(mode, id, d.content || '');
-        index.push({ id, title: d.title, addedAt: Date.now(), category: d.category || null });
+      try{
+        for(const d of cfg.seedDefaults){
+          const id = 'd_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+          await setRefDocContent(mode, id, d.content || '');
+          index.push({ id, title: d.title, addedAt: Date.now(), category: d.category || null });
+        }
+        await setRefDocsIndex(mode, index);
+      }catch(e){
+        console.error(e);
+        index = [];
       }
-      await setRefDocsIndex(mode, index);
     }
     if(!index.length){
       listEl.innerHTML = `<div class="empty-note">${cfg.emptyText}</div>`;
