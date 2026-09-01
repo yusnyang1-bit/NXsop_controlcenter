@@ -7,44 +7,48 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="SOP導覽">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0c1524">
+<meta name="theme-color" content="#0b2530">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
   :root{
-    --bg: #0c1524;
-    --bg-panel: #131d30;
-    --bg-panel-2: #1b2942;
-    --grid-line: rgba(140,170,210,0.06);
-    --border: #2a3b58;
-    --border-soft: #202e48;
-    --text: #eef3f8;
-    --text-dim: #9fb0c8;
-    --text-faint: #647591;
-    --accent: #5fb86f;
-    --accent-dim: #3a6b44;
-    --accent-soft: rgba(95,184,111,0.16);
-    --amber: #f0a83f;
-    --amber-soft: rgba(240,168,63,0.14);
+    --bg: #0b2530;
+    --bg-panel: #113844;
+    --bg-panel-2: #164554;
+    --grid-line: rgba(255,220,150,0.05);
+    --border: #2f6273;
+    --border-soft: #1f4d5c;
+    --text: #f5f7f0;
+    --text-dim: #a9c9c9;
+    --text-faint: #6f9297;
+    --accent: #33b6a6;
+    --accent-dim: #1f6f66;
+    --accent-soft: rgba(51,182,166,0.18);
+    --amber: #f4ac3f;
+    --amber-soft: rgba(244,172,63,0.16);
+    --coral: #ef7a6d;
+    --coral-soft: rgba(239,122,109,0.16);
     --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
     --sans: -apple-system, "Segoe UI", "PingFang TC", "Noto Sans TC", system-ui, sans-serif;
   }
   body.light{
-    --bg: #e8f1fa;
-    --bg-panel: #f6fafe;
-    --bg-panel-2: #e1edf7;
-    --grid-line: rgba(60,100,150,0.05);
-    --border: #c3d7ea;
-    --border-soft: #d7e6f2;
-    --text: #1f2c3a;
-    --text-dim: #55697d;
-    --text-faint: #8697aa;
-    --accent: #3f8f52;
-    --accent-dim: #a9d3b3;
-    --accent-soft: rgba(63,143,82,0.14);
-    --amber: #c9861f;
-    --amber-soft: rgba(201,134,31,0.12);
+    --bg: #faf3e6;
+    --bg-panel: #fffbf3;
+    --bg-panel-2: #eef7f5;
+    --grid-line: rgba(60,140,130,0.05);
+    --border: #bfe0da;
+    --border-soft: #dcefeb;
+    --text: #24312f;
+    --text-dim: #5c7370;
+    --text-faint: #8fa29e;
+    --accent: #1f9686;
+    --accent-dim: #a9d9d1;
+    --accent-soft: rgba(31,150,134,0.14);
+    --amber: #d68a1f;
+    --amber-soft: rgba(214,138,31,0.12);
+    --coral: #e2574a;
+    --coral-soft: rgba(226,87,74,0.12);
   }
   body{transition: background-color .25s ease, color .25s ease;}
   section.app-panel, section.novel-panel, section.pc-panel{transition: background-color .25s ease, border-color .25s ease;}
@@ -54,7 +58,10 @@
     background:
       linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0/40px 40px,
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0/40px 40px,
+      radial-gradient(circle at 12% -5%, var(--accent-soft), transparent 42%),
+      radial-gradient(circle at 100% 105%, var(--coral-soft), transparent 38%),
       var(--bg);
+    background-attachment: fixed;
     color:var(--text);
     font-family:var(--sans);
     min-height:100vh;
@@ -96,7 +103,7 @@
     font-size:11.5px;
     color:var(--text-faint);
     border:1px solid var(--border);
-    border-radius:6px;
+    border-radius:9px;
     padding:6px 10px;
     white-space:nowrap;
   }
@@ -113,7 +120,7 @@
     gap:6px;
     background:var(--bg);
     border:1px solid var(--border);
-    border-radius:10px;
+    border-radius:14px;
     padding:5px;
     margin-bottom:12px;
   }
@@ -124,7 +131,7 @@
     align-items:baseline;
     gap:7px;
     padding:6px 10px;
-    border-radius:7px;
+    border-radius:10px;
     font-size:12.5px;
     color:var(--text-dim);
     background:var(--bg-panel);
@@ -147,7 +154,7 @@
   section.app-panel, section.novel-panel, section.pc-panel{
     background:var(--bg-panel);
     border:1px solid var(--border);
-    border-radius:12px;
+    border-radius:16px;
     padding:15px 18px;
     margin-bottom:10px;
   }
@@ -161,8 +168,12 @@
   }
   section.app-panel h2 .idx, section.novel-panel h2 .idx, section.pc-panel h2 .idx{
     font-family:var(--mono);
-    color:var(--accent);
+    color:var(--coral);
+    background:var(--coral-soft);
     font-size:12px;
+    font-weight:700;
+    padding:2px 7px;
+    border-radius:6px;
   }
   section.app-panel .hint, section.novel-panel .hint, section.pc-panel .hint{
     color:var(--text-dim);
@@ -185,7 +196,7 @@
     background:var(--bg-panel-2);
     border:1px solid var(--border-soft);
     color:var(--text);
-    border-radius:7px;
+    border-radius:10px;
     padding:7px 10px;
     font-size:13.5px;
     font-family:var(--sans);
@@ -195,7 +206,7 @@
   input[type=text]:focus, select:focus, textarea:focus{
     outline:none;
     border-color:var(--accent);
-    box-shadow:0 0 0 3px var(--accent-soft);
+    box-shadow:0 0 0 4px var(--accent-soft);
   }
   textarea{font-family:var(--mono);font-size:12.5px;line-height:1.5;min-height:88px;}
   .computed{
@@ -203,7 +214,7 @@
     font-size:12.5px;
     background:var(--bg-panel-2);
     border:1px dashed var(--border-soft);
-    border-radius:7px;
+    border-radius:10px;
     padding:6px 9px;
     color:var(--accent);
     margin-bottom:8px;
@@ -229,14 +240,16 @@
   button.action{
     all:unset;cursor:pointer;
     font-family:var(--sans);font-size:13px;font-weight:600;
-    padding:7px 14px;border-radius:7px;
-    background:var(--accent);color:#0c1524;
+    padding:7px 14px;border-radius:9px;
+    background:var(--accent);color:#052220;
+    transition:filter .15s ease, transform .15s ease;
   }
   button.action.ghost{
     background:transparent;color:var(--text-dim);border:1px solid var(--border);
   }
-  button.action:hover{filter:brightness(1.08);}
-  button.action.ghost:hover{color:var(--text);border-color:var(--accent-dim);}
+  button.action:hover{filter:brightness(1.08);transform:translateY(-1px);}
+  button.action:active{transform:translateY(0);}
+  button.action.ghost:hover{color:var(--coral);border-color:var(--coral);}
 
   .output-box{
     white-space:pre-wrap;
@@ -245,7 +258,7 @@
     line-height:1.7;
     background:var(--bg-panel-2);
     border:1px solid var(--border-soft);
-    border-radius:9px;
+    border-radius:12px;
     padding:13px;
     max-height:400px;
     overflow:auto;
@@ -254,7 +267,7 @@
   .toast{
     position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
     background:var(--bg-panel-2);border:1px solid var(--accent);color:var(--accent);
-    font-family:var(--mono);font-size:12.5px;padding:9px 16px;border-radius:8px;
+    font-family:var(--mono);font-size:12.5px;padding:9px 16px;border-radius:12px;
     opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease;
   }
   .toast.show{opacity:1;transform:translate(-50%,-6px);}
@@ -270,7 +283,7 @@
   }
   .modal-backdrop.show{display:flex;}
   .modal{
-    background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;
+    background:var(--bg-panel);border:1px solid var(--border);border-radius:16px;
     padding:16px 16px 12px;max-width:360px;width:100%;
   }
   .modal h3{margin:0 0 8px;font-size:15px;}
@@ -286,7 +299,7 @@
 
   .project-card{
     display:flex;align-items:center;justify-content:space-between;gap:10px;
-    background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:8px;
+    background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:11px;
     padding:8px 12px;margin-bottom:6px;flex-wrap:wrap;
   }
   .project-card .pinfo{min-width:0;}
@@ -304,39 +317,24 @@
   .cloud-status{
     display:flex;align-items:center;gap:8px;flex-wrap:wrap;
     font-family:var(--mono);font-size:12px;color:var(--text-dim);
-    background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:8px;
+    background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:11px;
     padding:7px 11px;margin-bottom:10px;
   }
   .cloud-status .dot{width:8px;height:8px;border-radius:50%;background:var(--text-faint);flex-shrink:0;}
   .cloud-status.connected .dot{background:#4ade80;}
   .cloud-status.connected{color:var(--text);}
   .warn-box{
-    background:var(--amber-soft);border:1px solid rgba(232,163,61,0.35);border-radius:8px;
+    background:var(--amber-soft);border:1px solid rgba(244,172,63,0.4);border-radius:11px;
     padding:8px 12px;font-size:12px;color:var(--text-dim);line-height:1.5;margin-bottom:10px;
   }
   .warn-box b{color:var(--amber);}
-
-  #cloudPanelBody{
-    max-height:3000px;
-    overflow:hidden;
-    transition:max-height .3s ease, opacity .25s ease;
-    opacity:1;
-  }
-  #cloudPanelBody.collapsed{
-    max-height:0;
-    opacity:0;
-  }
-  section.app-panel h2#cloudPanelToggle{
-    display:flex;
-    align-items:center;
-  }
 
   .collapse-icon{font-family:var(--mono);font-size:11px;color:var(--text-faint);flex-shrink:0;}
   .panel-body-auto{max-height:4000px;overflow:hidden;transition:max-height .3s ease, opacity .25s ease, margin-top .3s ease;opacity:1;}
   .panel-body-auto.collapsed{max-height:0;opacity:0;}
 .pc-item{
   display:flex;align-items:center;gap:8px;flex-wrap:wrap;
-  background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:8px;
+  background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:11px;
   padding:7px 10px;margin-bottom:6px;
 }
 .pc-item input[type=checkbox]{width:18px;height:18px;flex-shrink:0;accent-color:var(--accent);}
@@ -349,7 +347,7 @@
 
 .entry-card, .novel-card{
     display:flex;align-items:center;justify-content:space-between;gap:10px;
-    background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:8px;
+    background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:11px;
     padding:8px 12px;margin-bottom:6px;flex-wrap:wrap;
   }
   .entry-card .einfo, .novel-card .ninfo{min-width:0;flex:1;}
@@ -375,7 +373,7 @@
     background:var(--bg-panel);border:1px solid var(--border);color:var(--text-dim);
   }
   .mode-tabs button.active{
-    background:var(--accent-soft);color:var(--text);border-color:var(--accent-dim);
+    background:var(--accent-soft);color:var(--text);border-color:var(--accent-dim);box-shadow:0 0 0 3px var(--accent-soft);
   }
   .mode-tabs button:hover:not(.active){color:var(--text);}
   .mode-section{display:none;}
@@ -389,7 +387,7 @@
     height:46px;
     border-radius:50%;
     background:var(--accent);
-    color:#1c130a;
+    color:#052220;
     border:none;
     font-size:18px;
     cursor:pointer;
@@ -434,12 +432,12 @@
 
   .modal.wide{max-width:560px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;}
   #docsListView{flex:1;min-height:0;overflow-y:auto;padding-right:2px;}
-  .doc-group-title{font-size:11.5px;font-family:var(--mono);color:var(--text-faint);text-transform:uppercase;letter-spacing:0.05em;margin:12px 0 4px;padding-left:2px;}
+  .doc-group-title{font-size:11.5px;font-family:var(--mono);color:var(--coral);text-transform:uppercase;letter-spacing:0.05em;margin:12px 0 4px;padding-left:8px;border-left:3px solid var(--coral);}
   .doc-group-title:first-child{margin-top:0;}
   .docs-list{}
   .doc-item{
     display:flex;align-items:center;justify-content:space-between;gap:10px;
-    background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:8px;
+    background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:11px;
     padding:8px 12px;margin-bottom:6px;cursor:pointer;
   }
   .doc-item:hover{border-color:var(--accent-dim);}
@@ -478,11 +476,81 @@
     </div>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <button class="action ghost" id="themeToggleBtn" style="padding:8px 12px;" title="切換深/淺色主題">🌙</button>
+      <button class="action ghost" id="cloudBtn" style="padding:8px 14px;">
+        <span id="cloudBtnDot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--text-faint);margin-right:6px;vertical-align:middle;"></span><span id="cloudBtnLabel">雲端同步</span>
+      </button>
       <button class="action ghost" id="docsBtn" style="padding:8px 14px;">📚 參考資料</button>
       <button class="action ghost" id="installBtn" style="padding:8px 14px;">📲 加到主畫面</button>
       <div class="status-chip" id="saveStatus">環境設定尚未載入</div>
     </div>
   </header>
+
+  <div class="modal-backdrop" id="cloudModal">
+    <div class="modal wide">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-shrink:0;">
+        <h3 style="margin:0;">☁️ 雲端同步設定</h3>
+        <button class="closeModal" id="closeCloudModal">✕ 關閉</button>
+      </div>
+      <div style="overflow-y:auto;flex:1;min-height:0;">
+        <p class="hint">設定一次後，App／小說／記事本／電腦設備全部分頁都會改存到雲端，手機、PC 用同一組設定即可同步。此區塊的設定值只存在<b>這台裝置的瀏覽器</b>裡，換裝置要重新貼一次設定（但資料本身是共用的）。</p>
+
+        <div class="cloud-status" id="cloudStatus"><span class="dot"></span><span>尚未連接雲端同步</span></div>
+
+        <div class="warn-box">
+          <b>設定步驟：</b>
+          1. 到 <b>console.firebase.google.com</b> 建立新專案<br>
+          2. 左側選單「Build → Firestore Database」→ 建立資料庫（測試模式即可）<br>
+          3. 左側「專案設定」→ 一般 → 新增網頁應用程式 → 複製顯示的 <b>firebaseConfig</b> 物件，整段貼到下面<br>
+          4. 自訂一組「同步代碼」（像密碼，只有你知道），手機與 PC 都填同一組即可讀到同一份資料
+        </div>
+
+        <p class="hint" style="color:var(--text-faint);">此設定已寫死在程式碼中，畫面僅供顯示核對，不可編輯。</p>
+        <label>Firebase 設定（唯讀）</label>
+        <textarea id="firebaseConfigInput" readonly style="min-height:95px;opacity:0.6;cursor:not-allowed;"></textarea>
+        <label>同步代碼（唯讀）</label>
+        <input type="text" id="syncCodeInput" readonly style="opacity:0.6;cursor:not-allowed;">
+
+        <div class="btnrow" style="margin-bottom:6px;">
+          <button class="action ghost" id="cloudRefreshBtn">🔄 重新從雲端載入</button>
+        </div>
+
+        <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border-soft);">
+          <label style="margin-bottom:8px;">📝 我的設定紀錄（僅供自己參考，不會出現在「產生整合文字」的 AI 輸出內容中）</label>
+          <div class="warn-box" style="color:var(--text-dim);">
+            <b>建立 Firebase 專案與資料庫：</b><br>
+            1. console.firebase.google.com → 新增專案<br>
+            2. 左側 Build → Firestore Database → 建立資料庫（測試/正式模式皆可）<br>
+            3. 若選正式模式，需到「規則」分頁貼上以下內容並發布，否則預設拒絕所有讀寫：<br>
+            <code style="display:block;background:var(--bg-panel-2);padding:8px 10px;border-radius:6px;margin:6px 0;white-space:pre-wrap;font-size:11px;">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /sopSync/{document=**} {
+      allow read, write: if true;
+    }
+    match /novelSync/{document=**} {
+      allow read, write: if true;
+    }
+    match /notebookSync/{document=**} {
+      allow read, write: if true;
+    }
+    match /pcSync/{document=**} {
+      allow read, write: if true;
+    }
+  }
+}</code>
+            （sopSync=App開發／novelSync=小說開發／notebookSync=記事本／pcSync=電腦設備，各自獨立的資料集合；用 <code style="background:var(--bg-panel-2);padding:1px 4px;border-radius:4px;">{document=**}</code> 一併放行底下的參考資料／記事子集合）<br>
+            <b>取得設定值：</b><br>
+            4. 左側「專案設定」→ 一般 → 你的應用程式 → 新增網頁應用程式（不用勾 Hosting）→ 複製 firebaseConfig<br>
+            5. 同一個 Firebase 專案可以重複用在以後的新網頁工具上，不用重新申請——每個新工具換一組不同的「同步代碼」即可讓資料彼此獨立（例：yusn1006、yusn1006-notes）<br><br>
+            <b>已知限制：</b><br>
+            ・在 Claude App 內建預覽視窗中，SDK 檔案能載入，但無法真正連上 Firestore（連線被擋），一定要下載後用手機/PC 的瀏覽器（Chrome/Safari）開啟才會動<br>
+            ・Firebase 設定與同步代碼存在瀏覽器 localStorage，只有真正用瀏覽器開啟時才會被記住並自動連線<br>
+            ・Spark 免費方案有每日讀寫額度上限，個人自用工具正常情況下不會碰到
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="mode-tabs" id="modeTabs">
     <button data-mode="app" class="active">📱 App 開發</button>
@@ -612,72 +680,7 @@
       </section>
 
       <section class="app-panel" data-step="6">
-        <h2 style="cursor:pointer;justify-content:space-between;" id="cloudPanelToggle">
-          <span><span class="idx">07</span> ☁️ 雲端同步設定</span>
-          <span id="cloudToggleIcon" style="font-family:var(--mono);font-size:12px;color:var(--text-faint);">▾ 收合</span>
-        </h2>
-        <div id="cloudPanelBody">
-        <p class="hint">設定一次後，「環境設定／協作模式」與「專案存檔」都會改存到雲端，手機、PC 用同一組設定即可同步。此區塊的設定值只存在<b>這台裝置的瀏覽器</b>裡，換裝置要重新貼一次設定（但資料本身是共用的）。</p>
-
-        <div class="cloud-status" id="cloudStatus"><span class="dot"></span><span>尚未連接雲端同步</span></div>
-
-        <div class="warn-box">
-          <b>設定步驟：</b>
-          1. 到 <b>console.firebase.google.com</b> 建立新專案<br>
-          2. 左側選單「Build → Firestore Database」→ 建立資料庫（測試模式即可）<br>
-          3. 左側「專案設定」→ 一般 → 新增網頁應用程式 → 複製顯示的 <b>firebaseConfig</b> 物件，整段貼到下面<br>
-          4. 自訂一組「同步代碼」（像密碼，只有你知道），手機與 PC 都填同一組即可讀到同一份資料
-        </div>
-
-        <p class="hint" style="color:var(--text-faint);">此設定已寫死在程式碼中，畫面僅供顯示核對，不可編輯。</p>
-        <label>Firebase 設定（唯讀）</label>
-        <textarea id="firebaseConfigInput" readonly style="min-height:95px;opacity:0.6;cursor:not-allowed;"></textarea>
-        <label>同步代碼（唯讀）</label>
-        <input type="text" id="syncCodeInput" readonly style="opacity:0.6;cursor:not-allowed;">
-
-        <div class="btnrow" style="margin-bottom:6px;">
-          <button class="action ghost" id="cloudRefreshBtn">🔄 重新從雲端載入</button>
-        </div>
-
-        <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border-soft);">
-          <label style="margin-bottom:8px;">📝 我的設定紀錄（僅供自己參考，不會出現在「產生整合文字」的 AI 輸出內容中）</label>
-          <div class="warn-box" style="color:var(--text-dim);">
-            <b>建立 Firebase 專案與資料庫：</b><br>
-            1. console.firebase.google.com → 新增專案<br>
-            2. 左側 Build → Firestore Database → 建立資料庫（測試/正式模式皆可）<br>
-            3. 若選正式模式，需到「規則」分頁貼上以下內容並發布，否則預設拒絕所有讀寫：<br>
-            <code style="display:block;background:var(--bg-panel-2);padding:8px 10px;border-radius:6px;margin:6px 0;white-space:pre-wrap;font-size:11px;">rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /sopSync/{document=**} {
-      allow read, write: if true;
-    }
-    match /novelSync/{document=**} {
-      allow read, write: if true;
-    }
-    match /notebookSync/{document=**} {
-      allow read, write: if true;
-    }
-    match /pcSync/{document=**} {
-      allow read, write: if true;
-    }
-  }
-}</code>
-            （sopSync=App開發／novelSync=小說開發／notebookSync=記事本／pcSync=電腦設備，各自獨立的資料集合；用 <code style="background:var(--bg-panel-2);padding:1px 4px;border-radius:4px;">{document=**}</code> 一併放行底下的參考資料／記事子集合）<br>
-            <b>取得設定值：</b><br>
-            4. 左側「專案設定」→ 一般 → 你的應用程式 → 新增網頁應用程式（不用勾 Hosting）→ 複製 firebaseConfig<br>
-            5. 同一個 Firebase 專案可以重複用在以後的新網頁工具上，不用重新申請——每個新工具換一組不同的「同步代碼」即可讓資料彼此獨立（例：yusn1006、yusn1006-notes）<br><br>
-            <b>已知限制：</b><br>
-            ・在 Claude App 內建預覽視窗中，SDK 檔案能載入，但無法真正連上 Firestore（連線被擋），一定要下載後用手機/PC 的瀏覽器（Chrome/Safari）開啟才會動<br>
-            ・Firebase 設定與同步代碼存在瀏覽器 localStorage，只有真正用瀏覽器開啟時才會被記住並自動連線<br>
-            ・Spark 免費方案有每日讀寫額度上限，個人自用工具正常情況下不會碰到
-          </div>
-        </div>
-        </div>
-      </section>
-
-      <section class="app-panel" data-step="7">
-        <h2><span class="idx">08</span> 專案存檔</h2>
+        <h2><span class="idx">07</span> 專案存檔</h2>
         <p class="hint">把目前「專案基本資訊」與「目標與需求」的內容存成一筆專案紀錄，之後可以載入繼續編輯或查詢，也可以刪除。環境設定與協作模式不會存進單筆專案（它們是共用的範本）。</p>
         <div class="grid2">
           <div style="grid-column:1/-1;">
@@ -692,8 +695,8 @@ service cloud.firestore {
         <div id="projectList"></div>
       </section>
 
-      <section class="app-panel" data-step="8">
-        <h2><span class="idx">09</span> 輸出</h2>
+      <section class="app-panel" data-step="7">
+        <h2><span class="idx">08</span> 輸出</h2>
         <p class="hint">整合以上內容為一篇文字，複製後貼給 AI 開始新專案協作。</p>
         <div class="btnrow" style="margin-bottom:14px;">
           <button class="action" id="genBtn">產生整合文字</button>
@@ -844,18 +847,7 @@ service cloud.firestore {
     </section>
 
     <section class="novel-panel" data-step="8">
-      <h2><span class="htitle"><span class="idx">09</span> ☁️ 雲端同步設定</span></h2>
-      <div class="hint">小說資料與「App 開發」分頁共用同一組 Firebase 連線設定，只需在 App 分頁設定一次即可，這裡不用重複設定。</div>
-
-      <div class="cloud-status" id="novelCloudStatus"><span class="dot"></span><span>尚未連接雲端</span></div>
-
-      <div class="warn-box">
-        <b>提醒：</b>請切到「App 開發」分頁的「☁️ 雲端同步設定」完成連接，這裡會自動顯示相同的連線狀態。小說與 App 的資料存在不同的資料集合裡，不會互相干擾。
-      </div>
-    </section>
-
-    <section class="novel-panel" data-step="9">
-      <h2><span class="htitle"><span class="idx">10</span> 小說存檔</span></h2>
+      <h2><span class="htitle"><span class="idx">09</span> 小說存檔</span></h2>
       <div class="hint">把目前正在編輯的整本小說（書名＋所有段落）存成一筆快照，之後可以載入切換到別本小說，或刪除。載入會覆蓋目前正在編輯的內容。</div>
       <label>存檔名稱</label>
       <input type="text" id="novelSaveName" placeholder="預設帶入書名">
@@ -864,8 +856,8 @@ service cloud.firestore {
       <div id="novelList"></div>
     </section>
 
-    <section class="novel-panel" data-step="10">
-      <h2><span class="htitle"><span class="idx">11</span> 輸出</span></h2>
+    <section class="novel-panel" data-step="9">
+      <h2><span class="htitle"><span class="idx">10</span> 輸出</span></h2>
       <div class="hint">整合以上所有段落為一篇文字，複製後貼給 AI 討論劇情或協助寫作。</div>
       <div class="btnrow">
         <button class="action" id="novelGenBtn">產生整合文字</button>
@@ -934,16 +926,7 @@ service cloud.firestore {
     </section>
 
     <section class="pc-panel" data-step="5">
-      <h2><span class="htitle"><span class="idx">06</span> ☁️ 雲端同步設定</span></h2>
-      <div class="hint">與「App 開發」分頁共用同一組 Firebase 連線設定，只需在 App 分頁設定一次即可。</div>
-      <div class="cloud-status" id="pcCloudStatus"><span class="dot"></span><span>尚未連接雲端</span></div>
-      <div class="warn-box">
-        <b>提醒：</b>請切到「App 開發」分頁的「☁️ 雲端同步設定」完成連接，這裡會自動顯示相同的連線狀態。此分頁的資料存在獨立的資料集合裡，不會跟其他分頁互相干擾。
-      </div>
-    </section>
-
-    <section class="pc-panel" data-step="6">
-      <h2><span class="htitle"><span class="idx">07</span> 輸出</span></h2>
+      <h2><span class="htitle"><span class="idx">06</span> 輸出</span></h2>
       <div class="hint">整合以上所有段落為一篇文字，複製後貼給 AI 或存檔備查。</div>
       <div class="btnrow">
         <button class="action" id="pcGenBtn">產生整合文字</button>
@@ -1066,6 +1049,10 @@ function setCloudStatus(text, connected){
   const el = cloudStatusEl_getter();
   el.classList.toggle('connected', !!connected);
   el.innerHTML = `<span class="dot"></span><span>${text}</span>`;
+  const dot = document.getElementById('cloudBtnDot');
+  const label = document.getElementById('cloudBtnLabel');
+  if(dot) dot.style.background = connected ? '#4ade80' : 'var(--text-faint)';
+  if(label) label.textContent = connected ? '雲端已連接' : '雲端同步';
 }
 
 function loadLocalCloudConfig(){
@@ -1159,22 +1146,11 @@ async function tryAutoConnectCloud(){
 }
 // ============ 雲端同步 結束 ============
 
-// ---- 雲端同步面板收合 ----
-const cloudPanelBody = document.getElementById('cloudPanelBody');
-const cloudToggleIcon = document.getElementById('cloudToggleIcon');
-function setCloudCollapsed(collapsed){
-  cloudPanelBody.classList.toggle('collapsed', collapsed);
-  cloudToggleIcon.textContent = collapsed ? '▸ 展開' : '▾ 收合';
-  try{ localStorage.setItem('cloud-panel-collapsed', collapsed ? '1' : '0'); }catch(e){}
-}
-document.getElementById('cloudPanelToggle').onclick = ()=>{
-  setCloudCollapsed(!cloudPanelBody.classList.contains('collapsed'));
-};
-(function initCloudCollapse(){
-  let collapsed = false;
-  try{ collapsed = localStorage.getItem('cloud-panel-collapsed') === '1'; }catch(e){}
-  setCloudCollapsed(collapsed);
-})();
+// ---- 雲端同步：整合為右上角按鈕 + 彈窗 ----
+const cloudModalEl = document.getElementById('cloudModal');
+document.getElementById('cloudBtn').onclick = ()=> cloudModalEl.classList.add('show');
+document.getElementById('closeCloudModal').onclick = ()=> cloudModalEl.classList.remove('show');
+cloudModalEl.onclick = (e)=>{ if(e.target === cloudModalEl) cloudModalEl.classList.remove('show'); };
 
 // ---- 使用者筆記（純自用，不進AI輸出）----
 const noteFieldLoaders = [];
@@ -1264,7 +1240,7 @@ function makeCollapsible(panel){
   h2.onclick = ()=> setState(!body.classList.contains('collapsed'), true);
   return setState;
 }
-[0,2,5,7].forEach(step=>{
+[0,2,5,6].forEach(step=>{
   const panel = document.querySelector(`.app-panel[data-step="${step}"]`);
   if(panel) collapseSetters[step] = makeCollapsible(panel);
 });
@@ -1281,8 +1257,8 @@ async function applyInitialCollapse(){
     const s = collapseSetters[5];
     s(s.hasStored() ? s.getStored() : !userNotesEl.value.trim());
   }
-  if(collapseSetters[7]){
-    const s = collapseSetters[7];
+  if(collapseSetters[6]){
+    const s = collapseSetters[6];
     if(s.hasStored()){
       s(s.getStored());
     } else {
@@ -1294,7 +1270,7 @@ async function applyInitialCollapse(){
   }
 }
 
-const steps = ["專案基本資訊","命名規範","目標與需求","環境設定","協作模式","使用者筆記","雲端同步","專案存檔","輸出"];
+const steps = ["專案基本資訊","命名規範","目標與需求","環境設定","協作模式","使用者筆記","專案存檔","輸出"];
 const stepnav = document.getElementById('appStepnav');
 steps.forEach((label, i) => {
   const b = document.createElement('button');
@@ -2229,7 +2205,7 @@ const SECTIONS = [
 let novelData = { title:'', logline:'', worldview:[], draft:[], factions:[], characters:[], scenes:[], outline:[], chapters:[] };
 
 // ---- 步驟導覽 ----
-const steps = ["小說名稱","世界觀","草稿","陣營勢力","角色資料","場景器具","章節綱要","正式劇情","雲端同步","小說存檔","輸出"];
+const steps = ["小說名稱","世界觀","草稿","陣營勢力","角色資料","場景器具","章節綱要","正式劇情","小說存檔","輸出"];
 const novelStepnav = document.getElementById('novelStepnav');
 steps.forEach((label, i) => {
   const b = document.createElement('button');
@@ -2246,16 +2222,6 @@ const io = new IntersectionObserver((entries)=>{
 panels.forEach(p=>io.observe(p));
 
 // ============ 雲端同步（共用 App 分頁的連線，僅資料集合不同：novelSync）============
-function novelSetCloudStatus(){
-  const el = document.getElementById('novelCloudStatus');
-  if(cloudConnected){
-    el.classList.add('connected');
-    el.innerHTML = `<span class="dot"></span><span>已連接雲端同步（代碼：${escapeHtml(syncCode||'')}）</span>`;
-  } else {
-    el.classList.remove('connected');
-    el.innerHTML = `<span class="dot"></span><span>尚未連接雲端（請到「App 開發」分頁的雲端同步設定連接）</span>`;
-  }
-}
 function cloudDocRef(){ return firestoreDb.collection('novelSync').doc(syncCode); }
 async function cloudGetDoc(){
   const snap = await cloudDocRef().get();
@@ -2265,7 +2231,6 @@ async function cloudSetField(field, value){
   await cloudDocRef().set({ [field]: value, updatedAt: Date.now() }, { merge: true });
 }
 window.__novelOnCloudChange = async function(){
-  novelSetCloudStatus();
   await loadCurrentDraft();
   await renderNovelList();
   applyInitialCollapse();
@@ -2532,13 +2497,10 @@ function applyInitialCollapse(){
   s8(s8.hasStored() ? s8.getStored() : false);
   const s9 = collapseSetters['9'];
   s9(s9.hasStored() ? s9.getStored() : false);
-  const s10 = collapseSetters['10'];
-  s10(s10.hasStored() ? s10.getStored() : false);
 }
 
 // ============ 初始化 ============
 (async function init(){
-  novelSetCloudStatus();
   await loadCurrentDraft();
   await renderNovelList();
   applyInitialCollapse();
@@ -2559,16 +2521,6 @@ function applyInitialCollapse(){
     userNotes: ''
   };
 
-  function pcSetCloudStatus(){
-    const el = document.getElementById('pcCloudStatus');
-    if(cloudConnected){
-      el.classList.add('connected');
-      el.innerHTML = `<span class="dot"></span><span>已連接雲端同步（代碼：${escapeHtml(syncCode||'')}）</span>`;
-    } else {
-      el.classList.remove('connected');
-      el.innerHTML = `<span class="dot"></span><span>尚未連接雲端（請到「App 開發」分頁的雲端同步設定連接）</span>`;
-    }
-  }
   function pcDocRef(){ return firestoreDb.collection('pcSync').doc(syncCode); }
   async function pcCloudGetDoc(){
     const snap = await pcDocRef().get();
@@ -2728,7 +2680,7 @@ function applyInitialCollapse(){
   };
 
   // ---- 步驟導覽 ----
-  const pcSteps = ["現役零組件","備用零組件","重灌流程","軟體相關","使用者筆記","雲端同步","輸出"];
+  const pcSteps = ["現役零組件","備用零組件","重灌流程","軟體相關","使用者筆記","輸出"];
   const pcStepnav = document.getElementById('pcStepnav');
   pcSteps.forEach((label, i)=>{
     const b = document.createElement('button');
@@ -2760,18 +2712,14 @@ function applyInitialCollapse(){
     s4(s4.hasStored() ? s4.getStored() : !pcData.userNotes);
     const s5 = pcCollapseSetters['5'];
     s5(s5.hasStored() ? s5.getStored() : false);
-    const s6 = pcCollapseSetters['6'];
-    s6(s6.hasStored() ? s6.getStored() : false);
   }
 
   window.__pcOnCloudChange = async function(){
-    pcSetCloudStatus();
     await loadPcDraft();
     applyPcCollapse();
   };
 
   (async function initPc(){
-    pcSetCloudStatus();
     await loadPcDraft();
     applyPcCollapse();
   })();
