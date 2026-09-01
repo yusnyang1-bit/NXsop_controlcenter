@@ -1135,6 +1135,7 @@ document.getElementById('cloudRefreshBtn').onclick = async ()=>{
   await applyInitialCollapse();
   if(window.__novelOnCloudChange) await window.__novelOnCloudChange();
   if(window.__pcOnCloudChange) await window.__pcOnCloudChange();
+  if(window.__notebookOnCloudChange) await window.__notebookOnCloudChange();
   showToast('已從雲端重新載入');
 };
 
@@ -1150,6 +1151,7 @@ async function tryAutoConnectCloud(){
     setCloudStatus(`已連接雲端同步（代碼：${escapeHtml(code)}）`, true);
     if(window.__novelOnCloudChange) await window.__novelOnCloudChange();
     if(window.__pcOnCloudChange) await window.__pcOnCloudChange();
+    if(window.__notebookOnCloudChange) await window.__notebookOnCloudChange();
   }catch(e){
     console.error(e);
     setCloudStatus('自動連接失敗，請確認設定或重新連接', false);
@@ -2171,6 +2173,9 @@ function initDocsPanel(cfg){
     modal.onclick = (e)=>{ if(e.target === modal) modal.classList.remove('show'); };
   } else {
     renderList();
+    if(cfg.exposeOnCloudChangeAs){
+      window[cfg.exposeOnCloudChangeAs] = renderList;
+    }
   }
 }
 
@@ -2197,6 +2202,7 @@ initDocsPanel({
   itemLabel: '記事',
   categories: ['專案','生活','工作','自訂'],
   seedDefaults: [ { title:'01 專案', content:'', category:'專案' }, { title:'02 生活', content:'', category:'生活' } ],
+  exposeOnCloudChangeAs: '__notebookOnCloudChange',
   ids: {
     listView:'nbListView', list:'nbList', preview:'nbPreview',
     previewTitle:'nbPreviewTitle', previewBody:'nbPreviewBody', addForm:'nbAddForm',
