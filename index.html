@@ -658,9 +658,12 @@ service cloud.firestore {
     match /notebookSync/{document=**} {
       allow read, write: if true;
     }
+    match /pcSync/{document=**} {
+      allow read, write: if true;
+    }
   }
 }</code>
-            （sopSync=App開發／novelSync=小說開發／notebookSync=記事本，各自獨立的資料集合；用 <code style="background:var(--bg-panel-2);padding:1px 4px;border-radius:4px;">{document=**}</code> 一併放行底下的參考資料／記事子集合）<br>
+            （sopSync=App開發／novelSync=小說開發／notebookSync=記事本／pcSync=電腦設備，各自獨立的資料集合；用 <code style="background:var(--bg-panel-2);padding:1px 4px;border-radius:4px;">{document=**}</code> 一併放行底下的參考資料／記事子集合）<br>
             <b>取得設定值：</b><br>
             4. 左側「專案設定」→ 一般 → 你的應用程式 → 新增網頁應用程式（不用勾 Hosting）→ 複製 firebaseConfig<br>
             5. 同一個 Firebase 專案可以重複用在以後的新網頁工具上，不用重新申請——每個新工具換一組不同的「同步代碼」即可讓資料彼此獨立（例：yusn1006、yusn1006-notes）<br><br>
