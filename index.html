@@ -51,7 +51,7 @@
     --coral-soft: rgba(226,87,74,0.12);
   }
   body{transition: background-color .25s ease, color .25s ease;}
-  section.app-panel, section.novel-panel, section.pc-panel{transition: background-color .25s ease, border-color .25s ease;}
+  section.app-panel, section.novel-panel, section.pc-panel, section.pn-panel{transition: background-color .25s ease, border-color .25s ease;}
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
@@ -151,14 +151,14 @@
   nav.stepnav button.active .n{color:var(--accent);}
   nav.stepnav button:hover:not(.active){color:var(--text);}
 
-  section.app-panel, section.novel-panel, section.pc-panel{
+  section.app-panel, section.novel-panel, section.pc-panel, section.pn-panel{
     background:var(--bg-panel);
     border:1px solid var(--border);
     border-radius:16px;
     padding:15px 18px;
     margin-bottom:10px;
   }
-  section.app-panel h2, section.novel-panel h2, section.pc-panel h2{
+  section.app-panel h2, section.novel-panel h2, section.pc-panel h2, section.pn-panel h2{
     font-size:15px;
     margin:0 0 4px;
     display:flex;
@@ -166,7 +166,7 @@
     gap:8px;
     font-weight:650;
   }
-  section.app-panel h2 .idx, section.novel-panel h2 .idx, section.pc-panel h2 .idx{
+  section.app-panel h2 .idx, section.novel-panel h2 .idx, section.pc-panel h2 .idx, section.pn-panel h2 .idx{
     font-family:var(--mono);
     color:var(--coral);
     background:var(--coral-soft);
@@ -175,7 +175,7 @@
     padding:2px 7px;
     border-radius:6px;
   }
-  section.app-panel .hint, section.novel-panel .hint, section.pc-panel .hint{
+  section.app-panel .hint, section.novel-panel .hint, section.pc-panel .hint, section.pn-panel .hint{
     color:var(--text-dim);
     font-size:12.5px;
     margin:0 0 10px;
@@ -536,9 +536,12 @@ service cloud.firestore {
     match /pcSync/{document=**} {
       allow read, write: if true;
     }
+    match /projNotesSync/{document=**} {
+      allow read, write: if true;
+    }
   }
 }</code>
-            （sopSync=App開發／novelSync=小說開發／notebookSync=記事本／pcSync=電腦設備，各自獨立的資料集合；用 <code style="background:var(--bg-panel-2);padding:1px 4px;border-radius:4px;">{document=**}</code> 一併放行底下的參考資料／記事子集合）<br>
+            （sopSync=App開發／novelSync=小說開發／notebookSync=記事本／pcSync=電腦設備／projNotesSync=專案筆記，各自獨立的資料集合；用 <code style="background:var(--bg-panel-2);padding:1px 4px;border-radius:4px;">{document=**}</code> 一併放行底下的參考資料／記事子集合）<br>
             <b>取得設定值：</b><br>
             4. 左側「專案設定」→ 一般 → 你的應用程式 → 新增網頁應用程式（不用勾 Hosting）→ 複製 firebaseConfig<br>
             5. 同一個 Firebase 專案可以重複用在以後的新網頁工具上，不用重新申請——每個新工具換一組不同的「同步代碼」即可讓資料彼此獨立（例：yusn1006、yusn1006-notes）<br><br>
@@ -553,10 +556,121 @@ service cloud.firestore {
   </div>
 
   <div class="mode-tabs" id="modeTabs">
+    <button data-mode="projnotes">🗂️ 專案筆記</button>
     <button data-mode="app" class="active">📱 App 開發</button>
     <button data-mode="notebook">📝 記事本</button>
     <button data-mode="novel">📖 小說開發</button>
     <button data-mode="pc">🖥️ 電腦設備</button>
+  </div>
+
+  <div id="projNotesMode" class="mode-section">
+  <div class="layout">
+    <nav class="stepnav" id="projNotesStepnav"></nav>
+
+    <div id="projNotesPanelsWrap">
+
+      <section class="pn-panel" data-step="0">
+        <h2><span class="htitle"><span class="idx">01</span> 專案現況</span></h2>
+        <div class="hint">目前進度、待辦事項、卡關的地方，自由編輯。</div>
+        <textarea id="pnStatusNotes" placeholder="例：目前進度、下一步要做什麼、待解決問題..." style="min-height:135px;"></textarea>
+        <div class="btnrow">
+          <button class="action ghost" id="savePnStatusBtn">儲存</button>
+          <button class="action ghost" id="copyPnStatusBtn">📋 複製內容</button>
+        </div>
+      </section>
+
+      <section class="pn-panel" data-step="1">
+        <h2><span class="htitle"><span class="idx">02</span> 環境與系統設定</span></h2>
+        <div class="hint">開發環境路徑、系統設定、固定值等，自由編輯。</div>
+        <textarea id="pnEnvNotes" placeholder="例：SDK路徑、環境變數、專案資料夾位置..." style="min-height:135px;"></textarea>
+        <div class="btnrow">
+          <button class="action ghost" id="savePnEnvBtn">儲存</button>
+          <button class="action ghost" id="copyPnEnvBtn">📋 複製內容</button>
+        </div>
+      </section>
+
+      <section class="pn-panel" data-step="2">
+        <h2><span class="htitle"><span class="idx">03</span> Flutter 版本</span></h2>
+        <div class="hint">Flutter／Dart 版本號、升級紀錄、相容性備註，自由編輯。</div>
+        <textarea id="pnFlutterNotes" placeholder="例：目前版本、升級紀錄、套件相容性備註..." style="min-height:135px;"></textarea>
+        <div class="btnrow">
+          <button class="action ghost" id="savePnFlutterBtn">儲存</button>
+          <button class="action ghost" id="copyPnFlutterBtn">📋 複製內容</button>
+        </div>
+      </section>
+
+      <section class="pn-panel" data-step="3">
+        <h2><span class="htitle"><span class="idx">04</span> Capacitor 版本</span></h2>
+        <div class="hint">Capacitor 版本號、外掛清單、平台設定備註，自由編輯。</div>
+        <textarea id="pnCapacitorNotes" placeholder="例：目前版本、已安裝外掛、平台設定備註..." style="min-height:135px;"></textarea>
+        <div class="btnrow">
+          <button class="action ghost" id="savePnCapacitorBtn">儲存</button>
+          <button class="action ghost" id="copyPnCapacitorBtn">📋 複製內容</button>
+        </div>
+      </section>
+
+      <section class="pn-panel" data-step="4">
+        <h2><span class="htitle"><span class="idx">05</span> 雲端服務與資料庫 (Firebase / GAS)</span></h2>
+        <div class="hint">Firebase／Google Apps Script 等雲端服務設定備註，自由編輯。</div>
+        <textarea id="pnCloudNotes" placeholder="例：Firebase 專案、GAS 部署網址、資料庫結構備註..." style="min-height:135px;"></textarea>
+        <div class="btnrow">
+          <button class="action ghost" id="savePnCloudBtn">儲存</button>
+          <button class="action ghost" id="copyPnCloudBtn">📋 複製內容</button>
+        </div>
+      </section>
+
+      <section class="pn-panel" data-step="5">
+        <h2><span class="htitle"><span class="idx">06</span> 廣告與行銷</span></h2>
+        <div class="hint">廣告版位、行銷素材、投放策略備註，自由編輯。</div>
+        <textarea id="pnAdsNotes" placeholder="例：廣告平台、版位設定、行銷素材連結..." style="min-height:135px;"></textarea>
+        <div class="btnrow">
+          <button class="action ghost" id="savePnAdsBtn">儲存</button>
+          <button class="action ghost" id="copyPnAdsBtn">📋 複製內容</button>
+        </div>
+      </section>
+
+      <section class="pn-panel" data-step="6">
+        <h2><span class="htitle"><span class="idx">07</span> 平台發布、更新</span></h2>
+        <div class="hint">上架審核、版本更新紀錄、發布流程備註，自由編輯。</div>
+        <textarea id="pnReleaseNotes" placeholder="例：版本號、更新內容、審核狀態、發布日期..." style="min-height:135px;"></textarea>
+        <div class="btnrow">
+          <button class="action ghost" id="savePnReleaseBtn">儲存</button>
+          <button class="action ghost" id="copyPnReleaseBtn">📋 複製內容</button>
+        </div>
+      </section>
+
+      <section class="pn-panel" data-step="7">
+        <h2><span class="htitle"><span class="idx">08</span> 重灌及硬體</span></h2>
+        <div class="hint">開發用電腦的重灌流程、硬體規格備註，自由編輯。</div>
+        <textarea id="pnHardwareNotes" placeholder="例：重灌步驟、硬體規格、驅動程式清單..." style="min-height:135px;"></textarea>
+        <div class="btnrow">
+          <button class="action ghost" id="savePnHardwareBtn">儲存</button>
+          <button class="action ghost" id="copyPnHardwareBtn">📋 複製內容</button>
+        </div>
+      </section>
+
+      <section class="pn-panel" data-step="8">
+        <h2><span class="htitle"><span class="idx">09</span> GitHub</span></h2>
+        <div class="hint">Repo 位置、分支策略、常用指令備註，自由編輯。</div>
+        <textarea id="pnGithubNotes" placeholder="例：repo網址、分支規則、常用git指令..." style="min-height:135px;"></textarea>
+        <div class="btnrow">
+          <button class="action ghost" id="savePnGithubBtn">儲存</button>
+          <button class="action ghost" id="copyPnGithubBtn">📋 複製內容</button>
+        </div>
+      </section>
+
+      <section class="pn-panel" data-step="9">
+        <h2><span class="htitle"><span class="idx">10</span> 輸出</span></h2>
+        <div class="hint">整合以上所有段落為一篇文字，複製後貼給 AI 或存檔備查。</div>
+        <div class="btnrow">
+          <button class="action" id="pnGenBtn">產生整合文字</button>
+          <button class="action ghost" id="pnCopyBtn">複製到剪貼簿</button>
+        </div>
+        <div class="output-box" id="pnOutputBox">按「產生整合文字」查看結果...</div>
+      </section>
+
+    </div>
+  </div>
   </div>
 
   <div id="appMode" class="mode-section active">
@@ -1123,6 +1237,7 @@ document.getElementById('cloudRefreshBtn').onclick = async ()=>{
   if(window.__novelOnCloudChange) await window.__novelOnCloudChange();
   if(window.__pcOnCloudChange) await window.__pcOnCloudChange();
   if(window.__notebookOnCloudChange) await window.__notebookOnCloudChange();
+  if(window.__projNotesOnCloudChange) await window.__projNotesOnCloudChange();
   showToast('已從雲端重新載入');
 };
 
@@ -1139,6 +1254,7 @@ async function tryAutoConnectCloud(){
     if(window.__novelOnCloudChange) await window.__novelOnCloudChange();
     if(window.__pcOnCloudChange) await window.__pcOnCloudChange();
     if(window.__notebookOnCloudChange) await window.__notebookOnCloudChange();
+    if(window.__projNotesOnCloudChange) await window.__projNotesOnCloudChange();
   }catch(e){
     console.error(e);
     setCloudStatus('自動連接失敗，請確認設定或重新連接', false);
@@ -1804,6 +1920,7 @@ document.getElementById('copyBtn').onclick = async ()=>{
 // ============ 模式切換（App / 小說）============
 (function(){
   const tabs = [...document.querySelectorAll('#modeTabs button')];
+  const projNotesModeEl = document.getElementById('projNotesMode');
   const appModeEl = document.getElementById('appMode');
   const notebookModeEl = document.getElementById('notebookMode');
   const novelModeEl = document.getElementById('novelMode');
@@ -1811,6 +1928,7 @@ document.getElementById('copyBtn').onclick = async ()=>{
   const titleEl = document.getElementById('mainTitle');
   const subtitleEl = document.getElementById('mainSubtitle');
   const modeText = {
+    projnotes:{ title:'專案筆記', subtitle:'開發環境、版本、雲端服務、上架與硬體資訊 — 一次整理，隨時查閱' },
     app:      { title:'App 開發 SOP 導覽',  subtitle:'每次啟動新專案的固定流程 — 填寫、確認、輸出，貼給 AI 開始協作' },
     notebook: { title:'記事本', subtitle:'自由分類的隨手記事 — 專案、生活，想到什麼就記下來' },
     novel:    { title:'小說開發 SOP 導覽', subtitle:'每次開新小說的固定流程 — 分段記錄、獨立存檔、最終輸出整合文本' },
@@ -1818,6 +1936,7 @@ document.getElementById('copyBtn').onclick = async ()=>{
   };
   function setMode(mode){
     tabs.forEach(b=> b.classList.toggle('active', b.dataset.mode === mode));
+    projNotesModeEl.classList.toggle('active', mode === 'projnotes');
     appModeEl.classList.toggle('active', mode === 'app');
     notebookModeEl.classList.toggle('active', mode === 'notebook');
     novelModeEl.classList.toggle('active', mode === 'novel');
@@ -2722,6 +2841,116 @@ function applyInitialCollapse(){
   (async function initPc(){
     await loadPcDraft();
     applyPcCollapse();
+  })();
+})();
+
+// ============ 專案筆記（App 開發前的固定資訊分頁，獨立雲端集合 projNotesSync）============
+(function(){
+  function pnDocRef(){ return firestoreDb.collection('projNotesSync').doc(syncCode); }
+  async function pnCloudGetDoc(){
+    const snap = await pnDocRef().get();
+    return snap.exists ? snap.data() : {};
+  }
+  async function pnCloudSetField(field, value){
+    await pnDocRef().set({ [field]: value, updatedAt: Date.now() }, { merge: true });
+  }
+
+  const fields = [
+    { id:'pnStatusNotes',    field:'pnStatus',    storageKey:'pn-status',    saveBtn:'savePnStatusBtn',    copyBtn:'copyPnStatusBtn',    label:'專案現況' },
+    { id:'pnEnvNotes',       field:'pnEnv',       storageKey:'pn-env',       saveBtn:'savePnEnvBtn',       copyBtn:'copyPnEnvBtn',       label:'環境與系統設定' },
+    { id:'pnFlutterNotes',   field:'pnFlutter',   storageKey:'pn-flutter',   saveBtn:'savePnFlutterBtn',   copyBtn:'copyPnFlutterBtn',   label:'Flutter 版本' },
+    { id:'pnCapacitorNotes', field:'pnCapacitor', storageKey:'pn-capacitor', saveBtn:'savePnCapacitorBtn', copyBtn:'copyPnCapacitorBtn', label:'Capacitor 版本' },
+    { id:'pnCloudNotes',     field:'pnCloud',     storageKey:'pn-cloud',     saveBtn:'savePnCloudBtn',     copyBtn:'copyPnCloudBtn',     label:'雲端服務與資料庫 (Firebase / GAS)' },
+    { id:'pnAdsNotes',       field:'pnAds',       storageKey:'pn-ads',       saveBtn:'savePnAdsBtn',       copyBtn:'copyPnAdsBtn',       label:'廣告與行銷' },
+    { id:'pnReleaseNotes',   field:'pnRelease',   storageKey:'pn-release',   saveBtn:'savePnReleaseBtn',   copyBtn:'copyPnReleaseBtn',   label:'平台發布、更新' },
+    { id:'pnHardwareNotes',  field:'pnHardware',  storageKey:'pn-hardware',  saveBtn:'savePnHardwareBtn',  copyBtn:'copyPnHardwareBtn',  label:'重灌及硬體' },
+    { id:'pnGithubNotes',    field:'pnGithub',    storageKey:'pn-github',    saveBtn:'savePnGithubBtn',    copyBtn:'copyPnGithubBtn',    label:'GitHub' }
+  ];
+
+  const loaders = [];
+  fields.forEach(f=>{
+    const el = document.getElementById(f.id);
+    async function load(){
+      if(cloudConnected){
+        try{ const d = await pnCloudGetDoc(); el.value = d[f.field] || ''; return; }catch(e){ console.error(e); }
+      }
+      try{
+        if(window.storage){
+          const r = await window.storage.get(f.storageKey, false);
+          el.value = r && r.value ? r.value : '';
+          return;
+        }
+      }catch(e){}
+      el.value = '';
+    }
+    document.getElementById(f.saveBtn).onclick = async ()=>{
+      if(cloudConnected){
+        try{ await pnCloudSetField(f.field, el.value); showToast('已儲存（雲端）'); return; }
+        catch(e){ console.error(e); showToast('雲端寫入失敗，改存本機'); }
+      }
+      try{
+        if(window.storage){ await window.storage.set(f.storageKey, el.value, false); showToast('已儲存（本機）'); return; }
+        showToast('目前無可用儲存方式，請先設定雲端同步');
+      }catch(e){ showToast('儲存失敗，請稍後再試'); }
+    };
+    document.getElementById(f.copyBtn).onclick = ()=> copyTextToClipboard(el.value);
+    loaders.push(load);
+  });
+
+  document.getElementById('pnGenBtn').onclick = ()=>{
+    let out = '';
+    fields.forEach(f=>{
+      const v = document.getElementById(f.id).value.trim();
+      if(v) out += `## ${f.label}\n${v}\n\n`;
+    });
+    document.getElementById('pnOutputBox').textContent = out.trim() || '（尚未填寫任何內容）';
+  };
+  document.getElementById('pnCopyBtn').onclick = async ()=>{
+    const box = document.getElementById('pnOutputBox');
+    if(!box.textContent || box.textContent.startsWith('按「產生')){ document.getElementById('pnGenBtn').click(); }
+    try{
+      await navigator.clipboard.writeText(document.getElementById('pnOutputBox').textContent);
+      showToast('已複製到剪貼簿');
+    }catch(e){ showToast('複製失敗，請手動選取文字'); }
+  };
+
+  // ---- 步驟導覽 ----
+  const pnSteps = ["專案現況","環境與系統設定","Flutter 版本","Capacitor 版本","雲端服務與資料庫","廣告與行銷","平台發布、更新","重灌及硬體","GitHub","輸出"];
+  const pnStepnav = document.getElementById('projNotesStepnav');
+  pnSteps.forEach((label, i)=>{
+    const b = document.createElement('button');
+    b.innerHTML = `<span class="n">${String(i+1).padStart(2,'0')}</span>${label}`;
+    b.onclick = ()=> document.querySelector(`.pn-panel[data-step="${i}"]`).scrollIntoView({behavior:'smooth', block:'start'});
+    pnStepnav.appendChild(b);
+  });
+  function setActiveNav(i){ [...pnStepnav.children].forEach((b,idx)=>b.classList.toggle('active', idx===i)); }
+  setActiveNav(0);
+  const pnPanels = [...document.querySelectorAll('.pn-panel')];
+  const pnIo = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting) setActiveNav(parseInt(e.target.dataset.step)); });
+  }, {rootMargin:"-10% 0px -70% 0px"});
+  pnPanels.forEach(p=>pnIo.observe(p));
+
+  // ---- 可收合（無內容才自動收合）----
+  const pnCollapseSetters = {};
+  pnPanels.forEach(p=>{ pnCollapseSetters[p.dataset.step] = makeCollapsible(p); });
+  function applyPnCollapse(){
+    fields.forEach((f,i)=>{
+      const s = pnCollapseSetters[String(i)];
+      if(s) s(s.hasStored() ? s.getStored() : !document.getElementById(f.id).value.trim());
+    });
+    const s9 = pnCollapseSetters[String(fields.length)];
+    if(s9) s9(s9.hasStored() ? s9.getStored() : false);
+  }
+
+  window.__projNotesOnCloudChange = async function(){
+    await Promise.all(loaders.map(fn=>fn()));
+    applyPnCollapse();
+  };
+
+  (async function initPn(){
+    await Promise.all(loaders.map(fn=>fn()));
+    applyPnCollapse();
   })();
 })();
 
