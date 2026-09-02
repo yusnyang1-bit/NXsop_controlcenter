@@ -29,6 +29,8 @@
     --amber-soft: rgba(255,176,32,0.20);
     --coral: #ff6f61;
     --coral-soft: rgba(255,111,97,0.20);
+    --apricot: #f2c184;
+    --apricot-dim: #7a5322;
     --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
     --sans: -apple-system, "Segoe UI", "PingFang TC", "Noto Sans TC", system-ui, sans-serif;
   }
@@ -49,6 +51,8 @@
     --amber-soft: rgba(214,138,31,0.12);
     --coral: #e2574a;
     --coral-soft: rgba(226,87,74,0.12);
+    --apricot: #e2a355;
+    --apricot-dim: #6b481c;
   }
   body{transition: background-color .25s ease, color .25s ease;}
   section.app-panel, section.novel-panel, section.pc-panel, section.pn-panel{transition: background-color .25s ease, border-color .25s ease;}
@@ -258,6 +262,8 @@
   button.action:hover{filter:brightness(1.08);transform:translateY(-1px);}
   button.action:active{transform:translateY(0);}
   button.action.ghost:hover{color:var(--coral);border-color:var(--coral);}
+  button.action.apricot{background:var(--apricot);color:var(--apricot-dim);}
+  button.action.apricot:hover{filter:brightness(1.1);transform:translateY(-1px);}
 
   .output-box{
     white-space:pre-wrap;
@@ -482,14 +488,22 @@
       <h1 id="mainTitle">App 開發 SOP 導覽</h1>
       <p id="mainSubtitle">每次啟動新專案的固定流程 — 填寫、確認、輸出，貼給 AI 開始協作</p>
     </div>
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <button class="action ghost" id="themeToggleBtn" style="padding:8px 12px;" title="切換深/淺色主題">🌙</button>
-      <button class="action ghost" id="cloudBtn" style="padding:8px 14px;">
-        <span id="cloudBtnDot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--text-faint);margin-right:6px;vertical-align:middle;"></span><span id="cloudBtnLabel">雲端同步</span>
-      </button>
-      <button class="action ghost" id="docsBtn" style="padding:8px 14px;">📚 參考資料</button>
-      <button class="action ghost" id="installBtn" style="padding:8px 14px;">📲 加到主畫面</button>
-      <div class="status-chip" id="saveStatus">環境設定尚未載入</div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <button class="action apricot" id="saveAllBtn" style="padding:7px 14px;">💾 全部儲存</button>
+        <button class="action apricot" id="exportAllBtn" style="padding:7px 14px;">⬇️ 匯出備份</button>
+        <button class="action apricot" id="importAllBtn" style="padding:7px 14px;">⬆️ 匯入備份</button>
+        <input type="file" id="importFileInput" accept="application/json" style="display:none;">
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <button class="action ghost" id="themeToggleBtn" style="padding:8px 12px;" title="切換深/淺色主題">🌙</button>
+        <button class="action ghost" id="cloudBtn" style="padding:8px 14px;">
+          <span id="cloudBtnDot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--text-faint);margin-right:6px;vertical-align:middle;"></span><span id="cloudBtnLabel">雲端同步</span>
+        </button>
+        <button class="action ghost" id="docsBtn" style="padding:8px 14px;">📚 參考資料</button>
+        <button class="action ghost" id="installBtn" style="padding:8px 14px;">📲 加到主畫面</button>
+        <div class="status-chip" id="saveStatus">環境設定尚未載入</div>
+      </div>
     </div>
   </header>
 
@@ -1275,6 +1289,100 @@ const cloudModalEl = document.getElementById('cloudModal');
 document.getElementById('cloudBtn').onclick = ()=> cloudModalEl.classList.add('show');
 document.getElementById('closeCloudModal').onclick = ()=> cloudModalEl.classList.remove('show');
 cloudModalEl.onclick = (e)=>{ if(e.target === cloudModalEl) cloudModalEl.classList.remove('show'); };
+
+// ---- 全部儲存／匯出／匯入備份 ----
+const CLOUD_COLLECTIONS = ['sopSync','novelSync','notebookSync','pcSync','projNotesSync'];
+const SAVE_ALL_BTN_IDS = [
+  'saveEnvBtn','saveCollabBtn','saveNotesBtn','saveNotesBtn2','saveNotesBtn3',
+  'saveNovelTitleBtn',
+  'saveReinstallBtn','saveSoftwareBtn','savePcNotesBtn',
+  'savePnStatusBtn','savePnEnvBtn','savePnFlutterBtn','savePnCapacitorBtn',
+  'savePnCloudBtn','savePnAdsBtn','savePnReleaseBtn','savePnHardwareBtn','savePnGithubBtn'
+];
+
+document.getElementById('saveAllBtn').onclick = async ()=>{
+  let ok = 0, fail = 0;
+  for(const id of SAVE_ALL_BTN_IDS){
+    const btn = document.getElementById(id);
+    if(!btn || typeof btn.onclick !== 'function') continue;
+    try{ await btn.onclick(); ok++; }
+    catch(e){ fail++; console.error(id, e); }
+  }
+  showToast(fail ? `已儲存 ${ok} 項，${fail} 項失敗` : `已全部儲存（共 ${ok} 項）`);
+};
+
+document.getElementById('exportAllBtn').onclick = async ()=>{
+  if(!cloudConnected){ showToast('請先連接雲端同步才能匯出'); return; }
+  try{
+    const result = { schemaVersion: 1, exportedAt: new Date().toISOString(), syncCode, data:{} };
+    for(const coll of CLOUD_COLLECTIONS){
+      const parentRef = firestoreDb.collection(coll).doc(syncCode);
+      const snap = await parentRef.get();
+      const fields = snap.exists ? snap.data() : {};
+      const refSnap = await parentRef.collection('refDocs').get();
+      const refDocs = {};
+      refSnap.forEach(d=>{ refDocs[d.id] = d.data(); });
+      result.data[coll] = { fields, refDocs };
+    }
+    const blob = new Blob([JSON.stringify(result, null, 2)], { type:'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const dateStr = new Date().toISOString().slice(0,10);
+    a.href = url;
+    a.download = `sop-backup-${syncCode}-${dateStr}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast('備份檔已下載');
+  }catch(e){
+    console.error(e);
+    showToast('匯出失敗，請確認雲端連線');
+  }
+};
+
+document.getElementById('importAllBtn').onclick = ()=>{
+  if(!cloudConnected){ showToast('請先連接雲端同步才能匯入'); return; }
+  document.getElementById('importFileInput').click();
+};
+document.getElementById('importFileInput').addEventListener('change', async (e)=>{
+  const file = e.target.files[0];
+  e.target.value = '';
+  if(!file) return;
+  askConfirm('匯入備份', '匯入會把備份檔內容合併寫回目前雲端資料（不會刪除現有欄位），確定要繼續嗎？', async ()=>{
+    try{
+      const text = await file.text();
+      const json = JSON.parse(text);
+      if(!json || !json.data) throw new Error('bad format');
+      for(const coll of CLOUD_COLLECTIONS){
+        const entry = json.data[coll];
+        if(!entry) continue;
+        const parentRef = firestoreDb.collection(coll).doc(syncCode);
+        if(entry.fields && Object.keys(entry.fields).length){
+          await parentRef.set(entry.fields, { merge:true });
+        }
+        if(entry.refDocs){
+          for(const [id, content] of Object.entries(entry.refDocs)){
+            await parentRef.collection('refDocs').doc(id).set(content, { merge:true });
+          }
+        }
+      }
+      showToast('匯入完成，正在重新載入畫面...');
+      if(window.__novelOnCloudChange) await window.__novelOnCloudChange();
+      if(window.__pcOnCloudChange) await window.__pcOnCloudChange();
+      if(window.__notebookOnCloudChange) await window.__notebookOnCloudChange();
+      if(window.__projNotesOnCloudChange) await window.__projNotesOnCloudChange();
+      await loadDefaults();
+      await renderProjectList();
+      await loadUserNotes();
+      await applyInitialCollapse();
+      showToast('匯入完成');
+    }catch(err){
+      console.error(err);
+      showToast('匯入失敗，請確認檔案格式正確');
+    }
+  });
+});
 
 // ---- 使用者筆記（純自用，不進AI輸出）----
 const noteFieldLoaders = [];
