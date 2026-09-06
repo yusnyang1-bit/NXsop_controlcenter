@@ -13,9 +13,9 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
   :root{
-    --bg: #081b23;
-    --bg-panel: #0f2e39;
-    --bg-panel-2: #14424f;
+    --bg: #1c3d48;
+    --bg-panel: #244f5c;
+    --bg-panel-2: #2b6070;
     --grid-line: rgba(255,220,150,0.06);
     --border: #3a83a0;
     --border-soft: #235164;
@@ -35,9 +35,9 @@
     --sans: -apple-system, "Segoe UI", "PingFang TC", "Noto Sans TC", system-ui, sans-serif;
   }
   body.light{
-    --bg: #d8c19a;
-    --bg-panel: #ecdfc5;
-    --bg-panel-2: #cbe4de;
+    --bg: #c9a24a;
+    --bg-panel: #ecdfb8;
+    --bg-panel-2: #ddc98f;
     --grid-line: rgba(60,140,130,0.06);
     --border: #bfe0da;
     --border-soft: #dcefeb;
@@ -644,15 +644,13 @@ service cloud.firestore {
       <section class="pn-panel" data-step="1">
         <h2><span class="htitle"><span class="idx">02</span> 專案現況陣列</span></h2>
         <div class="hint">類似 Excel 的表格。拖曳欄／列邊界可調整寬高，可自由新增欄列，刪除前會提醒確認。</div>
-        <div class="btnrow" style="margin-bottom:8px;">
-          <button class="action ghost" id="pnGridAddColBtn">＋ 新增欄</button>
-          <button class="action ghost" id="pnGridAddRowBtn">＋ 新增列</button>
-          <button class="action ghost" id="pnGridResetBtn">還原 4×4</button>
-        </div>
         <div id="pnGridWrap" style="overflow:auto;border:1px solid var(--border);border-radius:10px;max-width:100%;"></div>
         <div class="btnrow" style="margin-top:10px;">
           <button class="action ghost" id="savePnGridBtn">儲存</button>
           <button class="action ghost" id="copyPnGridBtn">📋 複製內容</button>
+          <span style="width:14px;"></span>
+          <button class="action ghost" id="pnGridAddColBtn">＋ 新增欄</button>
+          <button class="action ghost" id="pnGridAddRowBtn">＋ 新增列</button>
         </div>
       </section>
 
@@ -3216,12 +3214,6 @@ function applyInitialCollapse(){
     pnGrid.rows.push(32);
     pnGrid.cells.push(new Array(pnGrid.cols.length).fill(''));
     renderPnGrid();
-  };
-  document.getElementById('pnGridResetBtn').onclick = ()=>{
-    askConfirm('還原 4×4', '確定要清空目前表格並還原成預設的 4×4 嗎？此動作無法復原。', ()=>{
-      pnGrid = JSON.parse(JSON.stringify(PN_GRID_DEFAULT));
-      renderPnGrid();
-    });
   };
 
   const fields = [
