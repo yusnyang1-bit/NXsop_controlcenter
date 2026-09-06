@@ -35,10 +35,10 @@
     --sans: -apple-system, "Segoe UI", "PingFang TC", "Noto Sans TC", system-ui, sans-serif;
   }
   body.light{
-    --bg: #faf3e6;
-    --bg-panel: #fffbf3;
-    --bg-panel-2: #eef7f5;
-    --grid-line: rgba(60,140,130,0.05);
+    --bg: #d8c19a;
+    --bg-panel: #ecdfc5;
+    --bg-panel-2: #cbe4de;
+    --grid-line: rgba(60,140,130,0.06);
     --border: #bfe0da;
     --border-soft: #dcefeb;
     --text: #24312f;
@@ -452,26 +452,27 @@
   .doc-item{
     display:flex;align-items:center;justify-content:space-between;gap:10px;
     background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:11px;
-    padding:8px 12px;margin-bottom:6px;cursor:pointer;
+    padding:8px 12px;margin-bottom:6px;cursor:grab;
+    transition:opacity .15s ease, border-color .15s ease;
   }
   .doc-item:hover{border-color:var(--accent-dim);}
-  .doc-item .dname{font-size:13.5px;color:var(--text);}
+  .doc-item.dragging{opacity:0.4;}
+  .doc-item.drag-over{border-color:var(--coral);box-shadow:0 0 0 2px var(--coral-soft);}
+  .doc-item .dhandle{color:var(--text-faint);font-size:14px;cursor:grab;flex-shrink:0;}
+  .doc-item .dname{font-size:13.5px;color:var(--text);flex:1;}
   .doc-item .darrow{color:var(--text-faint);font-family:var(--mono);font-size:12px;cursor:pointer;}
   .doc-item .dactions{display:flex;align-items:center;gap:10px;flex-shrink:0;}
   .doc-item .ddel{
     all:unset;cursor:pointer;font-family:var(--mono);font-size:11px;color:#ff6b6b;
     padding:4px 8px;border-radius:6px;border:1px solid rgba(255,107,107,0.3);
   }
-  .doc-item .dmove{
-    all:unset;cursor:pointer;font-family:var(--mono);font-size:12px;color:var(--text-dim);
-    padding:4px 7px;border-radius:6px;border:1px solid var(--border-soft);
-  }
-  .doc-item .dmove:hover{color:var(--accent);border-color:var(--accent-dim);}
-  .doc-item .dmove:disabled{opacity:0.3;cursor:default;}
-  .doc-item .dmove:disabled:hover{color:var(--text-dim);border-color:var(--border-soft);}
   .docs-preview{display:flex;flex-direction:column;overflow:hidden;flex:1;min-height:0;}
   .docs-preview-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-shrink:0;}
   .docs-preview-title{font-size:13.5px;font-weight:600;color:var(--text);}
+  .docs-preview-title-input{
+    font-size:13.5px;font-weight:600;color:var(--text);background:var(--bg-panel-2);
+    border:1px solid var(--accent);border-radius:7px;padding:4px 8px;font-family:var(--sans);
+  }
   .docs-preview-body{
     white-space:pre-wrap;font-family:var(--mono);font-size:12px;line-height:1.7;
     background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:9px;
@@ -592,7 +593,44 @@ service cloud.firestore {
     <div id="projNotesPanelsWrap">
 
       <section class="pn-panel" data-step="0">
-        <h2><span class="htitle"><span class="idx">01</span> 專案現況</span></h2>
+        <h2><span class="htitle"><span class="idx">01</span> 分案管理</span></h2>
+        <div class="hint">管理專案下的子案／工單，仿「參考資料」格式：新增條目、點開檢視內容、可拖曳排序。</div>
+        <div id="pnCasesListView">
+          <div class="btnrow" style="margin-bottom:12px;">
+            <button class="action ghost" id="pnCasesAddToggleBtn">＋ 新增分案</button>
+          </div>
+          <div id="pnCasesAddForm" style="display:none;">
+            <label>標題</label>
+            <input type="text" id="pnCasesTitleInput" placeholder="例：客戶A - 首頁改版">
+            <label>內容</label>
+            <textarea id="pnCasesContentInput" placeholder="分案說明、進度、備註..." style="min-height:120px;"></textarea>
+            <div class="btnrow">
+              <button class="action" id="pnCasesSaveBtn">儲存</button>
+              <button class="action ghost" id="pnCasesCancelAddBtn">取消</button>
+            </div>
+          </div>
+          <div id="pnCasesList" class="docs-list"></div>
+        </div>
+
+        <div id="pnCasesPreview" class="docs-preview" style="display:none;">
+          <div class="docs-preview-head" style="flex-wrap:wrap;">
+            <button class="closeModal" id="pnCasesBackBtn">← 返回清單</button>
+            <span id="pnCasesPreviewTitle" class="docs-preview-title"></span>
+            <input id="pnCasesPreviewTitleInput" class="docs-preview-title-input" type="text" style="display:none;">
+            <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="action ghost" id="pnCasesCopyBtn">📋 複製</button>
+              <button class="action ghost" id="pnCasesEditBtn">✏️ 編輯</button>
+              <button class="action" id="pnCasesSaveEditBtn" style="display:none;">儲存</button>
+              <button class="action ghost" id="pnCasesCancelEditBtn" style="display:none;">取消</button>
+            </div>
+          </div>
+          <pre id="pnCasesPreviewBody" class="docs-preview-body" style="max-height:55vh;"></pre>
+          <textarea id="pnCasesEditBody" class="docs-preview-body" style="display:none;max-height:55vh;min-height:150px;"></textarea>
+        </div>
+      </section>
+
+      <section class="pn-panel" data-step="1">
+        <h2><span class="htitle"><span class="idx">02</span> 專案現況</span></h2>
         <div class="hint">目前進度、待辦事項、卡關的地方，自由編輯。</div>
         <textarea id="pnStatusNotes" placeholder="例：目前進度、下一步要做什麼、待解決問題..." style="min-height:135px;"></textarea>
         <div class="btnrow">
@@ -601,8 +639,8 @@ service cloud.firestore {
         </div>
       </section>
 
-      <section class="pn-panel" data-step="1">
-        <h2><span class="htitle"><span class="idx">02</span> 環境與系統設定</span></h2>
+      <section class="pn-panel" data-step="2">
+        <h2><span class="htitle"><span class="idx">03</span> 環境與系統設定</span></h2>
         <div class="hint">開發環境路徑、系統設定、固定值等，自由編輯。</div>
         <textarea id="pnEnvNotes" placeholder="例：SDK路徑、環境變數、專案資料夾位置..." style="min-height:135px;"></textarea>
         <div class="btnrow">
@@ -611,8 +649,8 @@ service cloud.firestore {
         </div>
       </section>
 
-      <section class="pn-panel" data-step="2">
-        <h2><span class="htitle"><span class="idx">03</span> Flutter 版本</span></h2>
+      <section class="pn-panel" data-step="3">
+        <h2><span class="htitle"><span class="idx">04</span> Flutter 版本</span></h2>
         <div class="hint">Flutter／Dart 版本號、升級紀錄、相容性備註，自由編輯。</div>
         <textarea id="pnFlutterNotes" placeholder="例：目前版本、升級紀錄、套件相容性備註..." style="min-height:135px;"></textarea>
         <div class="btnrow">
@@ -621,8 +659,8 @@ service cloud.firestore {
         </div>
       </section>
 
-      <section class="pn-panel" data-step="3">
-        <h2><span class="htitle"><span class="idx">04</span> Capacitor 版本</span></h2>
+      <section class="pn-panel" data-step="4">
+        <h2><span class="htitle"><span class="idx">05</span> Capacitor 版本</span></h2>
         <div class="hint">Capacitor 版本號、外掛清單、平台設定備註，自由編輯。</div>
         <textarea id="pnCapacitorNotes" placeholder="例：目前版本、已安裝外掛、平台設定備註..." style="min-height:135px;"></textarea>
         <div class="btnrow">
@@ -631,8 +669,8 @@ service cloud.firestore {
         </div>
       </section>
 
-      <section class="pn-panel" data-step="4">
-        <h2><span class="htitle"><span class="idx">05</span> 雲端服務與資料庫 (Firebase / GAS)</span></h2>
+      <section class="pn-panel" data-step="5">
+        <h2><span class="htitle"><span class="idx">06</span> 雲端服務與資料庫 (Firebase / GAS)</span></h2>
         <div class="hint">Firebase／Google Apps Script 等雲端服務設定備註，自由編輯。</div>
         <textarea id="pnCloudNotes" placeholder="例：Firebase 專案、GAS 部署網址、資料庫結構備註..." style="min-height:135px;"></textarea>
         <div class="btnrow">
@@ -641,8 +679,8 @@ service cloud.firestore {
         </div>
       </section>
 
-      <section class="pn-panel" data-step="5">
-        <h2><span class="htitle"><span class="idx">06</span> 廣告與行銷</span></h2>
+      <section class="pn-panel" data-step="6">
+        <h2><span class="htitle"><span class="idx">07</span> 廣告與行銷</span></h2>
         <div class="hint">廣告版位、行銷素材、投放策略備註，自由編輯。</div>
         <textarea id="pnAdsNotes" placeholder="例：廣告平台、版位設定、行銷素材連結..." style="min-height:135px;"></textarea>
         <div class="btnrow">
@@ -651,8 +689,8 @@ service cloud.firestore {
         </div>
       </section>
 
-      <section class="pn-panel" data-step="6">
-        <h2><span class="htitle"><span class="idx">07</span> 平台發布、更新</span></h2>
+      <section class="pn-panel" data-step="7">
+        <h2><span class="htitle"><span class="idx">08</span> 平台發布、更新</span></h2>
         <div class="hint">上架審核、版本更新紀錄、發布流程備註，自由編輯。</div>
         <textarea id="pnReleaseNotes" placeholder="例：版本號、更新內容、審核狀態、發布日期..." style="min-height:135px;"></textarea>
         <div class="btnrow">
@@ -661,8 +699,8 @@ service cloud.firestore {
         </div>
       </section>
 
-      <section class="pn-panel" data-step="7">
-        <h2><span class="htitle"><span class="idx">08</span> 重灌及硬體</span></h2>
+      <section class="pn-panel" data-step="8">
+        <h2><span class="htitle"><span class="idx">09</span> 重灌及硬體</span></h2>
         <div class="hint">開發用電腦的重灌流程、硬體規格備註，自由編輯。</div>
         <textarea id="pnHardwareNotes" placeholder="例：重灌步驟、硬體規格、驅動程式清單..." style="min-height:135px;"></textarea>
         <div class="btnrow">
@@ -671,8 +709,8 @@ service cloud.firestore {
         </div>
       </section>
 
-      <section class="pn-panel" data-step="8">
-        <h2><span class="htitle"><span class="idx">09</span> GitHub</span></h2>
+      <section class="pn-panel" data-step="9">
+        <h2><span class="htitle"><span class="idx">10</span> GitHub</span></h2>
         <div class="hint">Repo 位置、分支策略、常用指令備註，自由編輯。</div>
         <textarea id="pnGithubNotes" placeholder="例：repo網址、分支規則、常用git指令..." style="min-height:135px;"></textarea>
         <div class="btnrow">
@@ -681,8 +719,8 @@ service cloud.firestore {
         </div>
       </section>
 
-      <section class="pn-panel" data-step="9">
-        <h2><span class="htitle"><span class="idx">10</span> 輸出</span></h2>
+      <section class="pn-panel" data-step="10">
+        <h2><span class="htitle"><span class="idx">11</span> 輸出</span></h2>
         <div class="hint">整合以上所有段落為一篇文字，複製後貼給 AI 或存檔備查。</div>
         <div class="btnrow">
           <button class="action" id="pnGenBtn">產生整合文字</button>
@@ -876,7 +914,7 @@ service cloud.firestore {
       <div id="nbPreview" class="docs-preview" style="display:none;">
         <div class="docs-preview-head" style="flex-wrap:wrap;">
           <button class="closeModal" id="nbBackBtn">← 返回清單</button>
-          <span id="nbPreviewTitle" class="docs-preview-title"></span>
+          <span id="nbPreviewTitle" class="docs-preview-title"></span><input id="nbPreviewTitleInput" class="docs-preview-title-input" type="text" style="display:none;">
           <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;">
             <button class="action ghost" id="nbCopyBtn">📋 複製</button>
             <button class="action ghost" id="nbEditBtn">✏️ 編輯</button>
@@ -1128,7 +1166,7 @@ service cloud.firestore {
     <div id="docsPreview" class="docs-preview" style="display:none;">
       <div class="docs-preview-head" style="flex-wrap:wrap;">
         <button class="closeModal" id="docsBackBtn">← 返回清單</button>
-        <span id="docsPreviewTitle" class="docs-preview-title"></span>
+        <span id="docsPreviewTitle" class="docs-preview-title"></span><input id="docsPreviewTitleInput" class="docs-preview-title-input" type="text" style="display:none;">
         <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;">
           <button class="action ghost" id="docsCopyBtn">📋 複製</button>
           <button class="action ghost" id="docsEditBtn">✏️ 編輯</button>
@@ -2069,7 +2107,7 @@ document.getElementById('copyBtn').onclick = async ()=>{
 })();
 
 // ============ 參考資料（各模式各自獨立；輕量索引+每篇獨立文件存放，各自有獨立的1MB額度）============
-function refDocsCollectionName(mode){ return mode === 'novel' ? 'novelSync' : mode === 'notebook' ? 'notebookSync' : 'sopSync'; }
+function refDocsCollectionName(mode){ return mode === 'novel' ? 'novelSync' : mode === 'notebook' ? 'notebookSync' : mode === 'pncases' ? 'projNotesSync' : 'sopSync'; }
 function refLocalPrefix(mode){ return mode === 'novel' ? 'novel' : mode === 'notebook' ? 'notebook' : 'app'; }
 function refParentDocRef(mode){ return firestoreDb.collection(refDocsCollectionName(mode)).doc(syncCode); }
 function refSubCollection(mode){ return refParentDocRef(mode).collection('refDocs'); }
@@ -2157,6 +2195,7 @@ function initDocsPanel(cfg){
   const listEl = document.getElementById(ids.list);
   const previewEl = document.getElementById(ids.preview);
   const previewTitleEl = document.getElementById(ids.previewTitle);
+  const previewTitleInputEl = document.getElementById(ids.previewTitleInput);
   const previewBodyEl = document.getElementById(ids.previewBody);
   const addForm = document.getElementById(ids.addForm);
   const titleInput = document.getElementById(ids.titleInput);
@@ -2166,6 +2205,7 @@ function initDocsPanel(cfg){
   const categoryCustomInput = ids.categoryCustomInput ? document.getElementById(ids.categoryCustomInput) : null;
   const categories = cfg.categories || null;
   let currentPreviewDoc = null;
+  let dragId = null;
 
   const editBtn = document.getElementById(ids.editBtn);
   const editBodyEl = document.getElementById(ids.editBody);
@@ -2182,14 +2222,19 @@ function initDocsPanel(cfg){
   editBtn.onclick = ()=>{
     if(!currentPreviewDoc) return;
     editBodyEl.value = previewBodyEl.textContent;
+    previewTitleInputEl.value = previewTitleEl.textContent;
     previewBodyEl.style.display = 'none';
     editBodyEl.style.display = '';
+    previewTitleEl.style.display = 'none';
+    previewTitleInputEl.style.display = '';
     editBtn.style.display = 'none';
     saveEditBtn.style.display = '';
     cancelEditBtn.style.display = '';
   };
   cancelEditBtn.onclick = ()=>{
     editBodyEl.style.display = 'none';
+    previewTitleInputEl.style.display = 'none';
+    previewTitleEl.style.display = '';
     saveEditBtn.style.display = 'none';
     cancelEditBtn.style.display = 'none';
     editBtn.style.display = '';
@@ -2198,10 +2243,21 @@ function initDocsPanel(cfg){
   saveEditBtn.onclick = async ()=>{
     if(!currentPreviewDoc) return;
     const newContent = editBodyEl.value;
+    const newTitle = previewTitleInputEl.value.trim() || currentPreviewDoc.title;
     try{
       await setRefDocContent(currentPreviewDoc.mode, currentPreviewDoc.id, newContent);
+      const list = await getRefDocsIndex(currentPreviewDoc.mode);
+      const idx = list.findIndex(x=>x.id === currentPreviewDoc.id);
+      if(idx !== -1 && list[idx].title !== newTitle){
+        list[idx].title = newTitle;
+        await setRefDocsIndex(currentPreviewDoc.mode, list);
+      }
       previewBodyEl.textContent = newContent;
+      previewTitleEl.textContent = newTitle;
+      currentPreviewDoc.title = newTitle;
       editBodyEl.style.display = 'none';
+      previewTitleInputEl.style.display = 'none';
+      previewTitleEl.style.display = '';
       saveEditBtn.style.display = 'none';
       cancelEditBtn.style.display = 'none';
       editBtn.style.display = '';
@@ -2218,6 +2274,8 @@ function initDocsPanel(cfg){
     listViewEl.style.display = 'none';
     previewEl.style.display = 'flex';
     previewTitleEl.textContent = meta.title;
+    previewTitleEl.style.display = '';
+    previewTitleInputEl.style.display = 'none';
     previewBodyEl.textContent = '載入中...';
     previewBodyEl.style.display = '';
     editBodyEl.style.display = 'none';
@@ -2230,13 +2288,46 @@ function initDocsPanel(cfg){
     });
   }
 
-  function buildItemEl(meta, mode, isFirst, isLast){
+  function sameGroup(a, b){
+    if(!categories) return true;
+    const knownCats = categories.filter(c=>c!=='自訂');
+    const catA = a.category || knownCats[0];
+    const catB = b.category || knownCats[0];
+    return catA === catB;
+  }
+
+  async function reorder(fromId, toId){
+    const mode = cfg.getMode();
+    const list = await getRefDocsIndex(mode);
+    const fromIdx = list.findIndex(x=>x.id === fromId);
+    const toIdx = list.findIndex(x=>x.id === toId);
+    if(fromIdx === -1 || toIdx === -1 || fromIdx === toIdx) return;
+    if(!sameGroup(list[fromIdx], list[toIdx])){ showToast('只能在同分類內拖曳排序'); return; }
+    const [moved] = list.splice(fromIdx, 1);
+    list.splice(list.findIndex(x=>x.id === toId), 0, moved);
+    await setRefDocsIndex(mode, list);
+    renderList();
+  }
+
+  function buildItemEl(meta, mode){
     const item = document.createElement('div');
     item.className = 'doc-item';
-    item.innerHTML = `<span class="dname">${escapeHtml(meta.title)}</span><div class="dactions"><button class="dmove" ${isFirst?'disabled':''}>▲</button><button class="dmove" ${isLast?'disabled':''}>▼</button><span class="darrow">開啟 →</span><button class="ddel">刪除</button></div>`;
-    const moveBtns = item.querySelectorAll('.dmove');
-    moveBtns[0].onclick = (e)=>{ e.stopPropagation(); moveIndex(meta.id, -1); };
-    moveBtns[1].onclick = (e)=>{ e.stopPropagation(); moveIndex(meta.id, 1); };
+    item.draggable = true;
+    item.innerHTML = `<span class="dhandle" title="拖曳排序">⠿</span><span class="dname">${escapeHtml(meta.title)}</span><div class="dactions"><span class="darrow">開啟 →</span><button class="ddel">刪除</button></div>`;
+    item.addEventListener('dragstart', (e)=>{
+      dragId = meta.id;
+      item.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      try{ e.dataTransfer.setData('text/plain', meta.id); }catch(err){}
+    });
+    item.addEventListener('dragend', ()=>{ item.classList.remove('dragging'); dragId = null; });
+    item.addEventListener('dragover', (e)=>{ e.preventDefault(); item.classList.add('drag-over'); });
+    item.addEventListener('dragleave', ()=> item.classList.remove('drag-over'));
+    item.addEventListener('drop', (e)=>{
+      e.preventDefault();
+      item.classList.remove('drag-over');
+      if(dragId && dragId !== meta.id) reorder(dragId, meta.id);
+    });
     item.querySelector('.darrow').onclick = ()=> openPreview(mode, meta);
     item.querySelector('.ddel').onclick = (e)=>{
       e.stopPropagation();
@@ -2292,35 +2383,15 @@ function initDocsPanel(cfg){
         head.className = 'doc-group-title';
         head.textContent = cat;
         listEl.appendChild(head);
-        const items = groupMap[cat];
-        items.forEach((meta, gi)=>{
-          listEl.appendChild(buildItemEl(meta, mode, gi===0, gi===items.length-1));
+        groupMap[cat].forEach(meta=>{
+          listEl.appendChild(buildItemEl(meta, mode));
         });
       });
     } else {
-      index.forEach((meta, i)=>{
-        listEl.appendChild(buildItemEl(meta, mode, i===0, i===index.length-1));
+      index.forEach(meta=>{
+        listEl.appendChild(buildItemEl(meta, mode));
       });
     }
-  }
-
-  async function moveIndex(id, direction){
-    const mode = cfg.getMode();
-    const list = await getRefDocsIndex(mode);
-    const i = list.findIndex(x=>x.id===id);
-    if(i===-1) return;
-    let j;
-    if(categories){
-      const cat = list[i].category || (categories.filter(c=>c!=='自訂'))[0];
-      j = i;
-      do{ j += direction; }while(j>=0 && j<list.length && (list[j].category || cat) !== cat);
-    } else {
-      j = i + direction;
-    }
-    if(j<0 || j>=list.length) return;
-    const tmp = list[i]; list[i] = list[j]; list[j] = tmp;
-    await setRefDocsIndex(mode, list);
-    renderList();
   }
 
   if(fileInput){
@@ -2397,7 +2468,7 @@ initDocsPanel({
   itemLabel: '參考資料',
   ids: {
     modal:'docsModal', listView:'docsListView', list:'docsList', preview:'docsPreview',
-    previewTitle:'docsPreviewTitle', previewBody:'docsPreviewBody', addForm:'docsAddForm',
+    previewTitle:'docsPreviewTitle', previewTitleInput:'docsPreviewTitleInput', previewBody:'docsPreviewBody', addForm:'docsAddForm',
     titleInput:'docTitleInput', contentInput:'docContentInput', fileInput:'docFileInput',
     addToggleBtn:'docsAddToggleBtn', cancelAddBtn:'docCancelAddBtn', saveBtn:'docSaveBtn',
     editBtn:'docsEditBtn', editBody:'docsEditBody', saveEditBtn:'docsSaveEditBtn',
@@ -2416,7 +2487,7 @@ initDocsPanel({
   exposeOnCloudChangeAs: '__notebookOnCloudChange',
   ids: {
     listView:'nbListView', list:'nbList', preview:'nbPreview',
-    previewTitle:'nbPreviewTitle', previewBody:'nbPreviewBody', addForm:'nbAddForm',
+    previewTitle:'nbPreviewTitle', previewTitleInput:'nbPreviewTitleInput', previewBody:'nbPreviewBody', addForm:'nbAddForm',
     titleInput:'nbTitleInput', contentInput:'nbContentInput', fileInput:null,
     categorySelect:'nbCategorySelect', categoryCustomInput:'nbCategoryCustomInput',
     addToggleBtn:'nbAddToggleBtn', cancelAddBtn:'nbCancelAddBtn', saveBtn:'nbSaveBtn',
@@ -3031,7 +3102,7 @@ function applyInitialCollapse(){
   };
 
   // ---- 步驟導覽 ----
-  const pnSteps = ["專案現況","環境與系統設定","Flutter 版本","Capacitor 版本","雲端服務與資料庫","廣告與行銷","平台發布、更新","重灌及硬體","GitHub","輸出"];
+  const pnSteps = ["分案管理","專案現況","環境與系統設定","Flutter 版本","Capacitor 版本","雲端服務與資料庫","廣告與行銷","平台發布、更新","重灌及硬體","GitHub","輸出"];
   const pnStepnav = document.getElementById('projNotesStepnav');
   pnSteps.forEach((label, i)=>{
     const b = document.createElement('button');
@@ -3051,17 +3122,20 @@ function applyInitialCollapse(){
   const pnCollapseSetters = {};
   pnPanels.forEach(p=>{ pnCollapseSetters[p.dataset.step] = makeCollapsible(p); });
   function applyPnCollapse(){
+    const s0 = pnCollapseSetters['0'];
+    if(s0) s0(s0.hasStored() ? s0.getStored() : false);
     fields.forEach((f,i)=>{
-      const s = pnCollapseSetters[String(i)];
+      const s = pnCollapseSetters[String(i+1)];
       if(s) s(s.hasStored() ? s.getStored() : !document.getElementById(f.id).value.trim());
     });
-    const s9 = pnCollapseSetters[String(fields.length)];
-    if(s9) s9(s9.hasStored() ? s9.getStored() : false);
+    const sLast = pnCollapseSetters[String(fields.length+1)];
+    if(sLast) sLast(sLast.hasStored() ? sLast.getStored() : false);
   }
 
   window.__projNotesOnCloudChange = async function(){
     await Promise.all(loaders.map(fn=>fn()));
     applyPnCollapse();
+    if(window.__pnCasesOnCloudChange) await window.__pnCasesOnCloudChange();
   };
 
   (async function initPn(){
@@ -3069,6 +3143,24 @@ function applyInitialCollapse(){
     applyPnCollapse();
   })();
 })();
+
+// ---- 分案管理（沿用參考資料/記事本的清單＋內文設計，資料存在 projNotesSync 集合）----
+initDocsPanel({
+  getMode: ()=> 'pncases',
+  isModal: false,
+  emptyText: '尚未新增任何分案，點上方「＋ 新增分案」加入第一筆。',
+  itemLabel: '分案',
+  exposeOnCloudChangeAs: '__pnCasesOnCloudChange',
+  ids: {
+    listView:'pnCasesListView', list:'pnCasesList', preview:'pnCasesPreview',
+    previewTitle:'pnCasesPreviewTitle', previewTitleInput:'pnCasesPreviewTitleInput',
+    previewBody:'pnCasesPreviewBody', addForm:'pnCasesAddForm',
+    titleInput:'pnCasesTitleInput', contentInput:'pnCasesContentInput', fileInput:null,
+    addToggleBtn:'pnCasesAddToggleBtn', cancelAddBtn:'pnCasesCancelAddBtn', saveBtn:'pnCasesSaveBtn',
+    editBtn:'pnCasesEditBtn', editBody:'pnCasesEditBody', saveEditBtn:'pnCasesSaveEditBtn',
+    cancelEditBtn:'pnCasesCancelEditBtn', copyBtn:'pnCasesCopyBtn', backBtn:'pnCasesBackBtn'
+  }
+});
 
 enhanceAllTextareas();
 
