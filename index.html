@@ -447,6 +447,18 @@
   .modal.wide{max-width:560px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;}
   #docsListView{flex:1;min-height:0;overflow-y:auto;padding-right:2px;}
   .doc-group-title{font-size:11.5px;font-family:var(--mono);color:var(--coral);text-transform:uppercase;letter-spacing:0.05em;margin:12px 0 4px;padding-left:8px;border-left:3px solid var(--coral);}
+
+  .pn-grid-table{border-collapse:collapse;table-layout:fixed;}
+  .pn-grid-table th, .pn-grid-table td{border:1px solid var(--border-soft);padding:0;position:relative;background:var(--bg-panel-2);}
+  .pn-grid-table thead th{background:var(--bg-panel);font-size:11px;color:var(--text-faint);font-family:var(--mono);font-weight:600;padding:4px 6px;white-space:nowrap;}
+  .pn-grid-table tbody th{background:var(--bg-panel);font-size:11px;color:var(--text-faint);font-family:var(--mono);font-weight:600;padding:4px 6px;white-space:nowrap;text-align:left;}
+  .pn-grid-corner{background:var(--bg-panel);}
+  .pn-grid-cell-input{width:100%;height:100%;border:none;background:transparent;color:var(--text);font-size:13px;padding:4px 6px;font-family:var(--sans);box-sizing:border-box;outline:none;}
+  .pn-grid-cell-input:focus{background:var(--accent-soft);}
+  .pn-grid-colresize{position:absolute;top:0;right:-3px;width:6px;height:100%;cursor:col-resize;z-index:2;}
+  .pn-grid-rowresize{position:absolute;left:0;bottom:-3px;width:100%;height:6px;cursor:row-resize;z-index:2;}
+  .pn-grid-delbtn{all:unset;position:absolute;top:1px;right:2px;color:#ff6b6b;font-size:11px;cursor:pointer;line-height:1;padding:1px 3px;display:none;}
+  .pn-grid-table th:hover .pn-grid-delbtn{display:block;}
   .doc-group-title:first-child{margin-top:0;}
   .docs-list{}
   .doc-item{
@@ -630,7 +642,22 @@ service cloud.firestore {
       </section>
 
       <section class="pn-panel" data-step="1">
-        <h2><span class="htitle"><span class="idx">02</span> 專案現況</span></h2>
+        <h2><span class="htitle"><span class="idx">02</span> 專案現況陣列</span></h2>
+        <div class="hint">類似 Excel 的表格。拖曳欄／列邊界可調整寬高，可自由新增欄列，刪除前會提醒確認。</div>
+        <div class="btnrow" style="margin-bottom:8px;">
+          <button class="action ghost" id="pnGridAddColBtn">＋ 新增欄</button>
+          <button class="action ghost" id="pnGridAddRowBtn">＋ 新增列</button>
+          <button class="action ghost" id="pnGridResetBtn">還原 4×4</button>
+        </div>
+        <div id="pnGridWrap" style="overflow:auto;border:1px solid var(--border);border-radius:10px;max-width:100%;"></div>
+        <div class="btnrow" style="margin-top:10px;">
+          <button class="action ghost" id="savePnGridBtn">儲存</button>
+          <button class="action ghost" id="copyPnGridBtn">📋 複製內容</button>
+        </div>
+      </section>
+
+      <section class="pn-panel" data-step="2">
+        <h2><span class="htitle"><span class="idx">03</span> 專案現況</span></h2>
         <div class="hint">目前進度、待辦事項、卡關的地方，自由編輯。</div>
         <textarea id="pnStatusNotes" placeholder="例：目前進度、下一步要做什麼、待解決問題..." style="min-height:135px;"></textarea>
         <div class="btnrow">
@@ -639,8 +666,8 @@ service cloud.firestore {
         </div>
       </section>
 
-      <section class="pn-panel" data-step="2">
-        <h2><span class="htitle"><span class="idx">03</span> 環境與系統設定</span></h2>
+      <section class="pn-panel" data-step="3">
+        <h2><span class="htitle"><span class="idx">04</span> 環境與系統設定</span></h2>
         <div class="hint">開發環境路徑、系統設定、固定值等，自由編輯。</div>
         <textarea id="pnEnvNotes" placeholder="例：SDK路徑、環境變數、專案資料夾位置..." style="min-height:135px;"></textarea>
         <div class="btnrow">
@@ -649,8 +676,8 @@ service cloud.firestore {
         </div>
       </section>
 
-      <section class="pn-panel" data-step="3">
-        <h2><span class="htitle"><span class="idx">04</span> Flutter 版本</span></h2>
+      <section class="pn-panel" data-step="4">
+        <h2><span class="htitle"><span class="idx">05</span> Flutter 版本</span></h2>
         <div class="hint">Flutter／Dart 版本號、升級紀錄、相容性備註，自由編輯。</div>
         <textarea id="pnFlutterNotes" placeholder="例：目前版本、升級紀錄、套件相容性備註..." style="min-height:135px;"></textarea>
         <div class="btnrow">
@@ -659,8 +686,8 @@ service cloud.firestore {
         </div>
       </section>
 
-      <section class="pn-panel" data-step="4">
-        <h2><span class="htitle"><span class="idx">05</span> Capacitor 版本</span></h2>
+      <section class="pn-panel" data-step="5">
+        <h2><span class="htitle"><span class="idx">06</span> Capacitor 版本</span></h2>
         <div class="hint">Capacitor 版本號、外掛清單、平台設定備註，自由編輯。</div>
         <textarea id="pnCapacitorNotes" placeholder="例：目前版本、已安裝外掛、平台設定備註..." style="min-height:135px;"></textarea>
         <div class="btnrow">
@@ -669,8 +696,8 @@ service cloud.firestore {
         </div>
       </section>
 
-      <section class="pn-panel" data-step="5">
-        <h2><span class="htitle"><span class="idx">06</span> 雲端服務與資料庫 (Firebase / GAS)</span></h2>
+      <section class="pn-panel" data-step="6">
+        <h2><span class="htitle"><span class="idx">07</span> 雲端服務與資料庫 (Firebase / GAS)</span></h2>
         <div class="hint">Firebase／Google Apps Script 等雲端服務設定備註，自由編輯。</div>
         <textarea id="pnCloudNotes" placeholder="例：Firebase 專案、GAS 部署網址、資料庫結構備註..." style="min-height:135px;"></textarea>
         <div class="btnrow">
@@ -679,8 +706,8 @@ service cloud.firestore {
         </div>
       </section>
 
-      <section class="pn-panel" data-step="6">
-        <h2><span class="htitle"><span class="idx">07</span> 廣告與行銷</span></h2>
+      <section class="pn-panel" data-step="7">
+        <h2><span class="htitle"><span class="idx">08</span> 廣告與行銷</span></h2>
         <div class="hint">廣告版位、行銷素材、投放策略備註，自由編輯。</div>
         <textarea id="pnAdsNotes" placeholder="例：廣告平台、版位設定、行銷素材連結..." style="min-height:135px;"></textarea>
         <div class="btnrow">
@@ -689,8 +716,8 @@ service cloud.firestore {
         </div>
       </section>
 
-      <section class="pn-panel" data-step="7">
-        <h2><span class="htitle"><span class="idx">08</span> 平台發布、更新</span></h2>
+      <section class="pn-panel" data-step="8">
+        <h2><span class="htitle"><span class="idx">09</span> 平台發布、更新</span></h2>
         <div class="hint">上架審核、版本更新紀錄、發布流程備註，自由編輯。</div>
         <textarea id="pnReleaseNotes" placeholder="例：版本號、更新內容、審核狀態、發布日期..." style="min-height:135px;"></textarea>
         <div class="btnrow">
@@ -699,8 +726,8 @@ service cloud.firestore {
         </div>
       </section>
 
-      <section class="pn-panel" data-step="8">
-        <h2><span class="htitle"><span class="idx">09</span> 重灌及硬體</span></h2>
+      <section class="pn-panel" data-step="9">
+        <h2><span class="htitle"><span class="idx">10</span> 重灌及硬體</span></h2>
         <div class="hint">開發用電腦的重灌流程、硬體規格備註，自由編輯。</div>
         <textarea id="pnHardwareNotes" placeholder="例：重灌步驟、硬體規格、驅動程式清單..." style="min-height:135px;"></textarea>
         <div class="btnrow">
@@ -709,8 +736,8 @@ service cloud.firestore {
         </div>
       </section>
 
-      <section class="pn-panel" data-step="9">
-        <h2><span class="htitle"><span class="idx">10</span> GitHub</span></h2>
+      <section class="pn-panel" data-step="10">
+        <h2><span class="htitle"><span class="idx">11</span> GitHub</span></h2>
         <div class="hint">Repo 位置、分支策略、常用指令備註，自由編輯。</div>
         <textarea id="pnGithubNotes" placeholder="例：repo網址、分支規則、常用git指令..." style="min-height:135px;"></textarea>
         <div class="btnrow">
@@ -719,8 +746,8 @@ service cloud.firestore {
         </div>
       </section>
 
-      <section class="pn-panel" data-step="10">
-        <h2><span class="htitle"><span class="idx">11</span> 輸出</span></h2>
+      <section class="pn-panel" data-step="11">
+        <h2><span class="htitle"><span class="idx">12</span> 輸出</span></h2>
         <div class="hint">整合以上所有段落為一篇文字，複製後貼給 AI 或存檔備查。</div>
         <div class="btnrow">
           <button class="action" id="pnGenBtn">產生整合文字</button>
@@ -3042,6 +3069,161 @@ function applyInitialCollapse(){
     await pnDocRef().set({ [field]: value, updatedAt: Date.now() }, { merge: true });
   }
 
+  // ---- 專案現況陣列（類 Excel 表格，欄寬/列高可拖曳，可增刪欄列）----
+  const PN_GRID_DEFAULT = { cols:[120,120,120,120], rows:[32,32,32,32], cells:[['','','',''],['','','',''],['','','',''],['','','','']] };
+  let pnGrid = JSON.parse(JSON.stringify(PN_GRID_DEFAULT));
+  const pnGridWrap = document.getElementById('pnGridWrap');
+
+  function renderPnGrid(){
+    pnGridWrap.innerHTML = '';
+    const table = document.createElement('table');
+    table.className = 'pn-grid-table';
+    const colgroup = document.createElement('colgroup');
+    colgroup.innerHTML = `<col style="width:34px">` + pnGrid.cols.map(w=>`<col style="width:${w}px">`).join('');
+    table.appendChild(colgroup);
+
+    const thead = document.createElement('thead');
+    const headRow = document.createElement('tr');
+    headRow.innerHTML = `<th class="pn-grid-corner"></th>` + pnGrid.cols.map((w,c)=>
+      `<th data-col="${c}">欄${c+1}<button class="pn-grid-delbtn" data-delcol="${c}">×</button><div class="pn-grid-colresize" data-col="${c}"></div></th>`
+    ).join('');
+    thead.appendChild(headRow);
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+    pnGrid.rows.forEach((h, r)=>{
+      const tr = document.createElement('tr');
+      tr.style.height = h + 'px';
+      let rowHtml = `<th data-row="${r}">列${r+1}<button class="pn-grid-delbtn" data-delrow="${r}">×</button><div class="pn-grid-rowresize" data-row="${r}"></div></th>`;
+      pnGrid.cols.forEach((w, c)=>{
+        const v = (pnGrid.cells[r] && pnGrid.cells[r][c]) || '';
+        rowHtml += `<td><input class="pn-grid-cell-input" type="text" data-r="${r}" data-c="${c}" value="${escapeHtml(v)}"></td>`;
+      });
+      tr.innerHTML = rowHtml;
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    pnGridWrap.appendChild(table);
+
+    table.querySelectorAll('.pn-grid-cell-input').forEach(inp=>{
+      inp.addEventListener('input', ()=>{
+        const r = parseInt(inp.dataset.r), c = parseInt(inp.dataset.c);
+        pnGrid.cells[r][c] = inp.value;
+      });
+    });
+    table.querySelectorAll('[data-delcol]').forEach(btn=>{
+      btn.onclick = (e)=>{
+        e.stopPropagation();
+        const c = parseInt(btn.dataset.delcol);
+        if(pnGrid.cols.length <= 1){ showToast('至少要保留 1 欄'); return; }
+        askConfirm('刪除欄', `確定要刪除第 ${c+1} 欄嗎？此動作無法復原。`, ()=>{
+          pnGrid.cols.splice(c, 1);
+          pnGrid.cells.forEach(row=> row.splice(c, 1));
+          renderPnGrid();
+        });
+      };
+    });
+    table.querySelectorAll('[data-delrow]').forEach(btn=>{
+      btn.onclick = (e)=>{
+        e.stopPropagation();
+        const r = parseInt(btn.dataset.delrow);
+        if(pnGrid.rows.length <= 1){ showToast('至少要保留 1 列'); return; }
+        askConfirm('刪除列', `確定要刪除第 ${r+1} 列嗎？此動作無法復原。`, ()=>{
+          pnGrid.rows.splice(r, 1);
+          pnGrid.cells.splice(r, 1);
+          renderPnGrid();
+        });
+      };
+    });
+    table.querySelectorAll('.pn-grid-colresize').forEach(handle=>{
+      handle.addEventListener('mousedown', (e)=>{
+        e.preventDefault();
+        const c = parseInt(handle.dataset.col);
+        const startX = e.clientX;
+        const startW = pnGrid.cols[c];
+        const colEl = table.querySelectorAll('col')[c+1];
+        function onMove(e2){
+          const w = Math.max(40, startW + (e2.clientX - startX));
+          pnGrid.cols[c] = w;
+          colEl.style.width = w + 'px';
+        }
+        function onUp(){
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+        }
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+      });
+    });
+    table.querySelectorAll('.pn-grid-rowresize').forEach(handle=>{
+      handle.addEventListener('mousedown', (e)=>{
+        e.preventDefault();
+        const r = parseInt(handle.dataset.row);
+        const startY = e.clientY;
+        const startH = pnGrid.rows[r];
+        const trEl = table.querySelectorAll('tbody tr')[r];
+        function onMove(e2){
+          const h = Math.max(24, startH + (e2.clientY - startY));
+          pnGrid.rows[r] = h;
+          trEl.style.height = h + 'px';
+        }
+        function onUp(){
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+        }
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+      });
+    });
+  }
+
+  async function loadPnGrid(){
+    if(cloudConnected){
+      try{
+        const d = await pnCloudGetDoc();
+        if(d.pnGrid){ pnGrid = JSON.parse(d.pnGrid); }
+        return;
+      }catch(e){ console.error(e); }
+    }
+    try{
+      if(window.storage){
+        const r = await window.storage.get('pn-grid', false);
+        if(r && r.value){ pnGrid = JSON.parse(r.value); }
+      }
+    }catch(e){}
+  }
+  document.getElementById('savePnGridBtn').onclick = async ()=>{
+    const json = JSON.stringify(pnGrid);
+    if(cloudConnected){
+      try{ await pnCloudSetField('pnGrid', json); showToast('已儲存（雲端）'); return; }
+      catch(e){ console.error(e); showToast('雲端寫入失敗，改存本機'); }
+    }
+    try{
+      if(window.storage){ await window.storage.set('pn-grid', json, false); showToast('已儲存（本機）'); return; }
+      showToast('目前無可用儲存方式，請先設定雲端同步');
+    }catch(e){ showToast('儲存失敗，請稍後再試'); }
+  };
+  document.getElementById('copyPnGridBtn').onclick = ()=>{
+    const text = pnGrid.cells.map(row=>row.join('\t')).join('\n');
+    copyTextToClipboard(text);
+  };
+  document.getElementById('pnGridAddColBtn').onclick = ()=>{
+    pnGrid.cols.push(120);
+    pnGrid.cells.forEach(row=> row.push(''));
+    renderPnGrid();
+  };
+  document.getElementById('pnGridAddRowBtn').onclick = ()=>{
+    pnGrid.rows.push(32);
+    pnGrid.cells.push(new Array(pnGrid.cols.length).fill(''));
+    renderPnGrid();
+  };
+  document.getElementById('pnGridResetBtn').onclick = ()=>{
+    askConfirm('還原 4×4', '確定要清空目前表格並還原成預設的 4×4 嗎？此動作無法復原。', ()=>{
+      pnGrid = JSON.parse(JSON.stringify(PN_GRID_DEFAULT));
+      renderPnGrid();
+    });
+  };
+
   const fields = [
     { id:'pnStatusNotes',    field:'pnStatus',    storageKey:'pn-status',    saveBtn:'savePnStatusBtn',    copyBtn:'copyPnStatusBtn',    label:'專案現況' },
     { id:'pnEnvNotes',       field:'pnEnv',       storageKey:'pn-env',       saveBtn:'savePnEnvBtn',       copyBtn:'copyPnEnvBtn',       label:'環境與系統設定' },
@@ -3083,6 +3265,7 @@ function applyInitialCollapse(){
     document.getElementById(f.copyBtn).onclick = ()=> copyTextToClipboard(el.value);
     loaders.push(load);
   });
+  loaders.push(loadPnGrid);
 
   document.getElementById('pnGenBtn').onclick = ()=>{
     let out = '';
@@ -3102,7 +3285,7 @@ function applyInitialCollapse(){
   };
 
   // ---- 步驟導覽 ----
-  const pnSteps = ["分案管理","專案現況","環境與系統設定","Flutter 版本","Capacitor 版本","雲端服務與資料庫","廣告與行銷","平台發布、更新","重灌及硬體","GitHub","輸出"];
+  const pnSteps = ["分案管理","專案現況陣列","專案現況","環境與系統設定","Flutter 版本","Capacitor 版本","雲端服務與資料庫","廣告與行銷","平台發布、更新","重灌及硬體","GitHub","輸出"];
   const pnStepnav = document.getElementById('projNotesStepnav');
   pnSteps.forEach((label, i)=>{
     const b = document.createElement('button');
@@ -3124,22 +3307,26 @@ function applyInitialCollapse(){
   function applyPnCollapse(){
     const s0 = pnCollapseSetters['0'];
     if(s0) s0(s0.hasStored() ? s0.getStored() : false);
+    const s1 = pnCollapseSetters['1'];
+    if(s1) s1(s1.hasStored() ? s1.getStored() : false);
     fields.forEach((f,i)=>{
-      const s = pnCollapseSetters[String(i+1)];
+      const s = pnCollapseSetters[String(i+2)];
       if(s) s(s.hasStored() ? s.getStored() : !document.getElementById(f.id).value.trim());
     });
-    const sLast = pnCollapseSetters[String(fields.length+1)];
+    const sLast = pnCollapseSetters[String(fields.length+2)];
     if(sLast) sLast(sLast.hasStored() ? sLast.getStored() : false);
   }
 
   window.__projNotesOnCloudChange = async function(){
     await Promise.all(loaders.map(fn=>fn()));
+    renderPnGrid();
     applyPnCollapse();
     if(window.__pnCasesOnCloudChange) await window.__pnCasesOnCloudChange();
   };
 
   (async function initPn(){
     await Promise.all(loaders.map(fn=>fn()));
+    renderPnGrid();
     applyPnCollapse();
   })();
 })();
