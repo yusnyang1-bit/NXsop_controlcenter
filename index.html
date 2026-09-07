@@ -296,6 +296,7 @@
     display:none;align-items:center;justify-content:center;z-index:50;padding:20px;
   }
   .modal-backdrop.show{display:flex;}
+  #confirmModal{z-index:60;}
   .modal{
     background:var(--bg-panel);border:1px solid var(--border);border-radius:16px;
     padding:16px 16px 12px;max-width:360px;width:100%;
@@ -643,7 +644,7 @@ service cloud.firestore {
 
       <section class="pn-panel" data-step="1">
         <h2><span class="htitle"><span class="idx">02</span> 專案現況陣列</span></h2>
-        <div class="hint">類似 Excel 的表格。拖曳欄／列邊界可調整寬高，可自由新增欄列，刪除前會提醒確認。</div>
+        <div class="hint">類似 Excel 的表格。拖曳欄／列邊界可調整寬高，可自由新增欄列，刪除前會提醒確認。可直接從 Excel／Google試算表複製整塊貼上，會自動分欄分行並在需要時自動擴充表格。</div>
         <div id="pnGridWrap" style="overflow:auto;border:1px solid var(--border);border-radius:10px;max-width:100%;"></div>
         <div class="btnrow" style="margin-top:10px;">
           <button class="action ghost" id="savePnGridBtn">儲存</button>
@@ -1919,6 +1920,15 @@ function enhanceTextareaResize(ta){
   wrap.className = 'ta-wrap';
   ta.parentNode.insertBefore(wrap, ta);
   wrap.appendChild(ta);
+
+  // 還原上次拖曳調整過的高度
+  if(ta.id){
+    try{
+      const saved = localStorage.getItem('ta-height:' + ta.id);
+      if(saved) ta.style.height = saved + 'px';
+    }catch(e){}
+  }
+
   const handle = document.createElement('div');
   handle.className = 'ta-resize-handle';
   handle.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><path d="M13 3 L3 13 M13 8 L8 13 M13 13 L13 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
@@ -1931,6 +1941,9 @@ function enhanceTextareaResize(ta){
   function onUp(){
     document.removeEventListener('pointermove', onMove);
     document.removeEventListener('pointerup', onUp);
+    if(ta.id){
+      try{ localStorage.setItem('ta-height:' + ta.id, parseInt(ta.style.height, 10)); }catch(e){}
+    }
   }
   handle.addEventListener('pointerdown', (e)=>{
     e.preventDefault();
@@ -3071,6 +3084,36 @@ function applyInitialCollapse(){
   const PN_GRID_DEFAULT = { cols:[120,120,120,120], rows:[32,32,32,32], cells:[['','','',''],['','','',''],['','','',''],['','','','']] };
   let pnGrid = JSON.parse(JSON.stringify(PN_GRID_DEFAULT));
   const pnGridWrap = document.getElementById('pnGridWrap');
+
+  pnGridWrap.addEventListener('paste', (e)=>{
+    const target = e.target;
+    if(!target.classList || !target.classList.contains('pn-grid-cell-input')) return;
+    e.preventDefault();
+    const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+    if(!text) return;
+    const startR = parseInt(target.dataset.r), startC = parseInt(target.dataset.c);
+    let lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+    while(lines.length > 1 && lines[lines.length - 1] === '') lines.pop();
+    const grid = lines.map(l => l.split('\t'));
+    const neededRows = startR + grid.length;
+    const neededCols = startC + Math.max(...grid.map(r => r.length));
+    while(pnGrid.rows.length < neededRows){
+      pnGrid.rows.push(32);
+      pnGrid.cells.push(new Array(pnGrid.cols.length).fill(''));
+    }
+    while(pnGrid.cols.length < neededCols){
+      pnGrid.cols.push(120);
+      pnGrid.cells.forEach(row => row.push(''));
+    }
+    grid.forEach((rowArr, i)=>{
+      rowArr.forEach((val, j)=>{
+        pnGrid.cells[startR + i][startC + j] = val;
+      });
+    });
+    renderPnGrid();
+    showToast(`已貼上 ${grid.length} 列 × ${Math.max(...grid.map(r=>r.length))} 欄`);
+  });
+
 
   function renderPnGrid(){
     pnGridWrap.innerHTML = '';
