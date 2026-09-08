@@ -99,6 +99,12 @@
     text-transform:uppercase;
     margin-bottom:8px;
   }
+  .app-version-tag{
+    font-family:var(--mono);
+    font-size:10px;
+    color:var(--text-faint);
+    margin-bottom:6px;
+  }
   .title-block h1{
     font-size:26px;
     margin:0;
@@ -454,7 +460,14 @@
   .pn-grid-table thead th{background:var(--bg-panel);font-size:11px;color:var(--text-faint);font-family:var(--mono);font-weight:600;padding:4px 6px;white-space:nowrap;}
   .pn-grid-table tbody th{background:var(--bg-panel);font-size:11px;color:var(--text-faint);font-family:var(--mono);font-weight:600;padding:4px 6px;white-space:nowrap;text-align:left;}
   .pn-grid-corner{background:var(--bg-panel);}
-  .pn-grid-cell-input{width:100%;height:100%;border:none;background:transparent;color:var(--text);font-size:13px;padding:4px 6px;font-family:var(--sans);box-sizing:border-box;outline:none;}
+  .pn-grid-cell-input{width:100%;height:100%;border:none;background:transparent;color:var(--text);font-size:13px;padding:4px 6px;font-family:var(--sans);box-sizing:border-box;outline:none;resize:none;white-space:pre-wrap;overflow:auto;display:block;}
+  .pn-grid-table thead th[draggable], .pn-grid-table tbody th[draggable]{cursor:grab;}
+  .pn-grid-table th.drag-over{outline:2px solid var(--coral);outline-offset:-2px;}
+  .pn-grid-palette{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
+  .pn-grid-palette-label{font-size:12px;color:var(--text-faint);font-family:var(--mono);}
+  .pn-grid-swatch{width:20px;height:20px;border-radius:50%;border:1px solid var(--border);cursor:pointer;padding:0;flex-shrink:0;}
+  .pn-grid-swatch:hover{transform:scale(1.15);}
+  .pn-grid-swatch-none{background:transparent;border-style:dashed;}
   .pn-grid-cell-input:focus{background:var(--accent-soft);}
   .pn-grid-colresize{position:absolute;top:0;right:-3px;width:6px;height:100%;cursor:col-resize;z-index:2;}
   .pn-grid-rowresize{position:absolute;left:0;bottom:-3px;width:100%;height:6px;cursor:row-resize;z-index:2;}
@@ -495,6 +508,8 @@
 </head>
 <body>
 <div class="wrap">
+
+  <div class="app-version-tag" title="每次修改由 AI 遞增，方便識別目前是哪一版">V1.0.0</div>
 
   <header>
     <div class="title-block">
@@ -3081,9 +3096,32 @@ function applyInitialCollapse(){
   }
 
   // ---- 專案現況陣列（類 Excel 表格，欄寬/列高可拖曳，可增刪欄列）----
-  const PN_GRID_DEFAULT = { cols:[120,120,120,120], rows:[32,32,32,32], cells:[['','','',''],['','','',''],['','','',''],['','','','']] };
+  const PN_GRID_DEFAULT = { cols:[120,120,120,120], rows:[32,32,32,32], cells:[['','','',''],['','','',''],['','','',''],['','','','']], colors:[[null,null,null,null],[null,null,null,null],[null,null,null,null],[null,null,null,null]] };
   let pnGrid = JSON.parse(JSON.stringify(PN_GRID_DEFAULT));
   const pnGridWrap = document.getElementById('pnGridWrap');
+  const PN_GRID_SWATCHES = [
+    { color:'', title:'預設' },
+    { color:'#ff6b6b', title:'紅' },
+    { color:'#ffb020', title:'橘' },
+    { color:'#1fd9c4', title:'綠松' },
+    { color:'#5b8def', title:'藍' },
+    { color:'#c084fc', title:'紫' }
+  ];
+  let pnGridFocusedCell = null;
+  let pnGridDragCol = null;
+  let pnGridDragRow = null;
+
+  function ensurePnGridColors(){
+    if(!Array.isArray(pnGrid.colors)) pnGrid.colors = [];
+    pnGrid.rows.forEach((_, r)=>{
+      if(!Array.isArray(pnGrid.colors[r])) pnGrid.colors[r] = [];
+      pnGrid.cols.forEach((_, c)=>{
+        if(pnGrid.colors[r][c] === undefined) pnGrid.colors[r][c] = null;
+      });
+      pnGrid.colors[r].length = pnGrid.cols.length;
+    });
+    pnGrid.colors.length = pnGrid.rows.length;
+  }
 
   pnGridWrap.addEventListener('paste', (e)=>{
     const target = e.target;
@@ -3105,6 +3143,7 @@ function applyInitialCollapse(){
       pnGrid.cols.push(120);
       pnGrid.cells.forEach(row => row.push(''));
     }
+    ensurePnGridColors();
     grid.forEach((rowArr, i)=>{
       rowArr.forEach((val, j)=>{
         pnGrid.cells[startR + i][startC + j] = val;
@@ -3114,9 +3153,46 @@ function applyInitialCollapse(){
     showToast(`已貼上 ${grid.length} 列 × ${Math.max(...grid.map(r=>r.length))} 欄`);
   });
 
+  function reorderPnGridCol(from, to){
+    if(from === to) return;
+    const moveArr = (arr)=>{ const [x] = arr.splice(from,1); arr.splice(to,0,x); };
+    moveArr(pnGrid.cols);
+    pnGrid.cells.forEach(row=> moveArr(row));
+    pnGrid.colors.forEach(row=> moveArr(row));
+    renderPnGrid();
+  }
+  function reorderPnGridRow(from, to){
+    if(from === to) return;
+    const moveArr = (arr)=>{ const [x] = arr.splice(from,1); arr.splice(to,0,x); };
+    moveArr(pnGrid.rows);
+    moveArr(pnGrid.cells);
+    moveArr(pnGrid.colors);
+    renderPnGrid();
+  }
 
   function renderPnGrid(){
+    ensurePnGridColors();
     pnGridWrap.innerHTML = '';
+
+    const palette = document.createElement('div');
+    palette.className = 'pn-grid-palette';
+    palette.innerHTML = `<span class="pn-grid-palette-label">強調色（先點選儲存格）：</span>` +
+      PN_GRID_SWATCHES.map(s=>
+        `<button class="pn-grid-swatch${s.color===''?' pn-grid-swatch-none':''}" data-color="${s.color}" title="${s.title}" style="${s.color ? 'background:'+s.color+';' : ''}"></button>`
+      ).join('');
+    pnGridWrap.appendChild(palette);
+    palette.querySelectorAll('.pn-grid-swatch').forEach(sw=>{
+      sw.onclick = ()=>{
+        if(!pnGridFocusedCell){ showToast('請先點選一個儲存格'); return; }
+        const { r, c } = pnGridFocusedCell;
+        const color = sw.dataset.color || null;
+        ensurePnGridColors();
+        pnGrid.colors[r][c] = color;
+        const ta = pnGridWrap.querySelector(`textarea[data-r="${r}"][data-c="${c}"]`);
+        if(ta) ta.style.color = color || '';
+      };
+    });
+
     const table = document.createElement('table');
     table.className = 'pn-grid-table';
     const colgroup = document.createElement('colgroup');
@@ -3126,7 +3202,7 @@ function applyInitialCollapse(){
     const thead = document.createElement('thead');
     const headRow = document.createElement('tr');
     headRow.innerHTML = `<th class="pn-grid-corner"></th>` + pnGrid.cols.map((w,c)=>
-      `<th data-col="${c}">欄${c+1}<button class="pn-grid-delbtn" data-delcol="${c}">×</button><div class="pn-grid-colresize" data-col="${c}"></div></th>`
+      `<th data-col="${c}" draggable="true">欄${c+1}<button class="pn-grid-delbtn" draggable="false" data-delcol="${c}">×</button><div class="pn-grid-colresize" draggable="false" data-col="${c}"></div></th>`
     ).join('');
     thead.appendChild(headRow);
     table.appendChild(thead);
@@ -3135,10 +3211,11 @@ function applyInitialCollapse(){
     pnGrid.rows.forEach((h, r)=>{
       const tr = document.createElement('tr');
       tr.style.height = h + 'px';
-      let rowHtml = `<th data-row="${r}">列${r+1}<button class="pn-grid-delbtn" data-delrow="${r}">×</button><div class="pn-grid-rowresize" data-row="${r}"></div></th>`;
+      let rowHtml = `<th data-row="${r}" draggable="true">列${r+1}<button class="pn-grid-delbtn" draggable="false" data-delrow="${r}">×</button><div class="pn-grid-rowresize" draggable="false" data-row="${r}"></div></th>`;
       pnGrid.cols.forEach((w, c)=>{
         const v = (pnGrid.cells[r] && pnGrid.cells[r][c]) || '';
-        rowHtml += `<td><input class="pn-grid-cell-input" type="text" data-r="${r}" data-c="${c}" value="${escapeHtml(v)}"></td>`;
+        const col = (pnGrid.colors[r] && pnGrid.colors[r][c]) || '';
+        rowHtml += `<td><textarea class="pn-grid-cell-input" data-r="${r}" data-c="${c}" style="${col?'color:'+col+';':''}">${escapeHtml(v)}</textarea></td>`;
       });
       tr.innerHTML = rowHtml;
       tbody.appendChild(tr);
@@ -3146,10 +3223,13 @@ function applyInitialCollapse(){
     table.appendChild(tbody);
     pnGridWrap.appendChild(table);
 
-    table.querySelectorAll('.pn-grid-cell-input').forEach(inp=>{
-      inp.addEventListener('input', ()=>{
-        const r = parseInt(inp.dataset.r), c = parseInt(inp.dataset.c);
-        pnGrid.cells[r][c] = inp.value;
+    table.querySelectorAll('.pn-grid-cell-input').forEach(ta=>{
+      ta.addEventListener('input', ()=>{
+        const r = parseInt(ta.dataset.r), c = parseInt(ta.dataset.c);
+        pnGrid.cells[r][c] = ta.value;
+      });
+      ta.addEventListener('focus', ()=>{
+        pnGridFocusedCell = { r: parseInt(ta.dataset.r), c: parseInt(ta.dataset.c) };
       });
     });
     table.querySelectorAll('[data-delcol]').forEach(btn=>{
@@ -3160,6 +3240,7 @@ function applyInitialCollapse(){
         askConfirm('刪除欄', `確定要刪除第 ${c+1} 欄嗎？此動作無法復原。`, ()=>{
           pnGrid.cols.splice(c, 1);
           pnGrid.cells.forEach(row=> row.splice(c, 1));
+          pnGrid.colors.forEach(row=> row.splice(c, 1));
           renderPnGrid();
         });
       };
@@ -3172,6 +3253,7 @@ function applyInitialCollapse(){
         askConfirm('刪除列', `確定要刪除第 ${r+1} 列嗎？此動作無法復原。`, ()=>{
           pnGrid.rows.splice(r, 1);
           pnGrid.cells.splice(r, 1);
+          pnGrid.colors.splice(r, 1);
           renderPnGrid();
         });
       };
@@ -3179,6 +3261,7 @@ function applyInitialCollapse(){
     table.querySelectorAll('.pn-grid-colresize').forEach(handle=>{
       handle.addEventListener('mousedown', (e)=>{
         e.preventDefault();
+        e.stopPropagation();
         const c = parseInt(handle.dataset.col);
         const startX = e.clientX;
         const startW = pnGrid.cols[c];
@@ -3199,6 +3282,7 @@ function applyInitialCollapse(){
     table.querySelectorAll('.pn-grid-rowresize').forEach(handle=>{
       handle.addEventListener('mousedown', (e)=>{
         e.preventDefault();
+        e.stopPropagation();
         const r = parseInt(handle.dataset.row);
         const startY = e.clientY;
         const startH = pnGrid.rows[r];
@@ -3216,6 +3300,40 @@ function applyInitialCollapse(){
         document.addEventListener('mouseup', onUp);
       });
     });
+
+    // 拖曳欄／列標題改變順序
+    table.querySelectorAll('thead th[data-col]').forEach(th=>{
+      th.addEventListener('dragstart', (e)=>{
+        pnGridDragCol = parseInt(th.dataset.col);
+        e.dataTransfer.effectAllowed = 'move';
+        try{ e.dataTransfer.setData('text/plain', 'col:'+pnGridDragCol); }catch(err){}
+      });
+      th.addEventListener('dragover', (e)=>{ e.preventDefault(); th.classList.add('drag-over'); });
+      th.addEventListener('dragleave', ()=> th.classList.remove('drag-over'));
+      th.addEventListener('drop', (e)=>{
+        e.preventDefault();
+        th.classList.remove('drag-over');
+        if(pnGridDragCol === null) return;
+        reorderPnGridCol(pnGridDragCol, parseInt(th.dataset.col));
+        pnGridDragCol = null;
+      });
+    });
+    table.querySelectorAll('tbody th[data-row]').forEach(th=>{
+      th.addEventListener('dragstart', (e)=>{
+        pnGridDragRow = parseInt(th.dataset.row);
+        e.dataTransfer.effectAllowed = 'move';
+        try{ e.dataTransfer.setData('text/plain', 'row:'+pnGridDragRow); }catch(err){}
+      });
+      th.addEventListener('dragover', (e)=>{ e.preventDefault(); th.classList.add('drag-over'); });
+      th.addEventListener('dragleave', ()=> th.classList.remove('drag-over'));
+      th.addEventListener('drop', (e)=>{
+        e.preventDefault();
+        th.classList.remove('drag-over');
+        if(pnGridDragRow === null) return;
+        reorderPnGridRow(pnGridDragRow, parseInt(th.dataset.row));
+        pnGridDragRow = null;
+      });
+    });
   }
 
   async function loadPnGrid(){
@@ -3223,6 +3341,7 @@ function applyInitialCollapse(){
       try{
         const d = await pnCloudGetDoc();
         if(d.pnGrid){ pnGrid = JSON.parse(d.pnGrid); }
+        ensurePnGridColors();
         return;
       }catch(e){ console.error(e); }
     }
@@ -3232,6 +3351,7 @@ function applyInitialCollapse(){
         if(r && r.value){ pnGrid = JSON.parse(r.value); }
       }
     }catch(e){}
+    ensurePnGridColors();
   }
   document.getElementById('savePnGridBtn').onclick = async ()=>{
     const json = JSON.stringify(pnGrid);
@@ -3251,11 +3371,13 @@ function applyInitialCollapse(){
   document.getElementById('pnGridAddColBtn').onclick = ()=>{
     pnGrid.cols.push(120);
     pnGrid.cells.forEach(row=> row.push(''));
+    ensurePnGridColors();
     renderPnGrid();
   };
   document.getElementById('pnGridAddRowBtn').onclick = ()=>{
     pnGrid.rows.push(32);
     pnGrid.cells.push(new Array(pnGrid.cols.length).fill(''));
+    ensurePnGridColors();
     renderPnGrid();
   };
 
