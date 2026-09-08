@@ -511,7 +511,7 @@
 <body>
 <div class="wrap">
 
-  <div class="app-version-tag" title="每次修改由 AI 遞增，方便識別目前是哪一版">V1.0.1</div>
+  <div class="app-version-tag" title="每次修改由 AI 遞增，方便識別目前是哪一版">V1.0.2</div>
 
   <header>
     <div class="title-block">
@@ -3216,7 +3216,7 @@ function applyInitialCollapse(){
       pnGrid.cols.forEach((w, c)=>{
         const v = (pnGrid.cells[r] && pnGrid.cells[r][c]) || '';
         const col = (pnGrid.colors[r] && pnGrid.colors[r][c]) || '';
-        rowHtml += `<td><textarea class="pn-grid-cell-input" data-r="${r}" data-c="${c}" style="${col?'color:'+col+';':''}">${escapeHtml(v)}</textarea></td>`;
+        rowHtml += `<td><textarea class="pn-grid-cell-input" rows="1" data-r="${r}" data-c="${c}" style="${col?'color:'+col+';':''}">${escapeHtml(v)}</textarea></td>`;
       });
       tr.innerHTML = rowHtml;
       tbody.appendChild(tr);
@@ -3229,7 +3229,7 @@ function applyInitialCollapse(){
       if(!tr) return;
       let maxNeeded = 26;
       tr.querySelectorAll('.pn-grid-cell-input').forEach(ta=>{
-        ta.style.height = 'auto';
+        ta.style.height = '0px';
         if(ta.scrollHeight > maxNeeded) maxNeeded = ta.scrollHeight;
         ta.style.height = '';
       });
