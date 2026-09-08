@@ -101,9 +101,11 @@
   }
   .app-version-tag{
     font-family:var(--mono);
-    font-size:10px;
-    color:var(--text-faint);
+    font-size:15px;
+    font-weight:800;
+    color:var(--accent);
     margin-bottom:6px;
+    letter-spacing:0.03em;
   }
   .title-block h1{
     font-size:26px;
@@ -460,7 +462,7 @@
   .pn-grid-table thead th{background:var(--bg-panel);font-size:11px;color:var(--text-faint);font-family:var(--mono);font-weight:600;padding:4px 6px;white-space:nowrap;}
   .pn-grid-table tbody th{background:var(--bg-panel);font-size:11px;color:var(--text-faint);font-family:var(--mono);font-weight:600;padding:4px 6px;white-space:nowrap;text-align:left;}
   .pn-grid-corner{background:var(--bg-panel);}
-  .pn-grid-cell-input{width:100%;height:100%;border:none;background:transparent;color:var(--text);font-size:13px;padding:4px 6px;font-family:var(--sans);box-sizing:border-box;outline:none;resize:none;white-space:pre-wrap;overflow:auto;display:block;}
+  .pn-grid-cell-input{width:100%;height:100%;border:none;background:transparent;color:var(--text);font-size:13px;padding:4px 6px;font-family:var(--sans);box-sizing:border-box;outline:none;resize:none;white-space:pre-wrap;overflow:hidden;display:block;}
   .pn-grid-table thead th[draggable], .pn-grid-table tbody th[draggable]{cursor:grab;}
   .pn-grid-table th.drag-over{outline:2px solid var(--coral);outline-offset:-2px;}
   .pn-grid-palette{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
@@ -509,11 +511,10 @@
 <body>
 <div class="wrap">
 
-  <div class="app-version-tag" title="每次修改由 AI 遞增，方便識別目前是哪一版">V1.0.0</div>
+  <div class="app-version-tag" title="每次修改由 AI 遞增，方便識別目前是哪一版">V1.0.1</div>
 
   <header>
     <div class="title-block">
-      <div class="eyebrow">NOMAX STUDIO — INTERNAL TOOL</div>
       <h1 id="mainTitle">App 開發 SOP 導覽</h1>
       <p id="mainSubtitle">每次啟動新專案的固定流程 — 填寫、確認、輸出，貼給 AI 開始協作</p>
     </div>
@@ -3096,7 +3097,7 @@ function applyInitialCollapse(){
   }
 
   // ---- 專案現況陣列（類 Excel 表格，欄寬/列高可拖曳，可增刪欄列）----
-  const PN_GRID_DEFAULT = { cols:[120,120,120,120], rows:[32,32,32,32], cells:[['','','',''],['','','',''],['','','',''],['','','','']], colors:[[null,null,null,null],[null,null,null,null],[null,null,null,null],[null,null,null,null]] };
+  const PN_GRID_DEFAULT = { cols:[120,120,120,120], rows:[26,26,26,26], cells:[['','','',''],['','','',''],['','','',''],['','','','']], colors:[[null,null,null,null],[null,null,null,null],[null,null,null,null],[null,null,null,null]] };
   let pnGrid = JSON.parse(JSON.stringify(PN_GRID_DEFAULT));
   const pnGridWrap = document.getElementById('pnGridWrap');
   const PN_GRID_SWATCHES = [
@@ -3136,7 +3137,7 @@ function applyInitialCollapse(){
     const neededRows = startR + grid.length;
     const neededCols = startC + Math.max(...grid.map(r => r.length));
     while(pnGrid.rows.length < neededRows){
-      pnGrid.rows.push(32);
+      pnGrid.rows.push(26);
       pnGrid.cells.push(new Array(pnGrid.cols.length).fill(''));
     }
     while(pnGrid.cols.length < neededCols){
@@ -3223,10 +3224,26 @@ function applyInitialCollapse(){
     table.appendChild(tbody);
     pnGridWrap.appendChild(table);
 
+    function autoFitRow(r){
+      const tr = table.querySelectorAll('tbody tr')[r];
+      if(!tr) return;
+      let maxNeeded = 26;
+      tr.querySelectorAll('.pn-grid-cell-input').forEach(ta=>{
+        ta.style.height = 'auto';
+        if(ta.scrollHeight > maxNeeded) maxNeeded = ta.scrollHeight;
+        ta.style.height = '';
+      });
+      const newH = Math.max(pnGrid.rows[r] || 26, maxNeeded);
+      pnGrid.rows[r] = newH;
+      tr.style.height = newH + 'px';
+    }
+    pnGrid.rows.forEach((_, r)=> autoFitRow(r));
+
     table.querySelectorAll('.pn-grid-cell-input').forEach(ta=>{
       ta.addEventListener('input', ()=>{
         const r = parseInt(ta.dataset.r), c = parseInt(ta.dataset.c);
         pnGrid.cells[r][c] = ta.value;
+        autoFitRow(r);
       });
       ta.addEventListener('focus', ()=>{
         pnGridFocusedCell = { r: parseInt(ta.dataset.r), c: parseInt(ta.dataset.c) };
@@ -3375,7 +3392,7 @@ function applyInitialCollapse(){
     renderPnGrid();
   };
   document.getElementById('pnGridAddRowBtn').onclick = ()=>{
-    pnGrid.rows.push(32);
+    pnGrid.rows.push(26);
     pnGrid.cells.push(new Array(pnGrid.cols.length).fill(''));
     ensurePnGridColors();
     renderPnGrid();
